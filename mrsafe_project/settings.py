@@ -54,7 +54,7 @@ INSTALLED_APPS = [
       'django.contrib.sites',
 
 ]
-ASGI_APPLICATION = "mrsafe_app.asgi.application"
+ASGI_APPLICATION = "mrsafe_project.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
