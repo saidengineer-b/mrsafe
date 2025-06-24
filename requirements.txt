@@ -1,42 +1,9 @@
-# Core Django
 Django==5.2
-django-ckeditor==6.7.2
-django-js-asset==3.1.2
-django-widget-tweaks==1.5.0
-sqlparse==0.5.3
-python-dotenv==1.1.0
-
-# Database
-psycopg2-binary==2.9.10  # Required for PostgreSQL
-
-# AI and OpenAI
+psycopg2-binary==2.9.10
 openai==1.70.0
 gTTS==2.5.4
-
-# PDF and Document Handling
-reportlab==4.3.1
-weasyprint==65.1
-PyPDF2==3.0.1
-python-pptx==1.0.2
-pytesseract==0.3.13
-PyMuPDF==1.25.5
-
-# NLP and Parsing
-nltk==3.9.1
-newspaper3k==0.2.8
-beautifulsoup4==4.13.3
-lxml==5.3.2
-regex==2024.11.6
-jieba3k==0.35.1
-
-# Utilities
 requests==2.32.3
 pytz==2025.2
-tzdata==2025.2
-typing_extensions==4.13.1
-pandas==2.2.3
-qrcode==8.1
-XlsxWriter==3.2.2
+python-dotenv==1.1.0
+django-widget-tweaks==1.5.0
 
-# Rendering and Styles
-cssselect
