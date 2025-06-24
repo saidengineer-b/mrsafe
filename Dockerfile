@@ -1,37 +1,23 @@
 # Use an official Python runtime as a base image
-FROM python:3.12  # Change if needed
+FROM python:3.12-slim
 
 # Set environment variables
-ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies for Python packages
-RUN apt-get update && apt-get install -y \
-    python3-dev \
-    gcc \
-    libpq-dev \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
-    libjpeg-dev \
-    zlib1g-dev \
-    libportaudio2
-
-# Create and activate a virtual environment
-RUN python -m venv /opt/venv && \
-    . /opt/venv/bin/activate && \
-    pip install --upgrade pip
-
-# Copy project files
-COPY . /app
-
-# Install project dependencies
+# Install dependencies
+COPY requirements.txt /app/
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Expose the application port
-EXPOSE 8000
+# Copy the rest of the application
+COPY . /app/
 
-# Default command to run the app
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "quiz_project.wsgi:application"]
+# Run Django collectstatic if needed
+# RUN python manage.py collectstatic --noinput
+
+# Run the application using gunicorn
+CMD ["gunicorn", "mrsafe.wsgi:application", "--bind", "0.0.0.0:8000"]
