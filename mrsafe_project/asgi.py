@@ -13,7 +13,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 import mrsafe.routing  # ✅ Ensure your app’s routing exists
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'quiz_project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mrsafe_project.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),

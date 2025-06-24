@@ -20,4 +20,5 @@ COPY . /app/
 # RUN python manage.py collectstatic --noinput
 
 # Run the application using gunicorn
-CMD ["gunicorn", "mrsafe.wsgi:application", "--bind", "0.0.0.0:8000"]
+
+CMD ["gunicorn", "mrsafe_project.wsgi:application", "--bind", "0.0.0.0:8000"]
