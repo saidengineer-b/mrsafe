@@ -97,19 +97,32 @@ TEMPLATES = [
 
 # ✅ WSGI Application
 WSGI_APPLICATION = "mrsafe_project.wsgi.application"
+import os
+import dj_database_url
 
-# ✅ Database (MySQL)
-# ✅ Database (PostgreSQL)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mrsafe',
-        'USER': 'postgres',
-        'PASSWORD': 'Razan@1978',  # Replace with the actual password you set
-        'HOST': 'localhost',
-        'PORT': '5432',          # ✅ Must be 5432, not 5433
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True
+        )
     }
-}
+else:
+    # Fallback for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',  # ✅ uses psycopg v3
+            'NAME': 'mrsafe',
+            'USER': 'postgres',
+            'PASSWORD': 'Razan@1978',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+
 
 
 

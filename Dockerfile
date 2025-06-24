@@ -2,8 +2,8 @@
 FROM python:3.12-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
@@ -13,12 +13,11 @@ COPY requirements.txt /app/
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Copy the rest of the application
+# Copy project files
 COPY . /app/
 
-# Run Django collectstatic if needed
+# Optional: collect static files (uncomment if needed)
 # RUN python manage.py collectstatic --noinput
 
-# Run the application using gunicorn
-
-CMD ["gunicorn", "mrsafe_project.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Run migrations and start the app
+CMD ["sh", "-c", "python manage.py migrate && gunicorn mrsafe_project.wsgi:application --bind 0.0.0.0:8000"]
