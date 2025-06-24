@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid mt-5 px-3 d-flex justify-content-center">
+  <div class="profile-box p-4 rounded-4 shadow text-center position-relative">
+
+    <!-- Profile Image + Username -->
+    <img src="{% if user.profile_photo %}{{ user.profile_photo.url }}{% else %}{% static 'images/default.jpg' %}{% endif %}" class="profile-img mx-auto mb-2" alt="Profile Photo">
+    <h3 class="glow-text mb-1">{{ user.username }}</h3>
+
+    <!-- Edit Button -->
+    <a href="{% url 'quiz_app:edit_profile' %}" class="edit-icon position-absolute top-0 end-0 m-3">
+      <i class="bi bi-pencil-fill"></i>
+    </a>
+
+    <!-- Tab Buttons -->
+    <div class="tab-buttons my-3 d-flex justify-content-center gap-3">
+      <button class="btn tab-btn active" id="info-tab">Info</button>
+      <button class="btn tab-btn" id="membership-tab">Membership</button>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="tab-box-wrapper" class="tab-content-box mt-3 text-start d-none">
+      <div id="info-content" class="tab-pane active">
+        <h6 class="glow-label mb-3">👤 Personal Information</h6>
+        <p class="white-text"><strong>Full Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        <p class="white-text"><strong>Phone:</strong> {{ user.phone_number|default:"N/A" }}</p>
+        <p class="white-text"><strong>Email:</strong> {{ user.email }}</p>
+      </div>
+      <div id="membership-content" class="tab-pane d-none">
+        {% if user.is_premium %}
+          <h6 class="glow-label mb-3">⭐ Premium Member</h6>
+          <p class="white-text">Valid Until: {{ user.premiumprofile.end_date|date:"M d, Y" }}</p>
+        {% else %}
+          <h6 class="text-muted glow-label">🕓 Free Plan</h6>
+          <a href="{% url 'quiz_app:subscribe_premium' plan.name|default:'monthly' %}" class="btn btn-glow btn-sm mb-2">💎 Upgrade</a>
+        {% endif %}
+        <p class="white-text"><strong>🪙 Coins:</strong> {{ coin_balance }} Coins</p>
+      </div>
+    </div>
+
+    <!-- Icons Grid -->
+<!-- Icons Grid (no labels, full image fit) -->
+<!-- Icons Grid with labels positioned below image inside the card -->
+<div class="row g-3 mt-4">
+    <div class="col-6 col-md-4 text-center">
+        <a href="{% url 'quiz_app:my_stats' %}" class="text-decoration-none">
+          <div class="icon-card d-flex flex-column align-items-center justify-content-center">
+            <img src="{% static 'images/my_stats.png' %}" class="icon-img-full mb-2" alt="My Stats">
+            <div class="icon-label-tiffany">Stats</div>
+          </div>
+        </a>
+      </div>
+          <div class="col-6 col-md-4 text-center">
+      <a href="{% url 'quiz_app:my_roadmaps' %}" class="text-decoration-none">
+        <div class="icon-card">
+          <img src="{% static 'images/ai-roadmap-banner.png' %}" class="icon-img-full mb-2" alt="My summaries">
+          <div class="icon-label-tiffany">Roadmaps</div>
+        </div>
+      </a>
+    </div>
+ 
+  
+    <div class="col-6 col-md-4 text-center">
+      <a href="{% url 'quiz_app:my_masterit_lessons' %}" class="text-decoration-none">
+        <div class="icon-card">
+          <img src="{% static 'images/my_lessons.png' %}" class="icon-img-full mb-2" alt="My Lessons">
+          <div class="icon-label-tiffany">Lessons</div>
+        </div>
+      </a>
+    </div>
+  
+    <div class="col-6 col-md-4 text-center">
+      <a href="{% url 'quiz_app:my_quiz_center' %}" class="text-decoration-none">
+        <div class="icon-card">
+          <img src="{% static 'images/my_quizzes.png' %}" class="icon-img-full mb-2" alt="My Quizzes">
+          <div class="icon-label-tiffany">Quizzes</div>
+        </div>
+      </a>
+    </div>
+  
+    <div class="col-6 col-md-4 text-center">
+      <a href="{% url 'quiz_app:my_questionbank_center' %}" class="text-decoration-none">
+        <div class="icon-card">
+          <img src="{% static 'images/my_question_banks.png' %}" class="icon-img-full mb-2" alt="My Question Banks">
+          <div class="icon-label-tiffany">Question Banks</div>
+        </div>
+      </a>
+    </div>
+  
+    <div class="col-6 col-md-4 text-center">
+      <a href="{% url 'quiz_app:certificate_center' %}" class="text-decoration-none">
+        <div class="icon-card">
+          <img src="{% static 'images/my_certificates.png' %}" class="icon-img-full mb-2" alt="My Certificates">
+          <div class="icon-label-tiffany">Certificates</div>
+        </div>
+      </a>
+    </div>
+  
+    <div class="col-6 col-md-4 text-center">
+      <a href="{% url 'quiz_app:my_rewards_center' %}" class="text-decoration-none">
+        <div class="icon-card">
+          <img src="{% static 'images/my_rewards.png' %}" class="icon-img-full mb-2" alt="Rewards">
+          <div class="icon-label-tiffany">My Rewards</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 text-center">
+      <a href="{% url 'quiz_app:my_summaries' %}" class="text-decoration-none">
+        <div class="icon-card">
+          <img src="{% static 'images/my_summaries.png' %}" class="icon-img-full mb-2" alt="My summaries">
+          <div class="icon-label-tiffany">Summaries</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 text-center">
+      <a href="{% url 'quiz_app:my_podcasts' %}" class="text-decoration-none">
+        <div class="icon-card">
+          <img src="{% static 'images/my_podecast.png' %}" class="icon-img-full mb-2" alt="My summaries">
+          <div class="icon-label-tiffany">Podecasts</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-6 col-md-4 text-center">
+      <a href="{% url 'quiz_app:my_mind_maps' %}" class="text-decoration-none">
+        <div class="icon-card">
+          <img src="{% static 'images/my_mindmaps.png' %}" class="icon-img-full mb-2" alt="My summaries">
+          <div class="icon-label-tiffany">MindMaps</div>
+        </div>
+      </a>
+    </div>
+ 
+
+</div>
+<!-- Styles -->
+<style>
+body {
+  background-color: #0a0f1c;
+  color: #fff;
+}
+.profile-box {
+  background-color: #0a0f1c;
+  border: 1px solid #00ffff33;
+  box-shadow: 0 0 15px #00ffff20;
+  max-width: 768px;
+  width: 100%;
+}
+.profile-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #40e0d0;
+  box-shadow: 0 0 20px #40e0d0;
+  object-fit: cover;
+}
+.white-text {
+  color: white;
+}
+.edit-icon {
+  font-size: 18px;
+  color: #40e0d0;
+  background: #0a0f1c;
+  border: 1px solid #40e0d0;
+  padding: 6px 10px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px #40e0d033;
+}
+.edit-icon:hover {
+  background-color: #40e0d0;
+  color: #0a0f1c;
+}
+.glow-text {
+  color: #40e0d0;
+  text-shadow: 0 0 6px #40e0d0;
+}
+.tab-buttons .tab-btn {
+  border: 1px solid #40e0d0;
+  background: transparent;
+  color: #40e0d0;
+  font-weight: bold;
+  border-radius: 30px;
+  padding: 8px 24px;
+  box-shadow: 0 0 10px #40e0d033;
+  transition: 0.3s ease;
+}
+.tab-buttons .tab-btn.active {
+  background: #40e0d0;
+  color: #0a0f1c;
+  box-shadow: 0 0 15px #40e0d0aa;
+}
+.tab-content-box {
+  background: #0a0f1c;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px #40e0d033;
+}
+.glow-label {
+  color: #40e0d0;
+  text-shadow: 0 0 5px #40e0d0;
+  font-weight: bold;
+}
+.icon-card {
+    background-color: #0a0f1c;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0 10px #40e0d033;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .icon-card:hover {
+    transform: scale(1.05);
+    background-color: rgba(64, 224, 208, 0.05); /* soft tiffany background */
+    box-shadow: 0 0 20px #40e0d0aa;
+  }
+  
+
+  
+.icon-img-full {
+  width: 100%;
+  max-width: 120px;
+  height: auto;
+  max-height: 100px;
+  object-fit: cover;
+  border-radius: 16px;
+  filter: drop-shadow(0 0 4px #020505AA);
+}
+.icon-label-tiffany {
+  color: #40e0d0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-shadow: 0 0 4px #40e0d0aa;
+}
+@media (max-width: 768px) {
+  .icon-img-full {
+    max-height: 80px;
+  }
+  .icon-label-tiffany {
+    font-size: 0.85rem;
+  }
+  .profile-img {
+    width: 80px;
+    height: 80px;
+  }
+  .tab-buttons .tab-btn {
+    padding: 6px 16px;
+    font-size: 0.9rem;
+  }
+  .icon-card {
+    padding: 16px;
+  }
+}
+</style>
+
+<!-- Script -->
+<script>
+const infoTab = document.getElementById("info-tab");
+const membershipTab = document.getElementById("membership-tab");
+const tabBoxWrapper = document.getElementById("tab-box-wrapper");
+const infoContent = document.getElementById("info-content");
+const membershipContent = document.getElementById("membership-content");
+
+function openTab(tabName) {
+  tabBoxWrapper.classList.remove("d-none");
+  if (tabName === "info") {
+    infoContent.classList.remove("d-none");
+    membershipContent.classList.add("d-none");
+    infoTab.classList.add("active");
+    membershipTab.classList.remove("active");
+  } else {
+    infoContent.classList.add("d-none");
+    membershipContent.classList.remove("d-none");
+    infoTab.classList.remove("active");
+    membershipTab.classList.add("active");
+  }
+}
+infoTab.addEventListener("click", () => openTab("info"));
+membershipTab.addEventListener("click", () => openTab("membership"));
+</script>
+
+{% endblock %}

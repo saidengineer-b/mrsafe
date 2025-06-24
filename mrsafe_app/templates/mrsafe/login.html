@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="login-page-outer">
+    <div class="login-container bg-dark text-white border border-tiffany shadow-lg rounded-4 p-4">
+
+        <!-- 🔹 Logo -->
+
+        <div class="logo-container mb-4">
+            <img src="{% static 'images/quizai-logo.png' %}" alt="QuizAI Logo" class="logo-glow-large">
+        </div>
+
+
+        <!-- 🔹 Title -->
+        <h2 class="text-tiffany fw-bold">👋 Welcome Back!</h2>
+        <p class="text-tiffany mb-4">Please login to your account</p>
+
+        <!-- 🔹 Login Form -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group text-start mb-3">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div class="form-group text-start mb-3">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+            </div>
+            <div class="form-check mb-3 text-start">
+                <input class="form-check-input" type="checkbox" id="rememberMe" name="remember_me">
+                <label class="form-check-label" for="rememberMe">Remember Me</label>
+            </div>
+            <button type="submit" class="btn w-100 btn-tiffany fw-bold py-2">🔐 Login</button>
+        </form>
+
+        <!-- 🔹 Links -->
+        <p class="text-center mt-3 mb-1">
+            <a href="{% url 'quiz_app:password_reset' %}" class="link-tiffany">Forgot Password?</a>
+        </p>
+        <p class="text-center">
+            Don't have an account?
+            <a href="{% url 'quiz_app:register' %}" class="link-tiffany fw-semibold">Register here</a>.
+        </p>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #0a0f2c;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .text-tiffany {
+        color: #40E0D0;
+    }
+
+    .btn-tiffany {
+        background-color: #40E0D0;
+        color: #0a0f2c;
+        border: none;
+        transition: 0.3s;
+    }
+
+    .btn-tiffany:hover {
+        background-color: #30bfbf;
+    }
+
+    .link-tiffany {
+        color: #40E0D0;
+        text-decoration: none;
+    }
+
+    .link-tiffany:hover {
+        text-decoration: underline;
+        color: #30bfbf;
+    }
+
+    .login-page-outer {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 10px;
+    }
+
+.logo-glow-large {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(64, 224, 208, 0.9);
+    transition: transform 0.3s ease;
+}
+
+.logo-glow-large:hover {
+    transform: scale(1.05);
+}
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #666;
+        background-color: #1a1a2e;
+        color: #fff;
+    }
+
+    .form-group input:focus {
+        border-color: #40E0D0;
+        outline: none;
+        box-shadow: 0 0 5px #40E0D0;
+    }
+
+    label {
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .form-check-input {
+        accent-color: #40E0D0;
+    }
+</style>
+{% endblock %}

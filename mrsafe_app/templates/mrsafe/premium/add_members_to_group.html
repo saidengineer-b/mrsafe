@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-primary fw-bold">👥 Add Members to {{ group.name }}</h2>
+    <p class="text-muted">Select trainees to add to this group.</p>
+
+    {% if trainees %}
+    <form method="post" action="{% url 'add_members_to_group' group.id %}" class="mt-4">
+        {% csrf_token %}
+        
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trainee in trainees %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="trainee_ids" value="{{ trainee.id }}">
+                        </td>
+                        <td>{{ trainee.username }}</td>
+                        <td>{{ trainee.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg">➕ Add Selected Members</button>
+        </div>
+    </form>
+    {% else %}
+    <div class="alert alert-warning text-center">
+        No available trainees to add.
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-3">
+        <a href="{% url 'quiz_app:premium_dashboard' %}" class="btn btn-secondary">🔙 Back to Dashboard</a>
+    </div>
+</div>
+
+<style>
+    /* Custom Styling */
+    .container {
+        max-width: 800px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-lg {
+        padding: 10px 20px;
+        font-size: 18px;
+    }
+</style>
+{% endblock %}

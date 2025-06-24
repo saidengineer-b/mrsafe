@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact Us - QuizAI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="contact-card bg-dark text-white border-tiffany shadow-lg rounded-4 p-4 mx-auto" style="max-width: 600px;">
+
+        <!-- 🔹 Header -->
+        <h2 class="text-center text-tiffany fw-bold mb-2">📬 Contact Us</h2>
+        <p class="text-center text-muted mb-4">If you have any questions or suggestions, feel free to reach out!</p>
+
+        <!-- 🔹 Success Message -->
+        {% if message %}
+            <div class="alert alert-success fw-bold text-center">{{ message }}</div>
+        {% endif %}
+
+        <!-- 🔹 Contact Form -->
+        <form method="POST" class="contact-form">
+            {% csrf_token %}
+            <div class="form-group mb-3">
+                <label for="name" class="text-tiffany fw-semibold">Your Name</label>
+                <input type="text" id="name" name="name" class="form-control bg-dark text-white border-tiffany" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group mb-3">
+                <label for="email" class="text-tiffany fw-semibold">Your Email</label>
+                <input type="email" id="email" name="email" class="form-control bg-dark text-white border-tiffany" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group mb-4">
+                <label for="message" class="text-tiffany fw-semibold">Your Message</label>
+                <textarea id="message" name="message" rows="5" class="form-control bg-dark text-white border-tiffany" placeholder="Type your message here" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-tiffany w-100 fw-bold py-2">📨 Send Message</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .text-tiffany {
+        color: #40E0D0 !important;
+    }
+
+    .btn-tiffany {
+        background-color: #40E0D0;
+        color: #0a0f2c;
+        border: none;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+
+    .btn-tiffany:hover {
+        background-color: #30bfbf;
+    }
+
+    .border-tiffany {
+        border: 1px solid #40E0D0 !important;
+    }
+
+    .form-control:focus {
+        border-color: #40E0D0;
+        box-shadow: 0 0 5px #40E0D0;
+        outline: none;
+    }
+
+    label {
+        margin-bottom: 6px;
+    }
+
+    .contact-card {
+        background-color: #1a1a2e;
+    }
+</style>
+{% endblock %}

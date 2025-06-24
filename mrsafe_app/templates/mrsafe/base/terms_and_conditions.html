@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Terms & Conditions - QuizAI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="bg-dark text-white border-tiffany shadow-lg rounded-4 p-4">
+
+    <!-- 🔹 Header -->
+    <h2 class="text-center text-tiffany fw-bold mb-2">📜 Terms and Conditions</h2>
+    <p class="text-center text-tiffany"><strong>Effective Date:</strong> February 28, 2025</p>
+
+    <!-- 🔹 Terms Content -->
+    <div class="bg-black rounded-4 p-4 mt-3 terms-box">
+      <p>Welcome to <strong>QuizAI</strong>! By using our platform, you agree to comply with these Terms and Conditions. Please read them carefully.</p>
+
+      <h4 class="text-info mt-4">1. 📌 Acceptance of Terms</h4>
+      <p>By accessing or using <strong>QuizAI</strong>, you agree to be bound by these terms. If you do not agree, please do not use our services.</p>
+
+      <h4 class="text-info mt-4">2. 🔹 Use of the Service</h4>
+      <ul>
+        <li><strong>Eligibility:</strong> You must be at least 13 years old to use <strong>QuizAI</strong>.</li>
+        <li><strong>Account Responsibility:</strong> You are responsible for maintaining the confidentiality of your account and password.</li>
+        <li><strong>Prohibited Activities:</strong> You must not use <strong>QuizAI</strong> for:
+          <ul>
+            <li>Illegal activities.</li>
+            <li>Spamming or unauthorized advertising.</li>
+            <li>Hacking, reverse engineering, or disrupting the platform.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h4 class="text-info mt-4">3. 🤖 AI-Generated Content</h4>
+      <p><strong>QuizAI</strong> uses AI to generate quizzes. While we aim for accuracy, 100% correctness is not guaranteed. Please verify all critical information independently.</p>
+
+      <h4 class="text-info mt-4">4. 💳 Premium Membership & Payments</h4>
+      <ul>
+        <li><strong>Premium Features:</strong> Some features are exclusive to premium members.</li>
+        <li><strong>Payment Processing:</strong> We use third-party providers for secure payments.</li>
+        <li><strong>Refund Policy:</strong> All payments are final unless a technical issue on our end is proven.</li>
+      </ul>
+
+      <h4 class="text-info mt-4">5. 🔐 Privacy & Data Protection</h4>
+      <p>By using <strong>QuizAI</strong>, you agree to our <strong>Privacy Policy</strong> regarding how we handle your data securely and transparently.</p>
+
+      <h4 class="text-info mt-4">6. ⚠ Limitation of Liability</h4>
+      <p><strong>QuizAI</strong> is offered “as is.” We are not liable for:</p>
+      <ul>
+        <li>Loss of data or technical interruptions.</li>
+        <li>Errors in AI-generated content.</li>
+        <li>Unauthorized access to user accounts.</li>
+      </ul>
+
+      <h4 class="text-info mt-4">7. ✍️ User-Generated Content</h4>
+      <ul>
+        <li>Users retain ownership of their submitted quizzes.</li>
+        <li>By uploading, you grant QuizAI a license to display, adapt, or promote your content for platform improvement.</li>
+      </ul>
+
+      <h4 class="text-info mt-4">8. 🚨 Termination of Account</h4>
+      <p>We may terminate accounts that:</p>
+      <ul>
+        <li>Violate these terms.</li>
+        <li>Exploit or harm the system or other users.</li>
+      </ul>
+
+      <h4 class="text-info mt-4">9. 🔄 Changes to Terms</h4>
+      <p>We reserve the right to modify these terms anytime. Continued use of QuizAI implies acceptance of the updated terms.</p>
+
+      <h4 class="text-info mt-4">10. 📞 Contact Information</h4>
+      <p>Questions? Email us at <strong class="text-tiffany">support@quizai.com</strong>.</p>
+
+      <h4 class="text-info mt-4">✅ Acknowledgment</h4>
+      <p>By using <strong>QuizAI</strong>, you confirm that you’ve read, understood, and accepted these Terms and Conditions.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Styling -->
+<style>
+  .text-tiffany {
+    color: #40E0D0;
+  }
+
+  .border-tiffany {
+    border: 1px solid #40E0D0;
+  }
+
+  .terms-box {
+    background-color: #111;
+    box-shadow: 0 0 10px rgba(64, 224, 208, 0.15);
+  }
+
+  ul {
+    list-style-type: square;
+    padding-left: 20px;
+  }
+
+  ul ul {
+    list-style-type: circle;
+    padding-left: 25px;
+  }
+
+  h4 {
+    font-size: 1.2rem;
+  }
+
+  p, li {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+      .text-tiffany {
+    color: #40E0D0 !important;
+  }
+</style>
+{% endblock %}

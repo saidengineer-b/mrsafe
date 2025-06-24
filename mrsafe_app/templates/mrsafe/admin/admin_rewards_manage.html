@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-warning glow-title mb-4">🏆 Rewards Manager</h2>
+
+    <div class="text-end mb-3">
+        <a href="{% url 'quiz_app:add_reward' %}" class="btn btn-success">➕ Create New Reward</a>
+    </div>
+
+    {% if rewards %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center bg-dark text-light">
+            <thead class="table-warning text-dark">
+                <tr>
+                    <th>🏅 Name</th>
+                    <th>🎖️ Type</th>
+                    <th>🔢 Required Points</th>
+                    <th>⚡ Challenge</th>
+                    <th>🎯 Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reward in rewards %}
+                <tr>
+                    <td>{{ reward.name }}</td>
+                    <td>{{ reward.reward_type.name }}</td>
+                    <td>{{ reward.required_points }}</td>
+                    <td>{{ reward.challenge_type.name }}</td>
+                    <td>
+                        <a href="{% url 'edit_reward' reward.id %}" class="btn btn-warning btn-sm">✏️</a>
+                        <form action="{% url 'delete_reward' reward.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">🚫 No rewards available.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-info glow-title mb-4">💎 Premium Plan Manager</h2>
+
+    <!-- Add New Button -->
+    <div class="text-end mb-3">
+        <a href="{% url 'quiz_app:add_premium_plan' %}" class="btn btn-success">
+            ➕ Create New Premium Plan
+        </a>
+    </div>
+
+    {% if premium_plans %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center bg-dark text-light">
+            <thead class="table-info text-dark">
+                <tr>
+                    <th>💎 Name</th>
+                    <th>📅 Duration</th>
+                    <th>🪙 Coin Bonus</th>
+                    <th>✅ Status</th>
+                    <th>⚙️ Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in premium_plans %}
+                <tr>
+                    <td>{{ plan.name|capfirst }}</td>
+                    <td>{{ plan.duration_days }} days</td>
+                    <td>{{ plan.coin_bonus }}</td>
+                    <td>
+                        {% if plan.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'quiz_app:edit_premium_plan' plan.id %}" class="btn btn-warning btn-sm">✏️ Edit</a>
+                        <form action="{% url 'quiz_app:delete_premium_plan' plan.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">🚫 No premium plans available.</div>
+    {% endif %}
+</div>
+
+<style>
+.glow-title {
+    text-shadow: 0 0 8px #00ffffaa;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

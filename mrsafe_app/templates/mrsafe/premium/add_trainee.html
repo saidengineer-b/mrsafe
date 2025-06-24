@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center text-primary">Add Trainee</h2>
+
+    <form method="post" action="{% url 'add_trainee' %}" class="mt-3">  <!-- ✅ Ensure correct action -->
+        {% csrf_token %}
+        
+        <label for="trainee">Select Trainee:</label>
+        <select name="trainee" class="form-control" required>
+            {% for trainee in trainees %}
+                <option value="{{ trainee.id }}">{{ trainee.username }} ({{ trainee.email }})</option>
+            {% empty %}
+                <option disabled>No available trainees to add</option>
+            {% endfor %}
+        </select>
+    
+        <button type="submit" class="btn btn-success mt-3">➕ Add Trainee</button>
+    </form>
+    
+{% endblock %}

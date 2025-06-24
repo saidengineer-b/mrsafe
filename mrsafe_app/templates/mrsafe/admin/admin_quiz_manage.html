@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-warning glow-title mb-4">📖 Quiz Manager</h2>
+
+    <!-- Add Quiz Button -->
+    <div class="text-end mb-3">
+        <a href="{% url 'quiz_app:quiz_create' %}" class="btn btn-primary">➕ Add New Quiz</a>
+    </div>
+
+    {% if quizzes %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center bg-dark text-light">
+            <thead class="table-warning text-dark">
+                <tr>
+                    <th>📘 Title</th>
+                    <th>👤 Created By</th>
+                    <th>⚙️ Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quizzes %}
+                <tr>
+                    <td>{{ quiz.title }}</td>
+                    <td>{{ quiz.created_by.username }}</td>
+                    <td>
+                        <a href="{% url 'quiz_app:quiz_take' quiz.id %}" class="btn btn-info btn-sm">🔍 View</a>
+                        <a href="{% url 'quiz_app:premium_quiz_edit' quiz.id %}" class="btn btn-warning btn-sm">✏️ Edit</a>
+                        <form action="{% url 'quiz_app:quiz_delete' quiz.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">🗑 Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-warning text-center">🚫 No quizzes available.</div>
+    {% endif %}
+</div>
+
+<style>
+.glow-title {
+    text-shadow: 0 0 8px #ffd700cc;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

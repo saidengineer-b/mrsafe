@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center">
+        <h2 class="text-primary fw-bold">📚 Assign Quizzes</h2>
+        <p class="text-muted">Select one or more quizzes and assign them to a trainee or a group.</p>
+    </div>
+
+    {% if request.user.has_premium_access %}
+    <!-- ✅ Updated Form Action (Dynamic) -->
+    <form method="POST" id="assignQuizForm" action="" class="mt-4">
+        {% csrf_token %}
+
+        <!-- ✅ Select Individual Trainee -->
+        <label class="fw-bold">👤 Assign to a Trainee:</label>
+        <select name="user_id" class="form-control" id="userSelect" onchange="updateFormAction()">
+            <option value="" selected>-- Select a Trainee --</option>
+            {% for trainee in trainees %}
+            <option value="{{ trainee.id }}">{{ trainee.username }}</option>
+            {% endfor %}
+        </select>
+
+        <hr>
+
+        <!-- ✅ Select Group -->
+        <h3 class="mt-4">👥 Assign Quizzes to Groups</h3>
+        <table class="table table-bordered mt-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>Group Name</th>
+                    <th>Members</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                <tr>
+                    <td>{{ group.name }}</td>
+                    <td>
+                        {% for trainee in group.trainees.all %}
+                            {{ trainee.username }},
+                        {% empty %}
+                            No members
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <input type="radio" name="group_id" value="{{ group.id }}" class="group-radio" onchange="updateFormAction()">
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-center">No groups created yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <!-- ✅ Quiz Selection Grid -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-3">
+            {% for quiz in quizzes %}
+            <div class="col">
+                <div class="card shadow-lg quiz-card">
+                    {% if quiz.photo %}
+                    <img src="{{ quiz.photo.url }}" class="card-img-top quiz-image" alt="{{ quiz.title }}">
+                    {% else %}
+                    <img src="{'images/default_quiz.jpg' %}" class="card-img-top quiz-image" alt="Default Quiz">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold">{{ quiz.title }}</h5>
+                        <p class="card-text"><strong>Level:</strong> {{ quiz.level }}</p>
+                        <p class="card-text"><strong>Coins:</strong> {{ quiz.coins }}</p>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input quiz-checkbox" type="checkbox" name="quiz_ids" value="{{ quiz.id }}" id="quiz_{{ quiz.id }}">
+                            <label class="form-check-label fw-bold" for="quiz_{{ quiz.id }}">Select</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ✅ Submit Button -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-lg btn-primary fw-bold assign-btn" id="submitButton" disabled>🚀 Assign Selected Quizzes</button>
+        </div>
+    </form>
+
+    {% else %}
+    <div class="alert alert-danger text-center mt-5">
+        <h4>⚠ Access Denied</h4>
+        <p class="mb-0">Only trainers can assign quizzes. Upgrade to premium to access this feature.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ✅ JavaScript to Dynamically Update Form Action -->
+<script>
+    function updateFormAction() {
+        var userId = document.getElementById("userSelect").value;
+        var groupId = document.querySelector("input[name='group_id']:checked")?.value;
+        var form = document.getElementById("assignQuizForm");
+        var submitButton = document.getElementById("submitButton");
+
+        // Prevent both selections
+        if (userId && groupId) {
+            alert("You can only assign quizzes to either a trainee or a group, not both.");
+            document.getElementById("userSelect").value = "";
+            document.querySelector("input[name='group_id']:checked").checked = false;
+            return;
+        }
+
+        if (userId) {
+            form.action = "/quizzes/assign-quiz/user/" + userId + "/";
+            submitButton.disabled = false;
+        } else if (groupId) {
+            form.action = "/quizzes/assign-quiz/group/" + groupId + "/";
+            submitButton.disabled = false;
+        } else {
+            form.action = "";
+            submitButton.disabled = true;
+        }
+    }
+
+    // ✅ Enable submit button when at least one quiz is selected
+    document.querySelectorAll('.quiz-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            var anyChecked = document.querySelector('.quiz-checkbox:checked') !== null;
+            document.getElementById('submitButton').disabled = !anyChecked;
+        });
+    });
+</script>
+
+<!-- ✅ Styling -->
+<style>
+    /* Custom Styling for Quiz Cards */
+    .quiz-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .quiz-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .quiz-image {
+        height: 150px;
+        object-fit: cover;
+        border-bottom: 4px solid #007bff;
+    }
+
+    .quiz-checkbox {
+        transform: scale(1.3);
+        cursor: pointer;
+    }
+
+    .assign-btn {
+        padding: 12px 30px;
+        border-radius: 30px;
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .assign-btn:hover {
+        background: linear-gradient(45deg, #0056b3, #003f80);
+        transform: scale(1.05);
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+</style>
+
+{% endblock %}

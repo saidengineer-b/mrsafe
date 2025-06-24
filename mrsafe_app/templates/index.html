@@ -1,0 +1,411 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mrsafe - AI-Powered Safety Inspection App</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Safety Alert Bar -->
+    <div class="safety-alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Safety First! Always wear appropriate PPE at work sites.</span>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <img src="{% static 'images/mrsafe-logo.png' %}" alt="Mrsafe Logo" id="logo-placeholder">
+                </a>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#testimonials">Testimonials</a>
+                    <a href="#contact">Contact</a>
+                    <a href="#" class="btn btn-primary">Get Started</a>
+                </div>
+                <div class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Revolutionizing Workplace Safety with AI</h1>
+                <p class="subtitle">Upload images and get instant safety inspection reports with actionable recommendations</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary btn-large">
+                        <i class="fas fa-cloud-upload-alt"></i> Try Free Demo
+                    </a>
+                    <a href="#video-demo" class="btn btn-secondary btn-large">
+                        <i class="fas fa-play-circle"></i> Watch Demo
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="{% static 'images/app-screenshot.png' %}" alt="Mrsafe App Screenshot">
+            </div>
+        </div>
+    </section>
+
+    <!-- Intro Video Section -->
+    <section class="video-section" id="video-demo">
+        <div class="container">
+            <h2>See Mrsafe in Action</h2>
+            <p class="section-description">Discover how our AI-powered safety inspection works in under 2 minutes</p>
+            <div class="video-container">
+                <div class="video-wrapper">
+                    <!-- Placeholder for your video embed -->
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/your-video-id" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <h2>Comprehensive Safety Inspection Features</h2>
+            <p class="section-description">Mrsafe provides end-to-end safety compliance solutions</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon safety-red">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3>Image Upload & Analysis</h3>
+                    <p>Simply upload photos of your worksite and receive instant AI-powered safety analysis with identified hazards.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon safety-orange">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h3>Detailed Inspection Reports</h3>
+                    <p>Automatically generated reports document unsafe acts, unsafe conditions, and provide corrective actions.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon safety-yellow">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Risk Assessment Scoring</h3>
+                    <p>Our system evaluates and scores each hazard by severity to help prioritize corrective actions.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon safety-green">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Smart Recommendations</h3>
+                    <p>Get actionable recommendations based on OSHA standards and industry best practices.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon safety-blue">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3>Historical Tracking</h3>
+                    <p>Track safety improvements over time with historical data and trend analysis.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon safety-purple">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile-Friendly</h3>
+                    <p>Conduct inspections on the go with our fully responsive mobile interface.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <h2>How Mrsafe Works</h2>
+            <p class="section-description">Three simple steps to safer worksites</p>
+            
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Upload Site Images</h3>
+                        <p>Capture and upload photos of your worksite using your smartphone or upload existing images.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>AI Safety Analysis</h3>
+                        <p>Our advanced computer vision algorithms scan images for hundreds of potential safety violations.</p>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Receive Detailed Report</h3>
+                        <p>Get a comprehensive report with identified hazards, risk levels, and recommended corrective actions.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="demo-cta">
+                <a href="#" class="btn btn-primary btn-large">
+                    <i class="fas fa-play"></i> Live Demo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Report Example Section -->
+    <section class="report-example">
+        <div class="container">
+            <h2>Sample Safety Inspection Report</h2>
+            <p class="section-description">See what our AI-powered reports include</p>
+            
+            <div class="report-container">
+                <div class="report-tabs">
+                    <div class="tab active" data-tab="observations">Observations</div>
+                    <div class="tab" data-tab="unsafe-acts">Unsafe Acts</div>
+                    <div class="tab" data-tab="unsafe-conditions">Unsafe Conditions</div>
+                    <div class="tab" data-tab="recommendations">Recommendations</div>
+                </div>
+                
+                <div class="report-content">
+                    <div class="tab-content active" id="observations">
+                        <h3>Worksite Observations</h3>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> 12 safety hazards identified</li>
+                            <li><i class="fas fa-check-circle"></i> 3 high-risk conditions detected</li>
+                            <li><i class="fas fa-check-circle"></i> 5 medium-risk issues found</li>
+                            <li><i class="fas fa-check-circle"></i> 4 low-risk observations noted</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tab-content" id="unsafe-acts">
+                        <h3>Unsafe Acts Identified</h3>
+                        <ul>
+                            <li><i class="fas fa-exclamation-triangle"></i> Worker not wearing fall protection at height</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> Improper lifting techniques observed</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> Bypassing machine guards</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tab-content" id="unsafe-conditions">
+                        <h3>Unsafe Conditions Found</h3>
+                        <ul>
+                            <li><i class="fas fa-exclamation-triangle"></i> Unguarded floor opening (6" diameter)</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> Slippery surface due to oil spill</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> Improperly stored compressed gas cylinders</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tab-content" id="recommendations">
+                        <h3>Recommended Actions</h3>
+                        <ul>
+                            <li><i class="fas fa-clipboard-list"></i> Immediately cordon off floor opening</li>
+                            <li><i class="fas fa-clipboard-list"></i> Conduct fall protection training</li>
+                            <li><i class="fas fa-clipboard-list"></i> Clean oil spill and implement spill containment</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <h2>Trusted by Safety Professionals</h2>
+            <p class="section-description">What our users say about Mrsafe</p>
+            
+            <div class="testimonial-slider">
+                <div class="testimonial active">
+                    <div class="quote">
+                        "Mrsafe has transformed our safety inspection process. What used to take hours now takes minutes, and the reports are far more comprehensive."
+                    </div>
+                    <div class="author">
+                        <div class="author-image"></div>
+                        <div class="author-info">
+                            <h4>John Peterson</h4>
+                            <p>Safety Manager, Construction Co.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="quote">
+                        "The AI recommendations have helped us identify hazards we were consistently missing during manual inspections."
+                    </div>
+                    <div class="author">
+                        <div class="author-image"></div>
+                        <div class="author-info">
+                            <h4>Sarah Williams</h4>
+                            <p>EHS Director, Manufacturing</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <div class="quote">
+                        "Our safety compliance rates improved by 38% in the first 3 months of using Mrsafe. The ROI was immediate."
+                    </div>
+                    <div class="author">
+                        <div class="author-image"></div>
+                        <div class="author-info">
+                            <h4>Michael Rodriguez</h4>
+                            <p>Operations VP, Energy Sector</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Transform Your Safety Inspections?</h2>
+            <p class="section-description">Join hundreds of companies improving workplace safety with AI</p>
+            
+            <div class="cta-container">
+                <div class="cta-card">
+                    <h3>Start Your Free Trial</h3>
+                    <p>Experience Mrsafe with 10 free inspections</p>
+                    <a href="#" class="btn btn-primary">Get Started</a>
+                </div>
+                
+                <div class="cta-card highlighted">
+                    <div class="popular-badge">Most Popular</div>
+                    <h3>Professional Plan</h3>
+                    <p>Unlimited inspections and advanced features</p>
+                    <a href="#" class="btn btn-secondary">View Plans</a>
+                </div>
+                
+                <div class="cta-card">
+                    <h3>Enterprise Solution</h3>
+                    <p>Custom solutions for large organizations</p>
+                    <a href="#" class="btn btn-primary">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h2>Contact Us</h2>
+                    <p>Have questions about Mrsafe? Our team is here to help.</p>
+                    
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <i class="fas fa-envelope"></i>
+                            <span>support@mrsafe.com</span>
+                        </div>
+                        <div class="contact-method">
+                            <i class="fas fa-phone"></i>
+                            <span>+1 (800) SAFE-123</span>
+                        </div>
+                        <div class="contact-method">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>123 Safety Way, San Francisco, CA</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form action="#" method="POST">
+                        <div class="form-group">
+                            <input type="text" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="Company Name">
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="Your Message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="{% static 'images/mrsafe-logo.png' %}" alt="Mrsafe Logo">
+                    <p>AI-powered safety inspections for a safer workplace.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Product</h4>
+                        <a href="#">Features</a>
+                        <a href="#">Pricing</a>
+                        <a href="#">API</a>
+                        <a href="#">Integrations</a>
+                    </div>
+                    
+                    <div class="link-group">
+                        <h4>Resources</h4>
+                        <a href="#">Documentation</a>
+                        <a href="#">Safety Guides</a>
+                        <a href="#">Blog</a>
+                        <a href="#">Webinars</a>
+                    </div>
+                    
+                    <div class="link-group">
+                        <h4>Company</h4>
+                        <a href="#">About Us</a>
+                        <a href="#">Careers</a>
+                        <a href="#">Privacy</a>
+                        <a href="#">Terms</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+                
+                <div class="copyright">
+                    &copy; 2023 Mrsafe. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-info glow-title mb-4">📘 MasterIt Sessions Manager</h2>
+
+    {% if masterit_sessions %}
+    <div class="table-responsive rounded shadow" style="border: 1px solid #00ffff33; box-shadow: 0 0 10px #00ffff22;">
+        <table class="table table-bordered table-hover text-center bg-dark text-light">
+            <thead class="table-dark text-tiffany border-bottom border-tiffany">
+                <tr>
+                    <th>📚 Topic</th>
+                    <th>👤 User</th>
+                    <th>📖 Lessons</th>
+                    <th>🌍 Public?</th>
+                    <th>⚙️ Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in masterit_sessions %}
+                <tr>
+                    <td class="align-middle">{{ session.topic }}</td>
+                    <td class="align-middle">{{ session.user.username }}</td>
+                    <td class="align-middle">{{ session.lessons.count }}</td>
+                    <td class="align-middle">
+                        {% if session.is_public %}
+                            <span class="badge bg-success">Yes</span>
+                        {% else %}
+                            <span class="badge bg-secondary">No</span>
+                        {% endif %}
+                    </td>
+                    <td class="align-middle">
+                        <a href="{% url 'quiz_app:view_session_lessons' session.id %}" class="btn btn-outline-info btn-sm me-1">📖 View</a>
+                        <a href="{% url 'quiz_app:edit_masterit_session' session.id %}" class="btn btn-outline-warning btn-sm">✏️ Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center mt-4">🚫 No MasterIt sessions available.</div>
+    {% endif %}
+</div>
+
+            
+<style>
+.glow-title {
+    font-weight: bold;
+    text-shadow: 0 0 8px #00ffffaa;
+}
+
+.text-tiffany {
+    color: #00ffff;
+}
+
+.border-tiffany {
+    border-color: #00ffff55 !important;
+}
+
+.table-dark th {
+    background-color: #0e2233 !important;
+}
+</style>
+{% endblock %}

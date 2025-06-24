@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">🔗 Enter Premium Code</h2>
+    <p class="text-center text-muted">Enter the unique premium code to join a premium user's list.</p>
+
+    <div class="card shadow-lg p-4">
+        <form method="POST" class="form-group">
+            {% csrf_token %}
+            <input type="text" name="premium_code" class="form-control mb-3" placeholder="Enter Premium Code" required>
+            <button type="submit" class="btn btn-primary btn-block">🔗 Connect</button>
+        </form>
+    </div>
+
+    <div class="text-center mt-3">
+        <a href="{% url 'premium_dashboard' %}" class="btn btn-secondary">🔙 Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

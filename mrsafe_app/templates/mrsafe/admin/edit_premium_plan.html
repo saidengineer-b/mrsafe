@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}✏️ Edit Premium Plan{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">✏️ Edit Premium Plan</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="id_name" class="form-label">💎 Plan Name</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_duration_days" class="form-label">📆 Duration (in days)</label>
+                    {{ form.duration_days }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_coin_bonus" class="form-label">🪙 Coin Bonus</label>
+                    {{ form.coin_bonus }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_price" class="form-label">💵 Price (USD)</label>
+                    {{ form.price }}
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_is_active" class="form-label">✅ Active</label>
+                    {{ form.is_active }}
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">💾 Update Plan</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-label {
+        font-weight: 600;
+    }
+</style>
+{% endblock %}

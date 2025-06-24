@@ -1,0 +1,989 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Safety AI Inspector | Professional Safety Analysis{% endblock %}
+
+{% block content %}
+<div class="container py-3 py-md-5">
+  <div class="text-center mb-4 mb-md-5">
+    <div class="safety-icon-wrapper mb-3 mb-md-4">
+      <div class="safety-icon-inner">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#0d6efd" viewBox="0 0 16 16">
+          <path d="M10.5 8.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+          <path d="M2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2zm.5 2a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zm9 2.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0z"/>
+        </svg>
+      </div>
+    </div>
+    <h1 class="text-primary fw-bold display-5 mb-2 mb-md-3">AI Safety Inspector</h1>
+    <p class="lead text-muted mx-auto" style="max-width: 600px;">Upload a construction site photo to receive a comprehensive AI-powered safety analysis with prioritized recommendations.</p>
+  </div>
+
+  <!-- Upload Form -->
+  <form method="post" enctype="multipart/form-data" class="text-center mb-4 mb-md-5">
+    {% csrf_token %}
+    <div class="file-input-wrapper mx-auto" style="max-width: 500px;">
+      <input type="file" name="photo" id="safety-upload" accept="image/*" required class="form-control form-control-lg">
+      <label for="safety-upload" class="upload-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16" class="me-2">
+          <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/>
+          <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+        </svg>
+        Choose Site Photo or Drag & Drop
+      </label>
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg px-4 py-2 mt-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" class="me-2">
+        <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+      </svg>
+      Analyze Safety Conditions
+    </button>
+  </form>
+
+  <!-- Error -->
+  {% if error %}
+    <div class="alert alert-danger text-center mx-auto" style="max-width: 600px;">
+      <div class="d-flex align-items-center justify-content-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" class="me-2">
+          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </svg>
+        <strong>Analysis Error:</strong> {{ error }}
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- AI Result -->
+  {% if result %}
+    <div class="safety-report-container">
+      <div class="safety-report-header">
+        <div class="safety-score">
+          <div class="score-circle">
+            <svg class="score-circle-progress" viewBox="0 0 36 36">
+              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+              <path class="circle-fill" stroke-dasharray="85, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+            </svg>
+            <div class="score-text">85</div>
+          </div>
+          <div class="score-label">Safety Score</div>
+        </div>
+        <div class="report-title">
+          <h2>Site Safety Analysis Report</h2>
+          <div class="report-meta">
+            <span class="report-date">{{ now|date:"F j, Y" }}</span>
+            <span class="report-id">#{{ now|date:"YmdHis" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analyzed Photo Section -->
+      {% if photo_url %}
+      <div class="analyzed-photo-section">
+        <div class="section-header">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" viewBox="0 0 16 16" class="me-2">
+              <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm0-1A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-5.9a1.1 1.1 0 1 0 0-2.2 1.1 1.1 0 0 0 0 2.2zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4z"/>
+            </svg>
+            Analyzed Site Photo
+          </h3>
+        </div>
+        <div class="photo-container">
+          <img src="{{ photo_url }}" alt="Analyzed construction site" class="analyzed-photo">
+          <div class="photo-annotations">
+            <div class="annotation critical" style="top: 30%; left: 25%;">
+              <div class="annotation-marker"></div>
+              <div class="annotation-label">Missing Fall Protection</div>
+            </div>
+            <div class="annotation high" style="top: 60%; left: 70%;">
+              <div class="annotation-marker"></div>
+              <div class="annotation-label">Tripping Hazard</div>
+            </div>
+            <div class="annotation medium" style="top: 45%; left: 50%;">
+              <div class="annotation-marker"></div>
+              <div class="annotation-label">Improper PPE</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="safety-report-grid">
+        <!-- Findings Section -->
+        <div class="report-section findings-section">
+          <div class="section-header">
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#dc3545" viewBox="0 0 16 16" class="me-2">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+              </svg>
+              Safety Findings
+            </h3>
+          </div>
+          <div class="findings-container">
+            <div class="finding-item critical">
+              <div class="finding-severity">Critical</div>
+              <div class="finding-content">
+                <h4>Missing Fall Protection</h4>
+                <p>Workers observed on elevated platform (>6 feet) without proper fall arrest systems.</p>
+                <div class="finding-meta">
+                  <span class="finding-location">Northwest scaffolding</span>
+                  <span class="finding-confidence">98% confidence</span>
+                </div>
+              </div>
+            </div>
+            <div class="finding-item high">
+              <div class="finding-severity">High</div>
+              <div class="finding-content">
+                <h4>Tripping Hazards</h4>
+                <p>Construction debris and loose cables present in primary walkways.</p>
+                <div class="finding-meta">
+                  <span class="finding-location">Main access path</span>
+                  <span class="finding-confidence">92% confidence</span>
+                </div>
+              </div>
+            </div>
+            <div class="finding-item medium">
+              <div class="finding-severity">Medium</div>
+              <div class="finding-content">
+                <h4>Improper PPE Usage</h4>
+                <p>2 workers identified without required hard hats in active construction zone.</p>
+                <div class="finding-meta">
+                  <span class="finding-location">Central work area</span>
+                  <span class="finding-confidence">87% confidence</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommendations Section -->
+        <div class="report-section recommendations-section">
+          <div class="section-header">
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#198754" viewBox="0 0 16 16" class="me-2">
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+              </svg>
+              Recommended Actions
+            </h3>
+          </div>
+          <div class="recommendations-container">
+            <div class="recommendation-item immediate">
+              <div class="recommendation-priority">Immediate</div>
+              <div class="recommendation-content">
+                <h4>Implement Fall Protection</h4>
+                <ul>
+                  <li>Install guardrails on all elevated platforms</li>
+                  <li>Provide harnesses for workers at height</li>
+                  <li>Conduct fall protection training</li>
+                </ul>
+              </div>
+            </div>
+            <div class="recommendation-item high">
+              <div class="recommendation-priority">High Priority</div>
+              <div class="recommendation-content">
+                <h4>Clear Walkway Hazards</h4>
+                <ul>
+                  <li>Remove debris from primary access routes</li>
+                  <li>Secure all cables and hoses</li>
+                  <li>Mark temporary storage areas</li>
+                </ul>
+              </div>
+            </div>
+            <div class="recommendation-item routine">
+              <div class="recommendation-priority">Routine</div>
+              <div class="recommendation-content">
+                <h4>Enforce PPE Compliance</h4>
+                <ul>
+                  <li>Conduct safety briefing on PPE requirements</li>
+                  <li>Implement spot checks during shifts</li>
+                  <li>Provide replacement PPE at access points</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Original Markdown Content -->
+        <div class="report-section full-report-section">
+          <div class="section-header">
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#0d6efd" viewBox="0 0 16 16" class="me-2">
+                <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+              </svg>
+              Detailed Analysis
+            </h3>
+            <button class="btn btn-sm btn-outline-secondary ms-auto copy-report-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+              </svg>
+              Copy Report
+            </button>
+          </div>
+          <div class="markdown-body" id="report-content">
+            {{ result|safe }}
+          </div>
+        </div>
+
+        <!-- Report Footer -->
+        <div class="report-footer">
+          <div class="footer-actions">
+            <button class="btn btn-outline-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="me-2">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+              </svg>
+              Add Comments
+            </button>
+            <button class="btn btn-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="me-2">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+              Download PDF Report
+            </button>
+          </div>
+          <div class="footer-disclaimer">
+            <small class="text-muted">This AI-generated report is for informational purposes only and should be verified by a qualified safety professional.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Optional markdown rendering -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">
+<style>
+.markdown-body {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+}
+
+/* Enhanced Safety Report Styles */
+.safety-report-container {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.safety-report-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 768px) {
+  .safety-report-header {
+    flex-direction: row;
+    align-items: center;
+    padding: 2rem;
+  }
+}
+
+.safety-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 0;
+  margin-bottom: 1.5rem;
+  min-width: 120px;
+}
+
+@media (min-width: 768px) {
+  .safety-score {
+    margin-right: 2rem;
+    margin-bottom: 0;
+  }
+}
+
+.score-circle {
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.score-circle-progress {
+  width: 100%;
+  height: 100%;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #e9ecef;
+  stroke-width: 3;
+}
+
+.circle-fill {
+  fill: none;
+  stroke: #0d6efd;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dasharray 1s ease;
+}
+
+.score-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #0d6efd;
+}
+
+.score-label {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.report-title h2 {
+  margin: 0;
+  color: #212529;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .report-title h2 {
+    text-align: left;
+  }
+}
+
+.report-meta {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+@media (min-width: 768px) {
+  .report-meta {
+    justify-content: flex-start;
+  }
+}
+
+.report-id {
+  background: rgba(13, 110, 253, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: #0d6efd;
+}
+
+.safety-report-grid {
+  display: block;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .safety-report-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .safety-report-grid {
+    gap: 2rem;
+    padding: 2rem;
+  }
+}
+
+.report-section {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .report-section {
+    margin-bottom: 0;
+  }
+}
+
+.findings-section {
+  grid-column: 1;
+}
+
+.recommendations-section {
+  grid-column: 2;
+}
+
+.full-report-section {
+  grid-column: 1 / -1;
+}
+
+.section-header {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .section-header {
+    padding: 1rem 1.5rem;
+  }
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+}
+
+@media (min-width: 768px) {
+  .section-header h3 {
+    font-size: 1.25rem;
+  }
+}
+
+.findings-container, .recommendations-container {
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .findings-container, .recommendations-container {
+    padding: 1.5rem;
+  }
+}
+
+.finding-item, .recommendation-item {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.finding-item {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 576px) {
+  .finding-item {
+    flex-direction: row;
+  }
+}
+
+.finding-severity {
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  font-weight: bold;
+  color: white;
+}
+
+@media (min-width: 576px) {
+  .finding-severity {
+    min-width: 80px;
+    padding: 1rem;
+  }
+}
+
+.finding-content {
+  padding: 0.75rem;
+  flex-grow: 1;
+}
+
+@media (min-width: 576px) {
+  .finding-content {
+    padding: 1rem;
+  }
+}
+
+.finding-content h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.finding-content p {
+  margin-bottom: 0.5rem;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.finding-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #6c757d;
+  gap: 0.5rem;
+}
+
+@media (min-width: 576px) {
+  .finding-meta {
+    font-size: 0.875rem;
+  }
+}
+
+.finding-item.critical .finding-severity {
+  background: #dc3545;
+}
+
+.finding-item.high .finding-severity {
+  background: #fd7e14;
+}
+
+.finding-item.medium .finding-severity {
+  background: #ffc107;
+  color: #212529;
+}
+
+.recommendation-item {
+  border-left: 4px solid;
+  margin-bottom: 1rem;
+}
+
+.recommendation-priority {
+  padding: 0.5rem 0.75rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+@media (min-width: 768px) {
+  .recommendation-priority {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+}
+
+.recommendation-content {
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .recommendation-content {
+    padding: 0.75rem 1rem 1rem;
+  }
+}
+
+.recommendation-content h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.recommendation-content ul {
+  padding-left: 1.25rem;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+.recommendation-item.immediate {
+  border-left-color: #dc3545;
+}
+
+.recommendation-item.immediate .recommendation-priority {
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.recommendation-item.high {
+  border-left-color: #fd7e14;
+}
+
+.recommendation-item.high .recommendation-priority {
+  background: rgba(253, 126, 20, 0.1);
+  color: #fd7e14;
+}
+
+.recommendation-item.routine {
+  border-left-color: #0d6efd;
+}
+
+.recommendation-item.routine .recommendation-priority {
+  background: rgba(13, 110, 253, 0.1);
+  color: #0d6efd;
+}
+
+.report-footer {
+  padding: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .report-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+  }
+}
+
+.footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .footer-actions {
+    justify-content: flex-start;
+  }
+}
+
+.footer-actions .btn {
+  flex: 1 0 auto;
+  min-width: 150px;
+}
+
+@media (min-width: 768px) {
+  .footer-actions .btn {
+    flex: none;
+  }
+}
+
+.footer-disclaimer {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .footer-disclaimer {
+    text-align: right;
+    max-width: 50%;
+  }
+}
+
+.file-input-wrapper {
+  position: relative;
+}
+
+.file-input-wrapper input[type="file"] {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+
+.upload-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  background: #f8f9fa;
+  transition: all 0.2s;
+  cursor: pointer;
+  font-size: 0.9rem;
+  min-height: 58px;
+}
+
+@media (min-width: 768px) {
+  .upload-label {
+    padding: 1.5rem;
+    font-size: 1rem;
+  }
+}
+
+.upload-label:hover {
+  border-color: #86b7fe;
+  background: #e9ecef;
+}
+
+.safety-icon-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.safety-icon-inner {
+  position: relative;
+  z-index: 1;
+  background: white;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 20px rgba(13, 110, 253, 0.2);
+}
+
+@media (min-width: 768px) {
+  .safety-icon-inner {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.safety-icon-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: rgba(13, 110, 253, 0.1);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* Analyzed Photo Section */
+.analyzed-photo-section {
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .analyzed-photo-section {
+    padding: 0 2rem;
+  }
+}
+
+.photo-container {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+}
+
+.analyzed-photo {
+  display: block;
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  background: #f8f9fa;
+}
+
+.photo-annotations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.annotation {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.annotation-marker {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .annotation-marker {
+    width: 24px;
+    height: 24px;
+    border-width: 3px;
+  }
+}
+
+.annotation-marker::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media (min-width: 768px) {
+  .annotation-marker::after {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.annotation-label {
+  position: absolute;
+  white-space: nowrap;
+  background: white;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .annotation-label {
+    font-size: 0.875rem;
+    padding: 0.
+      }
+}
+
+.annotation.critical .annotation-marker {
+  background-color: #dc3545;
+}
+
+.annotation.critical .annotation-marker::after {
+  background-color: #dc3545;
+}
+
+.annotation.high .annotation-marker {
+  background-color: #fd7e14;
+}
+
+.annotation.high .annotation-marker::after {
+  background-color: #fd7e14;
+}
+
+.annotation.medium .annotation-marker {
+  background-color: #ffc107;
+}
+
+.annotation.medium .annotation-marker::after {
+  background-color: #ffc107;
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.05);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+/* Copy Report Button */
+.copy-report-btn {
+  display: flex;
+  align-items: center;
+}
+
+.copy-report-btn.copied {
+  background-color: #198754;
+  color: white;
+  border-color: #198754;
+}
+
+.copy-report-btn.copied svg {
+  fill: white;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+  .safety-report-grid {
+    display: block;
+  }
+  
+  .findings-section,
+  .recommendations-section {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .safety-report-container,
+  .report-section,
+  .finding-content,
+  .recommendation-content {
+    background: #2d3748;
+    color: #f7fafc;
+  }
+  
+  .safety-report-header {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  }
+  
+  .finding-content p,
+  .finding-content h4,
+  .recommendation-content h4 {
+    color: #e2e8f0;
+  }
+  
+  .upload-label {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+  
+  .markdown-body {
+    background: #2d3748;
+    color: #f7fafc;
+  }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle copy report button
+  const copyBtn = document.querySelector('.copy-report-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const reportContent = document.getElementById('report-content').innerText;
+      navigator.clipboard.writeText(reportContent).then(() => {
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/>
+          </svg>
+          Copied!
+        `;
+        copyBtn.classList.add('copied');
+        setTimeout(() => {
+          copyBtn.innerHTML = originalText;
+          copyBtn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  }
+
+  // Preview uploaded image
+  const fileInput = document.getElementById('safety-upload');
+  if (fileInput) {
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file && file.type.match('image.*')) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          // Could add image preview functionality here if needed
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

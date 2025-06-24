@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4 px-2">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-3 text-gradient text-xl">👤 User Management</h2>
+        <p class="text-center text-muted mb-4">Manage all platform users. Sort, filter, or search users easily.</p>
+
+        <!-- Filters & Search -->
+        <div class="row mb-3 gy-2 gx-2">
+            <div class="col-md-4">
+                <select id="membershipFilter" class="form-select bg-dark text-white border-secondary">
+                    <option value="all">🔎 All Memberships</option>
+                    <option value="premium">💎 Premium</option>
+                    <option value="free">🆓 Free</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="text" id="userSearch" class="form-control bg-dark text-white border-secondary" placeholder="🔍 Search username...">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover table-bordered text-center align-middle" id="userTable">
+                <thead>
+                    <tr>
+                        <th scope="col">👤 Username</th>
+                        <th scope="col">⚙️ Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr data-membership="{{ user.is_premium|yesno:'premium,free' }}">
+                        <td class="username">
+                            <a href="{% url 'quiz_app:user_profile' user.id %}" class="text-decoration-none text-info fw-bold">
+                                {{ user.username }}
+                            </a>
+                        </td>
+                        
+                        <td>
+                            <a href="{% url 'quiz_app:edit_user' user.id %}" class="btn btn-outline-warning btn-sm me-1">✏️ Edit</a>
+                            <form method="post" action="{% url 'quiz_app:delete_user' user.id %}" class="d-inline" onsubmit="return confirm('Are you sure?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm">🗑️ Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="text-muted">🚫 No users found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Script for filtering and searching -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filter = document.getElementById('membershipFilter');
+        const search = document.getElementById('userSearch');
+        const rows = document.querySelectorAll('#userTable tbody tr');
+
+        function filterUsers() {
+            const searchValue = search.value.toLowerCase();
+            const filterValue = filter.value;
+
+            rows.forEach(row => {
+                const username = row.querySelector('.username').textContent.toLowerCase();
+                const membership = row.getAttribute('data-membership');
+
+                const matchesSearch = username.includes(searchValue);
+                const matchesFilter = filterValue === 'all' || filterValue === membership;
+
+                row.style.display = matchesSearch && matchesFilter ? '' : 'none';
+            });
+        }
+
+        search.addEventListener('input', filterUsers);
+        filter.addEventListener('change', filterUsers);
+    });
+</script>
+
+<style>
+    .text-gradient {
+        background: linear-gradient(to right, #00c6ff, #00f2fe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: bold;
+    }
+
+    .card {
+        border-radius: 16px;
+        background: #1e1e2f;
+        color: #ffffff;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+    }
+
+    .form-select, .form-control {
+        border-radius: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .table-responsive {
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            margin-bottom: 4px;
+        }
+    }
+    
+</style>
+{% endblock %}

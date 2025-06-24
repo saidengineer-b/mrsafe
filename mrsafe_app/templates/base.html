@@ -1,0 +1,659 @@
+keep structure as it is impress me in the design this will working as an app and also will be viewed in web    impress me in the design while keeping stucture as it is {% load static %}
+{% load static i18n %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4893531235466621"
+     crossorigin="anonymous"></script>
+   <!-- ✅ KEEP THIS IN <head> -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4893531235466621" crossorigin="anonymous"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}mrsafe App{% endblock %}</title>
+
+    <!-- ✅ Bootstrap & Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- ✅ Custom Stylesheet -->
+    {% if request.user.is_authenticated and request.user.profile.theme == "kids" %}
+    <link rel="stylesheet" href="{% static 'css/kids-theme.css' %}">
+{% else %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endif %}
+
+    
+    <!-- ✅ Apply RTL CSS for Arabic -->
+    {% if LANGUAGE_CODE == "ar" %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    {% endif %}
+</head>
+<body class="{% if LANGUAGE_CODE == 'ar' %}rtl-mode{% endif %}">
+<!-- ✅ KEEP THIS IN <head> -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4893531235466621"
+     crossorigin="anonymous"></script>
+<!-- mrsafe-ai-Qr-code -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-4893531235466621"
+     data-ad-slot="7529357803"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<!-- ✅ Header Bar (Top Navigation) -->
+<!-- ✅ Header Bar (Top Navigation) -->
+<!-- ✅ Header Bar (Top Navigation) -->
+<header class="top-navbar d-flex align-items-center justify-content-between px-3">
+    <div class="d-flex align-items-center gap-3">
+        <!-- Sidebar Toggle Button -->
+        <button class="menu-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+<!-- Share and Store Icons beside the Menu Button -->
+<div class="d-flex align-items-center">
+    <!-- Share Button -->
+    
+    <!-- Store Button -->
+    <a href="{% url 'mrsafe_app:store' %}" class="nav-item mx-3">
+        <i class="fas fa-store"></i>
+        <span>Store</span>
+    </a>
+    <a href="#" class="nav-item mx-3" onclick="shareApp()">
+        <i class="fas fa-share-alt"></i>
+        <span>Share</span>
+    </a>
+
+</div>
+    </div>
+
+    <!-- Header Right Icons -->
+    <div class="header-right d-flex align-items-center gap-3">
+        <a href="javascript:history.back()" class="header-icon" title="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+      
+
+        <!-- Notifications -->
+        <div class="notification-container position-relative">
+            <div class="header-icon" onclick="toggleNotifications()" title="Notifications">
+                <i class="fas fa-bell"></i>
+                <span id="notification-count" class="badge">0</span>
+            </div>
+            
+            <div id="notification-dropdown" class="notification-dropdown">
+                <h4>Notifications</h4>
+                <ul id="notification-list">
+                    <li>No new notifications.</li>
+                </ul>
+                <button onclick="clearAllNotifications()" class="clear-btn">Clear All</button>
+            </div>
+        </div>
+
+        <a href="{% url 'mrsafe_app:profile' %}" class="header-icon" title="Profile">
+            <i class="fas fa-user-circle"></i>
+        </a>
+        <a href="{% url 'mrsafe_app:help' %}" class="header-icon" title="Help">
+            <i class="fas fa-question-circle"></i>
+        </a>
+    </div>
+</header>
+
+
+
+<!-- ✅ Sidebar -->
+<div class="sidebar" id="sidebar">
+
+    
+    {% if request.user.is_staff %}
+    <a href="{% url 'mrsafe_app:admin_dashboard' %}">🚀 Admin Dashboard</a>
+    {% endif %}
+    
+    <button class="close-btn" onclick="toggleSidebar()">×</button>
+    <a href="{% url 'mrsafe_app:about' %}"><i class="fas fa-info-circle"></i> About</a>
+    <a href="{% url 'mrsafe_app:faq' %}">FAQ</a>
+    <a href="{% url 'mrsafe_app:contact' %}"><i class="fas fa-envelope"></i> Contact</a>
+    <a href="{% url 'mrsafe_app:register' %}"><i class="fas fa-user-plus"></i> Register</a>
+    <a href="{% url 'mrsafe_app:login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+    <a href="{% url 'mrsafe_app:edit_profile' %}"><i class="fas fa-user-edit"></i> Edit Profile</a>
+    <a href="{% url 'mrsafe_app:profile' %}"><i class="fas fa-user-circle"></i> View Profile</a>
+    <a href="{% url 'mrsafe_app:terms_and_conditions' %}"><i class="fas fa-file-alt"></i> Terms</a>
+    <a href="{% url 'mrsafe_app:privacy_policy' %}"><i class="fas fa-shield-alt"></i> Privacy</a>
+    <div class="p-3">
+        <h6 style="color: var(--soft-white);">🎨 Choose Theme</h6>
+        <form method="POST" action="{% url 'mrsafe_app:change_theme' %}">
+            {% csrf_token %}
+            <select name="theme" class="form-select form-select-sm mb-2" onchange="this.form.submit()">
+                <option value="default" {% if request.session.theme == 'default' %}selected{% endif %}>Default</option>
+                <option value="kids" {% if request.session.theme == 'kids' %}selected{% endif %}>Kids</option>
+                <option value="doctors" {% if request.session.theme == 'doctors' %}selected{% endif %}>Doctors</option>
+                <option value="engineers" {% if request.session.theme == 'engineers' %}selected{% endif %}>Engineers</option>
+                <option value="sports" {% if request.session.theme == 'sports' %}selected{% endif %}>Sports</option>
+                <option value="girls" {% if request.session.theme == 'girls' %}selected{% endif %}>Girls</option>
+                <option value="general" {% if request.session.theme == 'general' %}selected{% endif %}>General</option>
+            </select>
+        </form>
+    </div>
+    
+    <a href="{% url 'mrsafe_app:logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<!-- ✅ Sidebar Toggle Button -->
+
+<div class="d-flex justify-content-between align-items-center w-100 px-3 py-2">
+    <!-- Sidebar Toggle Button -->
+    <button class="open-btn" onclick="toggleSidebar()">☰ Menu</button>
+
+    
+</div>
+
+
+
+<!-- ✅ Main Content Area -->
+<div class="content">
+    {% block content %}{% endblock %}
+</div>
+<!-- ✅ Bottom Navigation Bar -->
+<div class="bottom-navbar d-flex justify-content-evenly align-items-center w-100 px-3 py-2">
+    <!-- Home Icon -->
+    <a href="/" class="nav-item d-flex flex-column align-items-center" title="Home">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+    </a>
+
+    <!-- Menu Items -->
+ 
+
+    <a href="{% url 'mrsafe_app:premium_dashboard' %}" class="nav-item premium d-flex flex-column align-items-center">
+        🌟 <span>mrsafeAI Premium</span>
+    </a>
+
+   
+
+<!-- ✅ JavaScript Functions -->
+<script>
+    function toggleSidebar() {
+        var sidebar = document.getElementById("sidebar");
+        sidebar.classList.toggle("active");
+
+        // ✅ Save the sidebar state across pages
+        localStorage.setItem("sidebarState", sidebar.classList.contains("active") ? "open" : "closed");
+    }
+
+    function checkSidebarState() {
+        var sidebar = document.getElementById("sidebar");
+        if (localStorage.getItem("sidebarState") === "open") {
+            sidebar.classList.add("active");
+        }
+    }
+
+    function shareApp() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'mrsafe App',
+                text: 'Check out this amazing mrsafe App!',
+                url: window.location.href
+            }).then(() => console.log('✅ Successfully shared'))
+            .catch((error) => console.error('❌ Error sharing:', error));
+        } else {
+            alert('Sharing is not supported on this browser. Please copy the link manually.');
+        }
+    }
+
+    // ✅ Detect Arabic Language and Apply RTL
+    function detectLanguage() {
+        const lang = document.documentElement.lang;
+        if (lang === 'ar') {
+            document.body.classList.add('rtl');
+        } else {
+            document.body.classList.remove('rtl');
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        detectLanguage();
+        fetchNotifications();
+
+        // Auto-fetch notifications every 10 seconds
+        setInterval(fetchNotifications, 10000);
+    });
+
+    function fetchNotifications() {
+        fetch("/notifications/")
+            .then(response => response.json())
+            .then(data => {
+                const notificationList = document.getElementById("notification-list");
+                const notificationCount = document.getElementById("notification-count");
+
+                // ✅ Update the notification count badge
+                if (data.count > 0) {
+                    notificationCount.innerText = data.count;
+                    notificationCount.style.display = "inline-block";
+                } else {
+                    notificationCount.style.display = "none";
+                }
+
+                // ✅ Display notifications
+                notificationList.innerHTML = "";
+                if (data.notifications.length === 0) {
+                    notificationList.innerHTML = "<li>No new notifications.</li>";
+                } else {
+                    data.notifications.forEach(notification => {
+                        const li = document.createElement("li");
+                        li.innerHTML = notification.message;
+                        li.onclick = function () {
+                            markNotificationAsRead(notification.id);
+                        };
+                        notificationList.appendChild(li);
+                    });
+                }
+            })
+            .catch(error => console.error("Error fetching notifications:", error));
+    }
+
+    function markNotificationAsRead(notificationId) {
+        fetch(`/notifications/read/${notificationId}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCSRFToken(),
+                "Content-Type": "application/json"
+            }
+        }).then(() => {
+            fetchNotifications(); // Refresh notifications
+        }).catch(error => console.error("Error marking notification as read:", error));
+    }
+
+    function clearAllNotifications() {
+        fetch(`/notifications/clear/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCSRFToken(),
+                "Content-Type": "application/json"
+            }
+        }).then(() => {
+            fetchNotifications(); // Refresh notifications
+        }).catch(error => console.error("Error clearing notifications:", error));
+    }
+
+    function toggleNotifications() {
+        const dropdown = document.getElementById("notification-dropdown");
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+
+    function getCSRFToken() {
+        return document.cookie.split("; ").find(row => row.startsWith("csrftoken"))?.split("=")[1];
+    }
+</script>
+
+<!-- ✅ Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ CSS Styling -->
+<style>
+
+<!-- ✅ CSS Styling -->
+<style>
+    :root {
+        --navy-blue: #0A192F;
+        --light-navy: #112240;
+        --accent-blue: #64FFDA;
+        --soft-white: #E6F1FF;
+        --gray: #8892B0;
+    }
+
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 18px;
+        background: var(--navy-blue);
+        color: var(--soft-white);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: bold;
+        color: var(--soft-white);
+    }
+
+    .bottom-navbar .nav-item,
+    .top-navbar .header-icon {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .sidebar {
+        background: var(--light-navy);
+    }
+
+    .sidebar a:hover {
+        background-color: var(--accent-blue);
+        color: var(--navy-blue);
+    }
+
+    /* ✅ Modern Color Palette */
+    :root {
+        --navy-blue: #0A192F; /* Deep Navy Blue */
+        --light-navy: #112240; /* Slightly Lighter Navy */
+        --accent-blue: #64FFDA; /* Teal Blue Accent */
+        --soft-white: #E6F1FF; /* Modern Light White */
+        --gray: #8892B0; /* Soft Gray for text */
+    }
+
+    /* ✅ Updated Font Clarity */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.6;
+        color: var(--soft-white);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 600;
+    }
+
+    /* ✅ RTL Support */
+    body.rtl {
+        direction: rtl;
+        text-align: right;
+    }
+
+    body.rtl .sidebar {
+        right: -250px;
+        left: auto;
+    }
+
+    body.rtl .sidebar.active {
+        right: 0;
+    }
+
+    body.rtl .open-btn {
+        right: 10px;
+        left: auto;
+    }
+
+    body.rtl .close-btn {
+        left: 15px;
+        right: auto;
+    }
+
+    /* ✅ Updated Header Bar (Matches Bottom Nav) */
+    .top-navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: var(--navy-blue); /* Modern Navy Blue */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        z-index: 1500;
+    }
+
+    /* ✅ Menu Button (Left Side) */
+    .menu-btn {
+        background: none;
+        border: none;
+        color: var(--soft-white);
+        font-size: 22px;
+        cursor: pointer;
+    }
+
+    /* ✅ Right Side (Back, Notifications, Profile) */
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* ✅ Header Icons */
+    .header-icon {
+        color: var(--soft-white);
+        font-size: 20px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .header-icon:hover {
+        color: var(--accent-blue);
+        transform: scale(1.1);
+    }
+
+    /* 🔔 Notification Badge */
+    .badge {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: red;
+        color: white;
+        font-size: 12px;
+        border-radius: 50%;
+        padding: 3px 7px;
+        display: none; /* Hide if no notifications */
+    }
+
+    /* 🔔 Notification Dropdown */
+    .notification-dropdown {
+        position: absolute;
+        top: 35px;
+        right: 0;
+        background: var(--soft-white);
+        color: var(--navy-blue);
+        width: 250px;
+        border-radius: 8px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+        display: none;
+        padding: 10px;
+        text-align: left;
+    }
+
+    /* ✅ Ensure Content Doesn't Overlap Header */
+    .content {
+        margin-top: 60px; /* Push content down */
+    }
+
+    /* ✅ Full-Width Bottom Navigation Bar */
+    .bottom-navbar {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: var(--navy-blue); /* Matches Header */
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 12px 0;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.4);
+        z-index: 1000;
+    }
+
+    /* ✅ Ensure each button is evenly spaced and centered */
+    .bottom-navbar .nav-item {
+        flex: 1;
+        text-decoration: none;
+        color: var(--soft-white);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 14px;
+        padding: 10px 0;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    /* ✅ Fix Icons Inside Bottom Navbar */
+    .bottom-navbar .nav-item i {
+        font-size: 18px;
+        margin-bottom: 3px;
+    }
+
+    /* ✅ Premium Section Special Styling */
+    .bottom-navbar .premium {
+        color: var(--accent-blue);
+        font-weight: bold;
+    }
+
+    /* ✅ Hover Effects */
+    .bottom-navbar .nav-item:hover {
+        color: var(--accent-blue);
+        transform: scale(1.1);
+    }
+
+    /* ✅ Mobile-Friendly - Ensure text hides on smaller screens */
+    @media (max-width: 600px) {
+        .bottom-navbar .nav-item span {
+            display: none; /* Only show icons on small screens */
+        }
+
+        .bottom-navbar .nav-item i {
+            font-size: 24px;
+        }
+    }
+
+    /* ✅ Modern Background Styling */
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0A192F, #112240); /* Dark Navy Gradient */
+        color: var(--soft-white);
+        margin: 0;
+        padding: 0;
+        transition: margin-left 0.3s ease;
+        padding-bottom: 80px; /* To prevent overlap with navbar */
+    }
+
+    /* ✅ Regular Background */
+    .regular-bg {
+        background: linear-gradient(135deg, #0A192F, #112240);
+    }
+
+    /* ✅ Premium Background - Sleek Gradient */
+    .premium-bg {
+        background: linear-gradient(135deg, #1F4068, #278EA5);
+    }
+
+    /* ✅ Sidebar */
+    .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        width: 250px;
+        height: 100%;
+        background-color: var(--light-navy);
+        color: var(--soft-white);
+        padding-top: 60px;
+        transition: left 0.3s ease;
+        z-index: 1000;
+    }
+
+    .sidebar a {
+        padding: 15px 20px;
+        color: var(--soft-white);
+        text-decoration: none;
+        display: block;
+        transition: background-color 0.3s ease;
+    }
+
+    .sidebar a:hover {
+        background-color: var(--accent-blue);
+        color: var(--navy-blue);
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    /* ✅ Open Menu Button */
+    .open-btn {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background-color: var(--light-navy);
+        color: var(--soft-white);
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        z-index: 1001;
+        border-radius: 4px;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        color: var(--soft-white);
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    /* ✅ Enhance Font for Better Visibility */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    color: #020101FF;
+    background: linear-gradient(135deg, #0A192F, #112240);
+}
+
+/* ✅ Bold Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    color: #154066FF;
+}
+
+/* ✅ Make Navigation Text More Visible */
+.bottom-navbar .nav-item,
+.top-navbar .header-icon {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* ✅ Arabic (RTL) Layout */
+.rtl-mode {
+    direction: rtl;
+    text-align: right;
+}
+
+/* ✅ Adjust Bootstrap for RTL */
+.rtl-mode .navbar, 
+.rtl-mode .top-navbar, 
+.rtl-mode .bottom-navbar {
+    flex-direction: row-reverse;
+}
+
+.rtl-mode .header-right {
+    flex-direction: row-reverse;
+}
+/* Sidebar Toggle Button */
+.open-btn {
+    background: none;
+    border: none;
+    color: var(--soft-white);
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Share and Store Button Style */
+.d-flex.align-items-center .nav-item {
+    display: flex;
+    align-items: center;
+    color: var(--soft-white);
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+.d-flex.align-items-center .nav-item i {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.d-flex.align-items-center .nav-item:hover {
+    color: var(--accent-blue);
+}
+
+</style>
+</body>
+</html>

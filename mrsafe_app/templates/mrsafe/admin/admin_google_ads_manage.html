@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-warning glow-title mb-4">📊 Google Ads Activities</h2>
+
+    <!-- ✅ Add New Google Ad Activity Form -->
+    <div class="card bg-dark text-light mb-4 p-4 shadow-lg">
+        <h5 class="text-warning mb-3">🔄 Add New Google Ad Activity</h5>
+        <form method="post" action="{% url 'quiz_app:add_google_ad_activity' %}">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="name" class="form-label">📝 Activity Context:</label>
+                    <select name="name" id="name" class="form-select">
+                        <option value="quiz_start">🟢 Start Free Quiz</option>
+                        <option value="quiz_result">📊 View Quiz Results</option>
+                        <option value="quiz_review">🔍 Review Quiz (Non-Premium)</option>
+                        <option value="game_over">☠️ Game Over Screen</option>
+                        <option value="level_up">🚀 Level Up Screen</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="ad_type" class="form-label">📢 Ad Type:</label>
+                    <select name="ad_type" id="ad_type" class="form-select">
+                        <option value="display">Display Ad</option>
+                        <option value="video">Video Ad</option>
+                        <option value="rewarded">Rewarded Ad</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="start_date" class="form-label">📅 Start Date:</label>
+                    <input type="date" name="start_date" class="form-control" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="end_date" class="form-label">📅 End Date:</label>
+                    <input type="date" name="end_date" class="form-control" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="is_active" class="form-label">✅ Active?</label>
+                    <select name="is_active" class="form-select">
+                        <option value="True">Yes</option>
+                        <option value="False">No</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-warning mt-3 w-100">💾 Save Activity</button>
+        </form>
+    </div>
+
+    <!-- ✅ Table of Existing Ad Activities -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover bg-dark text-light text-center">
+            <thead class="table-warning text-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Context</th>
+                    <th>Ad Type</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in ad_activities %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ activity.get_name_display }}</td>
+                    <td>{{ activity.get_ad_type_display }}</td>
+                    <td>{{ activity.start_date }}</td>
+                    <td>{{ activity.end_date }}</td>
+                    <td>
+                        <a href="{% url 'quiz_app:edit_google_ad_activity' activity.id %}" class="btn btn-warning btn-sm">✏️ Edit</a>
+                        <form method="post" action="{% url 'quiz_app:delete_google_ad_activity' activity.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted">🚫 No activities yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.glow-title {
+    text-shadow: 0 0 10px #ffc107aa;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

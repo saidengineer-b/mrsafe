@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3 gradient-text">Unlock Premium Features</h1>
+        <p class="lead text-muted">Get unlimited access to all content, exclusive resources, and premium support</p>
+        {% if not is_logged_in %}
+  <a href="{% url 'quiz_app:register' %}?next={{ request.path }}"
+     class="btn btn-lg btn-darkorange rounded-pill px-5 mt-3 hover-lift">
+     <i class="fas fa-user-plus me-2"></i> Join&nbsp;free&nbsp;to&nbsp;see&nbsp;plans
+  </a>
+{% endif %}
+
+        {% if is_premium %}
+            <div class="alert alert-success alert-dismissible fade show col-md-8 mx-auto" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-crown me-3 fs-4"></i>
+                    <div>
+                        <strong>Premium Member</strong> - Your subscription is active until 
+                        <strong>{{ premium_expires|date:"F d, Y" }}</strong>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Pricing Cards -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+        {% for plan in plans %}
+            {% if plan.name %}
+                {% if plan.name != 'trial' or not trial_used %}
+                <div class="col">
+                    <div class="card pricing-card h-100 border-0 shadow-lg rounded-4 overflow-hidden 
+                        {% if plan.name == 'annual' %}popular-plan{% endif %}">
+                        <!-- Popular Badge -->
+                        {% if plan.name == 'annual' %}
+                            <div class="popular-badge">BEST VALUE</div>
+                        {% endif %}
+                        
+                        <!-- Card Header -->
+                        <div class="card-header p-4 
+                            {% if plan.name == 'weekly' %}bg-primary-gradient
+                            {% elif plan.name == 'monthly' %}bg-success-gradient
+                            {% elif plan.name == 'annual' %}bg-warning-gradient
+                            {% elif plan.name == 'trial' %}bg-darkorange-gradient
+                            {% endif %}">
+                            <h3 class="h4 text-white fw-bold mb-0">{{ plan.get_name_display|upper }} PLAN</h3>
+                        </div>
+                        
+                        <!-- Card Body -->
+                        <div class="card-body p-4">
+                            <!-- Card Footer -->
+<div class="card-footer bg-light p-4 text-center">
+  {% if is_logged_in %}
+      {% if is_premium and plan.name != 'trial' %}
+          <span class="badge bg-success w-100 py-2">Current&nbsp;Plan</span>
+      {% else %}
+          <a href="{% url 'checkout_plan' plan.slug %}"
+             class="btn btn-darkorange w-100">Choose&nbsp;Plan</a>
+      {% endif %}
+  {% else %}
+      <a href="{% url 'quiz_app:register' %}?next={{ request.path }}"
+         class="btn btn-darkorange w-100">Create&nbsp;a&nbsp;free&nbsp;account&nbsp;to&nbsp;upgrade</a>
+  {% endif %}
+</div>
+
+                            <div class="mb-4">
+                                <h2 class="display-5 fw-bold 
+                                    {% if plan.name == 'weekly' %}text-primary
+                                    {% elif plan.name == 'monthly' %}text-success
+                                    {% elif plan.name == 'annual' %}text-warning
+                                    {% elif plan.name == 'trial' %}text-darkorange
+                                    {% endif %}">
+                                    ${{ plan.price }}
+                                </h2>
+                                <span class="text-muted">for {{ plan.duration_days }} days</span>
+                            </div>
+                            
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Full content access
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    {{ plan.coin_bonus }} bonus coins
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Ad-free experience
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    Priority support
+                                </li>
+                                {% if plan.name == 'annual' %}
+                                <li class="mb-2">
+                                    <i class="fas fa-star text-warning me-2"></i>
+                                    Exclusive annual bonus
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        
+                        <!-- Card Footer -->
+                    
+                    </div>
+                </div>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Features Comparison -->
+    <div class="bg-light p-5 rounded-4 mb-5">
+        <h2 class="text-center fw-bold mb-4">Premium Features Comparison</h2>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Feature</th>
+                        <th scope="col" class="text-center">Free</th>
+                        <th scope="col" class="text-center">Premium</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Full content access</td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Ad-free experience</td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Bonus coins</td>
+                        <td class="text-center">0</td>
+                        <td class="text-center">Up to 500</td>
+                    </tr>
+                    <tr>
+                        <td>Priority support</td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                    <tr>
+                        <td>Exclusive content</td>
+                        <td class="text-center"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center"><i class="fas fa-check text-success"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Testimonials -->
+    <div class="text-center mb-5">
+        <h2 class="fw-bold mb-5">What Our Premium Members Say</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4 p-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        <img src="https://randomuser.me/api/portraits/women/43.jpg" class="rounded-circle" width="80" height="80" alt="User">
+                    </div>
+                    <div class="card-body p-0">
+                        <p class="card-text mb-3">"The annual plan saved me so much money and the content is amazing!"</p>
+                        <h5 class="mb-1">Sarah K.</h5>
+                        <p class="text-muted small">Premium Member</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4 p-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" class="rounded-circle" width="80" height="80" alt="User">
+                    </div>
+                    <div class="card-body p-0">
+                        <p class="card-text mb-3">"Worth every penny! The quality difference is night and day."</p>
+                        <h5 class="mb-1">Michael T.</h5>
+                        <p class="text-muted small">Premium Member</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4 p-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" class="rounded-circle" width="80" height="80" alt="User">
+                    </div>
+                    <div class="card-body p-0">
+                        <p class="card-text mb-3">"I tried the trial and immediately upgraded. No regrets!"</p>
+                        <h5 class="mb-1">Jessica L.</h5>
+                        <p class="text-muted small">Premium Member</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ Section -->
+    <div class="mb-5">
+        <h2 class="text-center fw-bold mb-4">Frequently Asked Questions</h2>
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                <h3 class="accordion-header" id="headingOne">
+                    <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        How does billing work?
+                    </button>
+                </h3>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Your subscription will automatically renew at the end of each billing period unless you cancel. You can cancel anytime from your account settings.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                <h3 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Can I switch between plans?
+                    </button>
+                </h3>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Yes! You can upgrade or downgrade your plan at any time. The changes will take effect at your next billing cycle.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                <h3 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        Is there a money-back guarantee?
+                    </button>
+                </h3>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        We offer a 7-day money-back guarantee for all new subscriptions. If you're not satisfied, contact our support team for a full refund.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles */
+    :root {
+        --darkorange: #ff8c00;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(90deg, #4e54c8, #8f94fb, #ff8c00);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+    
+    .bg-primary-gradient {
+        background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%) !important;
+    }
+    
+    .bg-success-gradient {
+        background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%) !important;
+    }
+    
+    .bg-warning-gradient {
+        background: linear-gradient(135deg, #f46b45 0%, #eea849 100%) !important;
+    }
+    
+    .bg-darkorange-gradient {
+        background: linear-gradient(135deg, #ff8c00 0%, #ffaf4d 100%) !important;
+    }
+    
+    .pricing-card {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+    }
+    
+    .popular-plan {
+        border: 2px solid #ffc107 !important;
+    }
+    
+    .popular-badge {
+        position: absolute;
+        top: 20px;
+        right: -30px;
+        background: #ffc107;
+        color: #000;
+        padding: 5px 30px;
+        font-size: 14px;
+        font-weight: bold;
+        transform: rotate(45deg);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .btn-darkorange {
+        background-color: var(--darkorange);
+        border-color: var(--darkorange);
+        color: white;
+    }
+    
+    .btn-darkorange:hover {
+        background-color: #e67d00;
+        border-color: #e67d00;
+        color: white;
+    }
+    
+    .text-darkorange {
+        color: var(--darkorange) !important;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(78, 84, 200, 0.1);
+        color: #4e54c8;
+    }
+</style>
+
+<script>
+    // Add animation to cards when they come into view
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.pricing-card');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = `all 0.5s ease ${index * 0.1}s`;
+            observer.observe(card);
+        });
+    });
+</script>
+{% endblock %}

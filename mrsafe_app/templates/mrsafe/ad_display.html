@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="ad-container">
+        <h2>Advertisement</h2>
+        <p>Watch this ad to continue</p>
+        <div class="ad-content">
+            <!-- Simulate ad content here -->
+            <p>Advertisement content...</p>
+            <button onclick="window.location.href='{% url 'quiz_app:quiz_take' quiz_id=quiz_id %}'">Start Quiz</button>
+        </div>
+    </div>
+{% endblock %}

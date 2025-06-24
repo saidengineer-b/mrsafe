@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5 p-4 bg-dark text-white shadow-lg rounded" style="max-width: 800px;">
+    <h2 class="text-center text-info fw-bold">🏆 Edit Reward</h2>
+
+    <form method="post" enctype="multipart/form-data" class="mt-4">
+        {% csrf_token %}
+
+        <!-- ✅ Reward Name -->
+        <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}" class="form-label fw-bold">🏅 Reward Name:</label>
+            {{ form.name }}
+        </div>
+
+        <!-- ✅ Reward Type -->
+        <div class="mb-3">
+            <label for="{{ form.reward_type.id_for_label }}" class="form-label fw-bold">🎖️ Reward Type:</label>
+            {{ form.reward_type }}
+        </div>
+
+        <!-- ✅ Challenge Type -->
+        <div class="mb-3">
+            <label for="{{ form.challenge_type.id_for_label }}" class="form-label fw-bold">🔥 Challenge Type:</label>
+            {{ form.challenge_type }}
+        </div>
+
+        <!-- ✅ Required Points -->
+        <div class="mb-3">
+            <label for="{{ form.required_points.id_for_label }}" class="form-label fw-bold">🎯 Required Points:</label>
+            {{ form.required_points }}
+        </div>
+
+        <!-- ✅ Progress to Unlock -->
+        <div class="mb-3">
+            <label for="{{ form.progress_to_unlock.id_for_label }}" class="form-label fw-bold">📊 Progress to Unlock (%):</label>
+            <input type="number" id="{{ form.progress_to_unlock.id_for_label }}" name="{{ form.progress_to_unlock.name }}" class="form-control"
+                   value="{{ form.progress_to_unlock.value|default_if_none:'' }}" min="0" max="100" step="0.1">
+            <small class="text-muted">Set the progress required (0-100%) to unlock this reward.</small>
+        </div>
+
+        <!-- ✅ Unlock Status (Checkbox) -->
+        <div class="mb-3 form-check">
+            <input type="checkbox" id="{{ form.is_unlocked.id_for_label }}" name="{{ form.is_unlocked.name }}" class="form-check-input" {% if form.is_unlocked.value %}checked{% endif %}>
+            <label for="{{ form.is_unlocked.id_for_label }}" class="form-check-label fw-bold">🔓 Unlock Status</label>
+        </div>
+
+        <!-- ✅ Locked Image -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">🔒 Locked Image:</label>
+            <div class="reward-circle">
+                {% if reward.locked_image %}
+                    <img id="lockedPreview" src="{{ reward.locked_image.url }}" alt="Locked Reward" class="reward-img">
+                {% else %}
+                    <p class="text-muted">⚠️ No locked image uploaded.</p>
+                {% endif %}
+            </div>
+            <input type="file" name="locked_image" class="form-control mt-2" id="id_locked_image" accept="image/*" onchange="previewImage(event, 'lockedPreview')">
+        </div>
+
+        <!-- ✅ Unlocked Image -->
+        <div class="mb-3">
+            <label for="{{ form.unlocked_image.id_for_label }}" class="form-label fw-bold">🌟 Unlocked Image:</label>
+            <div class="reward-circle">
+                {% if reward.unlocked_image %}
+                    <img id="unlockedPreview" src="{{ reward.unlocked_image.url }}" alt="Unlocked Reward" class="reward-img">
+                {% else %}
+                    <p class="text-muted">⚠️ No unlocked image uploaded.</p>
+                {% endif %}
+            </div>
+            <input type="file" name="unlocked_image" class="form-control mt-2" id="id_unlocked_image" accept="image/*" onchange="previewImage(event, 'unlockedPreview')">
+        </div>
+
+       <!-- ✅ Save & Back Buttons -->
+        <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-success">💾 Save Changes</button>
+            <a href="{% url 'quiz_app:manage_rewards' %}" class="btn btn-secondary">⬅️ Back to Rewards</a>
+        </div>
+    </form>
+</div>
+
+<!-- ✅ JavaScript for Image Preview -->
+<script>
+    function previewImage(event, previewId) {
+        let reader = new FileReader();
+        reader.onload = function(){
+            let output = document.getElementById(previewId);
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+
+<!-- ✅ Styling -->
+<style>
+    body {
+        background: #0A192F; /* Dark navy background */
+    }
+
+    .container {
+        max-width: 800px;
+        background: #112240;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+        color: #64FFDA;
+    }
+
+    .btn {
+        font-size: 1.1rem;
+        font-weight: bold;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .form-label {
+        font-size: 1.1rem;
+        color: #64FFDA;
+        font-weight: bold;
+    }
+
+    .reward-circle {
+        width: 120px;
+        height: 120px;
+        background: #64FFDA;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        padding: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .reward-img {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        border-radius: 50%;
+    }
+
+    .img-thumbnail {
+        border-radius: 10px;
+        box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .text-muted {
+        font-size: 0.9rem;
+    }
+</style>
+
+{% endblock %}

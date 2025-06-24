@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container text-center mt-5 text-white">
+  <div class="payment-box shadow p-4 rounded-4 mx-auto fade-in">
+    <h2 class="text-success neon-text mb-3">
+      <i class="fas fa-check-circle"></i> Payment Successful!
+    </h2>
+    <p class="lead">🎉 Your coins have been added to your account!</p>
+    <a href="{% url 'quiz_app:store_home' %}" class="btn btn-outline-info mt-4">
+      🛍️ Back to Store
+    </a>
+  </div>
+</div>
+
+<style>
+  .neon-text {
+    text-shadow: 0 0 8px #00ffcc, 0 0 18px #00ffc3;
+  }
+
+  .payment-box {
+    background-color: rgba(0, 0, 0, 0.4);
+    max-width: 500px;
+  }
+
+  .fade-in {
+    animation: fadeInUp 0.6s ease-in-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+{% endblock %}

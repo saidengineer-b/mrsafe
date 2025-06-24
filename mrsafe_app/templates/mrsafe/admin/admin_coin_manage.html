@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-info glow-title mb-4">🪙 Coin Manager</h2>
+
+    <!-- 🔄 Update User Coins -->
+    <div class="card mb-4 bg-dark text-light">
+        <div class="card-header text-info fw-bold">🔄 Update User Coin Balance</div>
+        <div class="card-body">
+            <form method="post" action="{% url 'quiz_app:update_user_coins' %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">👤 Select User</label>
+                        <select name="user_id" class="form-select" required>
+                            {% for user in users %}
+                                <option value="{{ user.id }}">{{ user.username }} ({{ user.coinbalance.balance }} Coins)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">🪙 Amount</label>
+                        <input type="number" name="amount" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">⚖️ Action</label>
+                        <select name="action" class="form-select" required>
+                            <option value="add">➕ Add Coins</option>
+                            <option value="deduct">➖ Deduct Coins</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 mt-2">💾 Update Coins</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 🪙 Coin Activities -->
+    <div class="card mb-4 bg-dark text-light">
+        <div class="card-header text-info fw-bold d-flex justify-content-between align-items-center">
+            🧾 Coin Activities
+            <a href="{% url 'quiz_app:add_coin_activity' %}" class="btn btn-success btn-sm">➕ Add Coin Activity</a>
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-bordered text-center bg-dark text-light">
+                <thead class="table-info text-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in coin_activities %}
+                    <tr>
+                        <td>{{ activity.name }}</td>
+                        <td>{{ activity.activity_type }}</td>
+                        <td>{{ activity.coin_amount }}</td>
+                        <td class="{% if activity.is_active %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+                            {{ activity.is_active|yesno:"Active,Inactive" }}
+                        </td>
+                        <td>
+                            <a href="{% url 'quiz_app:edit_coin_activity' activity.id %}" class="btn btn-warning btn-sm">✏️</a>
+                            <form action="{% url 'quiz_app:delete_coin_activity' activity.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-muted">🚫 No activities found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.glow-title {
+    text-shadow: 0 0 8px #00ffffaa;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

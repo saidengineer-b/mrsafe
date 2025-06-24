@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center text-glow mb-4">📈 My Stats Overview</h2>
+
+    <div class="row g-4 text-center">
+        <!-- ✅ Quiz Performance -->
+        <div class="col-md-4">
+            <div class="stat-card glowing-border border-blue">
+                <h5 class="text-info fw-bold mb-3">📊 Quiz Performance</h5>
+                <p><strong>🏁 Completed:</strong> {{ completed_quizzes }}</p>
+                <p><strong>✅ Passed:</strong> {{ passed_tests }}</p>
+                <p><strong>📈 Avg. Score:</strong> {{ average_score|default:"0.0"|floatformat:1 }}%</p>
+            </div>
+        </div>
+
+        <!-- ✅ Learning Progress -->
+<!-- ✅ Learning Progress -->
+<div class="col-md-4">
+    <div class="stat-card glowing-border border-purple">
+        <h5 class="text-purple fw-bold mb-3">📘 Learning Progress</h5>
+        <p><strong>📚 Completed Sessions:</strong> {{ completed_sessions }}</p>
+    </div>
+</div>
+
+
+        <!-- ✅ Coins & Points -->
+        <div class="col-md-4">
+            <div class="stat-card glowing-border border-green">
+                <h5 class="text-success fw-bold mb-3">💰 Rewards</h5>
+                <p><strong>🪙 Coins:</strong> {{ coin_balance }}</p>
+                <p><strong>🎯 Points:</strong> {{ total_points }}</p>
+            </div>
+        </div>
+
+        <!-- ✅ Leaderboard -->
+        <div class="col-md-6 offset-md-3">
+            <div class="stat-card glowing-border border-yellow">
+                <h5 class="text-warning fw-bold mb-3">🏅 Leaderboard</h5>
+                <p><strong>🌍 Rank:</strong> {{ user_ranking|default:"N/A" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🌈 Custom Styles -->
+<style>
+    .text-glow {
+        color: #17e3ff;
+        text-shadow: 0 0 6px #17e3ff;
+        font-weight: 700;
+    }
+
+    .stat-card {
+        background-color: #1c1e22;
+        padding: 25px 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 8px rgba(0, 255, 255, 0.05);
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: scale(1.03);
+    }
+
+    .glowing-border {
+        border-left: 4px solid #17e3ff;
+    }
+
+    .border-blue { border-color: #00f2ff !important; }
+    .border-green { border-color: #28a745 !important; }
+    .border-yellow { border-color: #ffc107 !important; }
+    .border-purple { border-color: #b76df1 !important; }
+
+    .text-purple { color: #b76df1 !important; }
+
+    .stat-card p {
+        font-size: 1.1rem;
+        color: #f8f9fa;
+    }
+
+    .stat-card h5 {
+        font-size: 1.3rem;
+    }
+
+    @media (max-width: 768px) {
+        .stat-card {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
+

@@ -1,0 +1,215 @@
+{% load static %}
+
+{% block title %} 🎮 Kids Quiz - Fun Learning {% endblock %}
+
+{% block content %}
+
+<!-- ✅ Sidebar Menu -->
+<div class="sidebar kids-sidebar" id="sidebar">
+    <button class="close-btn" onclick="toggleSidebar()">×</button>
+    <a href="{% url 'quiz_app:home' %}">🏡 Home</a>
+    <a href="{% url 'quiz_app:quiz_list' %}">📝 Quizzes</a>
+    <a href="{% url 'quiz_app:course_list' %}">📚 Courses</a>
+    <a href="{% url 'quiz_app:store' %}">🛍️ Store</a>
+    <a href="{% url 'quiz_app:profile' %}">👦 Profile</a>
+</div>
+
+<!-- ✅ Welcome Message -->
+<div class="kids-header">
+    <h2 class="kids-welcome">🎉 Welcome, {{ user.username }}! Ready for a Fun Quiz? 🎈</h2>
+</div>
+
+<!-- ✅ Slideshow Banner Section -->
+<div class="kids-slideshow">
+    <img class="kids-slide" src="{% static 'images/slide1.jpg' %}" alt="Fun Learning">
+    <img class="kids-slide" src="{% static 'images/slide2.jpg' %}" alt="Interactive Quizzes">
+    <img class="kids-slide" src="{% static 'images/photo_2025-02-15_18-48-25.jpg' %}" alt="Challenge Yourself">
+
+    <button class="prev kids-btn" onclick="changeSlide(-1)">⬅</button>
+    <button class="next kids-btn" onclick="changeSlide(1)">➡</button>
+</div>
+
+<!-- ✅ AI Challenge Section -->
+<div class="kids-section">
+    <h3>🤖 Challenge the AI!</h3>
+    <img src="{% static 'images/ai_challenge_placeholder.jpg' %}" class="kids-banner">
+    <a href="{% url 'quiz_app:ai_challenge' %}" class="kids-btn-primary">🚀 Start Challenge</a>
+</div>
+
+<!-- ✅ Free Quizzes Section -->
+<div class="kids-section">
+    <h3>🎯 Play Fun Quizzes!</h3>
+    <div class="kids-quiz-container">
+        {% for quiz in free_quizzes %}
+            <div class="kids-quiz-card">
+                {% if quiz.photo %}
+                    <img src="{{ quiz.photo.url }}" class="kids-quiz-img">
+                {% else %}
+                    <img src="{% static 'images/default_quiz.jpg' %}" class="kids-quiz-img">
+                {% endif %}
+                <h4>{{ quiz.title }}</h4>
+                <a href="{% url 'quiz_app:quiz_take' quiz.id %}" class="kids-btn-primary">🎮 Play Now</a>
+            </div>
+        {% empty %}
+            <p>No quizzes available right now. Check back later!</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ✅ Leaderboard -->
+<div class="kids-section">
+    <h3>🏆 Top Scorers</h3>
+    <table class="kids-table">
+        <thead>
+            <tr>
+                <th>🥇 Rank</th>
+                <th>👦 Username</th>
+                <th>🏅 Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in leaderboard %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ entry.user.username }}</td>
+                    <td>{{ entry.total_score }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="3">No leaderboard data yet. Play and score points!</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ✅ JavaScript for Slideshow -->
+<script>
+    let slideIndex = 0;
+    function showSlides() {
+        let slides = document.getElementsByClassName("kids-slide");
+        for (let slide of slides) {
+            slide.style.display = "none";
+        }
+        slideIndex = (slideIndex + 1) % slides.length;
+        slides[slideIndex].style.display = "block";
+        setTimeout(showSlides, 3000);
+    }
+    showSlides();
+</script>
+
+
+
+<style>
+
+    <!-- ✅ CSS Styling -->
+    <style>
+
+/* 🎨 Kids Theme - Fun & Engaging Colors */
+:root {
+    --kids-blue: #74ebd5;
+    --kids-yellow: #f9d423;
+    --kids-pink: #ff6f91;
+    --kids-green: #6effa1;
+    --kids-purple: #a29bfe;
+    --kids-white: #fffde7;
+}
+
+/* ✅ Fun Background */
+body {
+    background: linear-gradient(to bottom, var(--kids-blue), var(--kids-white));
+    font-family: 'Comic Sans MS', 'Baloo', 'Nunito', sans-serif;
+    font-size: 18px;
+    color: #444;
+    margin: 0;
+    padding: 0;
+}
+
+/* ✅ Sidebar */
+.kids-sidebar {
+    background: var(--kids-yellow);
+    color: var(--kids-pink);
+}
+
+.kids-sidebar a:hover {
+    background-color: var(--kids-green);
+    color: white;
+}
+
+/* ✅ Welcome Header */
+.kids-header {
+    text-align: center;
+    padding: 20px;
+    background: var(--kids-pink);
+    color: white;
+    font-size: 24px;
+    border-bottom: 5px dashed var(--kids-yellow);
+}
+
+/* ✅ Slideshow */
+.kids-slideshow {
+    max-width: 800px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+.kids-slide {
+    width: 100%;
+    border-radius: 15px;
+    display: none;
+}
+
+/* ✅ Buttons */
+.kids-btn-primary {
+    display: inline-block;
+    background: var(--kids-green);
+    color: white;
+    padding: 12px 18px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.kids-btn-primary:hover {
+    background: var(--kids-pink);
+    transform: scale(1.1);
+}
+
+/* ✅ Quiz Cards */
+.kids-quiz-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.kids-quiz-card {
+    background: var(--kids-purple);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 15px;
+    text-align: center;
+    width: 250px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+}
+
+.kids-quiz-card:hover {
+    transform: translateY(-10px);
+}
+
+/* ✅ Leaderboard */
+.kids-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+}
+
+.kids-table th, .kids-table td {
+    padding: 10px;
+    border-bottom: 3px solid var(--kids-yellow);
+    text-align: center;
+}
+
+</style>
+{% endblock %}

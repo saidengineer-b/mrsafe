@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-warning">⚡ Edit User Profile</h2>
+
+    <form method="POST" enctype="multipart/form-data" class="mt-4 shadow-lg p-4 bg-dark rounded">
+        {% csrf_token %}
+
+        <!-- Profile Photo Upload -->
+        <div class="text-center mb-4">
+            <label class="fw-bold text-light">📸 Profile Photo:</label>
+            
+            <!-- Display Profile Photo of the Selected User -->
+            {% if selected_user.profile_photo %}
+                <img id="profile-image-preview" src="{{ selected_user.profile_photo.url }}" class="img-thumbnail" width="120" height="120">
+            {% else %}
+                <img id="profile-image-preview" src="{% static 'images/default-avatar.png' %}" class="img-thumbnail" width="120" height="120">
+            {% endif %}
+
+            <!-- File Upload Input -->
+            <input type="file" name="profile_photo" id="profile_photo_input" class="form-control mt-3" accept="image/*" onchange="previewImage(event)">
+        </div>
+
+        <!-- Username -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">👤 Username:</label>
+            <input type="text" name="username" class="form-control" value="{{ selected_user.username }}" required>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">📧 Email:</label>
+            <input type="email" name="email" class="form-control" value="{{ selected_user.email }}" required>
+        </div>
+
+        <!-- Coin Balance -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">🪙 Coin Balance:</label>
+            {{ form.coin_balance }}
+        </div>
+
+        <!-- Membership -->
+        <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" name="is_premium" {% if selected_user.is_premium %}checked{% endif %}>
+            <label class="form-check-label fw-bold text-warning">🌟 Upgrade to Premium</label>
+        </div>
+
+        <!-- Active Status -->
+        <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" name="is_active" {% if selected_user.is_active %}checked{% endif %}>
+            <label class="form-check-label fw-bold text-success">✅ Activate User</label>
+        </div>
+
+        <!-- Admin Access -->
+        <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" name="is_staff" {% if selected_user.is_staff %}checked{% endif %}>
+            <label class="form-check-label fw-bold text-danger">🔑 Grant Admin Access</label>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-success">
+                ✅ Save Changes
+            </button>
+            <a href="{% url 'quiz_app:admin_dashboard' %}" class="btn btn-secondary">
+                🔙 Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+            var output = document.getElementById('profile-image-preview');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+
+
+<style>
+    /* Profile Picture Styling */
+    .profile-preview img {
+        border-radius: 50%;
+        border: 3px solid #ffc107;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Form Container */
+    .container {
+        max-width: 600px;
+    }
+
+    /* Form Inputs */
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    /* Buttons */
+    .btn-success {
+        background-color: #28a745;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 18px;
+    }
+
+    .btn-secondary {
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 18px;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 text-white">
+    <h2 class="text-center mb-4 neon-text">
+        <i class="fas fa-shopping-cart"></i> Your Cart
+    </h2>
+
+    {% if cart_items %}
+    <div class="card bg-dark shadow-lg rounded-4 px-4 py-4 cart-glow">
+        {% for item in cart_items %}
+        <div class="cart-item d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center border-bottom py-3 px-2">
+            <div class="item-details mb-2 mb-md-0">
+                <h5 class="fw-bold text-cyan mb-2"><i class="fas fa-box-open me-2"></i>{{ item.item.name }}</h5>
+                <p class="mb-1 text-light"><i class="fas fa-dollar-sign me-2 text-success"></i>Price: ${{ item.item.price }}</p>
+                <p class="mb-1 text-light"><i class="fas fa-sort-numeric-up me-2 text-warning"></i>Qty: {{ item.quantity }}</p>
+                <p class="mb-0 text-light"><i class="fas fa-equals me-2 text-info"></i>Subtotal: ${{ item.subtotal }}</p>
+            </div>
+            <form action="{% url 'quiz_app:remove_from_cart' item.id %}" method="post">
+                {% csrf_token %}
+                <button class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash-alt me-1"></i> Remove
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+        <h4 class="text-info fw-bold neon-text">
+            <i class="fas fa-wallet me-2"></i>Total: ${{ total_price }}
+        </h4>
+        <form action="{% url 'quiz_app:checkout' %}" method="post" class="mt-3">
+            {% csrf_token %}
+            <button class="btn btn-success btn-lg shadow px-5 py-2">
+                <i class="fas fa-credit-card me-2"></i> Proceed to Checkout
+            </button>
+        </form>
+    </div>
+
+    {% else %}
+    <div class="text-center mt-5">
+        <h5 class="text-warning"><i class="fas fa-cart-arrow-down me-2"></i>Your cart is empty</h5>
+        <p class="text-muted">Start shopping to add items to your cart!</p>
+        <a href="{% url 'quiz_app:store_home' %}" class="btn btn-outline-info">
+            🛍️ Visit Store
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: #fff;
+    }
+
+    .text-cyan {
+        color: #00e6e6;
+    }
+
+    .cart-glow {
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .neon-text {
+        color: #00f2ff;
+        text-shadow: 0 0 8px #00f2ff, 0 0 15px #00f2ff;
+    }
+
+    .btn-success {
+        background: linear-gradient(90deg, #00c853, #43a047);
+        border: none;
+        font-weight: bold;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(90deg, #009624, #2e7d32);
+    }
+
+    .btn-danger {
+        background-color: #e53935;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        background-color: #c62828;
+    }
+
+    .card {
+        background: #1e1e1e;
+        border-radius: 12px;
+    }
+
+    .cart-item {
+        transition: background 0.3s ease;
+    }
+
+    .cart-item:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+</style>
+{% endblock %}

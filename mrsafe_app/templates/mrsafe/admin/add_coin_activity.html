@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary">➕ Add New Coin Activity</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label class="form-label">📋 Activity Name:</label>
+            <input type="text" name="name" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">📊 Activity Type:</label>
+            <select name="activity_type" class="form-select">
+                <option value="earn">🏆 Earn Coins</option>
+                <option value="spend">💰 Spend Coins</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">🪙 Coin Amount:</label>
+            <input type="number" name="coin_amount" class="form-control" required>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="is_active" id="is_active" checked>
+            <label class="form-check-label" for="is_active">✅ Activate Activity</label>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 mt-3">💾 Save Activity</button>
+    </form>
+    
+    <a href="{% url 'quiz_app:admin_dashboard' %}" class="btn btn-secondary mt-3">⬅️ Back to Dashboard</a>
+</div>
+{% endblock %}

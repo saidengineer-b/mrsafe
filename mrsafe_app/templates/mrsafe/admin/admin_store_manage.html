@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-success glow-title mb-4">🛍️ Store Item Manager</h2>
+
+    <div class="text-end mb-3">
+        <a href="{% url 'quiz_app:add_item' %}" class="btn btn-primary">➕ Add New Item</a>
+    </div>
+
+    {% if store_items %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center bg-dark text-light">
+            <thead class="table-success text-dark">
+                <tr>
+                    <th>🖼️ Image</th>
+                    <th>📦 Title</th>
+                    <th>💵 Price</th>
+                    <th>⚙️ Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in store_items %}
+                <tr>
+                    <td>
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.title }}" class="img-thumbnail" width="80">
+                        {% else %}
+                        <span class="text-muted">No Image</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.name }}</td>
+                    <td>${{ item.price }}</td>
+                    <td>
+                        <a href="{% url 'quiz_app:edit_item' item.id %}" class="btn btn-warning btn-sm">✏️ Edit</a>
+                        <form action="{% url 'quiz_app:delete_item' item.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">🚫 No store items available.</div>
+    {% endif %}
+</div>
+
+<style>
+.glow-title {
+    text-shadow: 0 0 8px #00ff88aa;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,606 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4 fw-bold" style="color: #40E0D0; text-shadow: 0 0 8px #40E0D0aa;">🎖️ Premium Dashboard</h2>
+
+<!-- 🌟 Premium Header with AI Roadmap & Premium Code -->
+<div class="card shadow-lg p-4 mb-4" style="background: linear-gradient(145deg, #0f172a, #121212); border: 1px solid #40E0D088; border-radius: 20px;">
+  <div class="row g-4 align-items-center">
+    
+ <!-- 🔝 Updated Premium Header with AI Roadmap on Right and Smaller QR Block -->
+<div class="card shadow-lg p-4 mb-4" style="background-color: #121212; border: 1px solid #40E0D044;">
+  <div class="row g-4 align-items-start">
+    <!-- 👤 User Info + Premium QR on Left -->
+    <div class="col-md-4 text-md-start text-center">
+      <h4 class="text-glow">👋 Welcome, {{ user.username }}</h4>
+      <p class="text-success mb-1">✅ Premium Access Activated</p>
+      <p style="color: #b8e0ff;">
+        🗓️ <strong>Member Since:</strong> {{ user.date_joined|date:"F d, Y" }}
+      </p>
+
+<div class="premium-code-container mt-4 p-3 text-center border border-tiffany rounded-4 shadow-lg" style="max-width: 320px; margin: 0 auto; background-color: #0a0f2c;">
+  <h5 class="text-glow mb-3">📢 Your Premium QR Code</h5>
+
+  <div class="qr-wrapper d-inline-block" style="background-color: #0a0f2c; padding: 10px; border-radius: 16px; box-shadow: 0 0 18px #40e0d0;">
+    <img src="{{ premium_qr_url }}" alt="QR Code" class="qr-image img-fluid rounded" style="width: 200px;">
+  </div>
+
+  <small class="text-tiffany d-block mt-3">Scan to activate or share premium access</small>
+</div>
+
+
+    </div>
+
+    <!-- 🧭 AI Roadmap Feature Card -->
+    <div class="col-md-8">
+      <div class="card feature-card text-center p-3 shadow-sm h-100">
+        <img src="{% static 'images/ai-roadmap-banner.png' %}" class="feature-img" alt="AI Roadmap">
+        <h5 class="mt-3 text-glow">🧭 AI Roadmap</h5>
+        <p>Master your goals step-by-step with guided AI-generated lessons, quizzes, flashcards, and progress tracking.</p>
+        <a href="{% url 'quiz_app:start_roadmap_onboarding' %}" class="btn btn-primary w-100">🚀 Start Roadmap</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- 🚀 Premium Features Section -->
+<div class="row g-4 justify-content-center mb-5">
+  <!-- First row: 3 cards -->
+  <div class="col-12 col-md-4">
+    <div class="card feature-card text-center p-3 shadow-sm h-100">
+      <img src="{% static 'images/AI_quiz_generator.jpg' %}" class="feature-img" alt="AI Quiz Generator">
+      <h5 class="mt-3">🤖 <span class="text-tiffany">AI Quiz Generator</span></h5>
+      <p>Create quizzes using AI in seconds.</p>
+      <a href="{% url 'quiz_app:quiz_create' %}" class="btn btn-primary w-100">✨ Create AI Quiz</a>
+    </div>
+  </div>
+
+
+
+  <!-- Second row: 2 cards, centered -->
+  <div class="col-12 col-md-4">
+    <div class="card feature-card text-center p-3 shadow-sm h-100">
+      <img src="{% static 'images/AI_question_bank.jpg' %}" class="feature-img" alt="Question Bank">
+      <h5 class="mt-3">📢 <span class="text-tiffany">Create Question Banks</span></h5>
+      <p>Create and manage question banks quickly.</p>
+      <a href="{% url 'quiz_app:question_bank_list' %}" class="btn btn-success w-100">📌 Create Quiz</a>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-4">
+    <div class="card feature-card text-center p-3 shadow-sm h-100">
+      <img src="{% static 'images/Track_performance.jpg' %}" class="feature-img" alt="Track Performance">
+      <h5 class="mt-3">📊 <span class="text-tiffany">View Quiz Results</span></h5>
+      <p>Track trainee quiz performance effectively.</p>
+      <a href="{% url 'quiz_app:trainer_quiz_results' %}" class="btn btn-info w-100">📈 View Results</a>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="card feature-card text-center p-3 shadow-sm h-100">
+      <img src="{% static 'images/summarize_it_icon.png' %}" class="feature-img" alt="Summarize It">
+      <h5 class="mt-3">📝 <span class="text-tiffany">Summarize It</span></h5>
+      <p>Generate clean summaries from articles or videos and chat with your notes.</p>
+      <a href="{% url 'quiz_app:summarize_from_url' %}" class="btn btn-info w-100">💡 Start Summarizing</a>
+    </div>
+  </div>
+
+  <div class="col-12 col-md-4">
+    <div class="card feature-card text-center p-3 shadow-sm h-100">
+      <img src="{% static 'images/summarize_book_icon.png' %}" class="feature-img" alt="Summarize Book">
+      <h5 class="mt-3">📘 <span class="text-tiffany">Summarize Book</span></h5>
+      <p>Generate clean summaries from large PDFs and chat with your notes.</p>
+      <a href="{% url 'quiz_app:summarize_large_pdf' %}" class="btn btn-info w-100">📚 Start Summarizing</a>
+    </div>
+  </div>
+  <div class="col-12 col-md-4">
+    <div class="card feature-card text-center p-3 shadow-sm h-100">
+      <img src="{% static '/images/AI-Lab.png' %}" class="feature-img" alt="Ai_labs">
+      <h5 class="mt-3">📘 <span class="text-tiffany">AI-LAb</span></h5>
+      <p>More AI tools</p>
+      <a href="{% url 'quiz_app:quiz_ai_lab_view' %}" class="btn btn-info w-100">📚 More Ai Tools</a>
+    </div>
+  </div>
+</div>
+
+<!-- 📦 Glowing Container with Horizontal Scroll -->
+<div class="container my-5 icon-grid-container py-4">
+  <h4 class="text-glow mb-4">📦 Management Panel</h4>
+
+  <div class="scrolling-wrapper d-flex gap-3 pb-2 px-2">
+    
+    <div class="icon-card">
+      <a href="{% url 'quiz_app:manage_quizzes' %}" class="text-decoration-none">
+        <img src="{% static 'images/manage_quizzes.png' %}" class="icon-card-img" alt="Manage Quizzes">
+        <div class="icon-card-label">Quizzes</div>
+      </a>
+    </div>
+
+    <div class="icon-card">
+      <a href="{% url 'quiz_app:manage_linked_users' %}" class="text-decoration-none">
+        <img src="{% static 'images/manage_linked_users.png' %}" class="icon-card-img" alt="Linked Users">
+        <div class="icon-card-label">Linked Users</div>
+      </a>
+    </div>
+
+    <div class="icon-card">
+      <a href="{% url 'quiz_app:manage_competitions' %}" class="text-decoration-none">
+        <img src="{% static 'images/my_competitions.png' %}" class="icon-card-img" alt="Competitions">
+        <div class="icon-card-label">Competitions</div>
+      </a>
+    </div>
+
+    <div class="icon-card">
+      <a href="{% url 'quiz_app:manage_question_bank' %}" class="text-decoration-none">
+        <img src="{% static 'images/manage_questionbanks.png' %}" class="icon-card-img" alt="Question Banks">
+        <div class="icon-card-label">Question Banks</div>
+      </a>
+    </div>
+
+    <div class="icon-card">
+      <a href="{% url 'quiz_app:my_flashcard_sets' %}" class="text-decoration-none">
+        <img src="{% static 'images/my_flashcard.png' %}" class="icon-card-img" alt="My Flashcards">
+        <div class="icon-card-label">My Flashcards</div>
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function copyToClipboard() {
+  var text = document.getElementById("premium-code").innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    alert("Premium Code Copied: " + text);
+  });
+}
+</script>
+
+
+
+<!-- Bootstrap JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JavaScript for Delete Confirmation -->
+
+<script>
+    function confirmDelete() {
+        return confirm("🚨 Are you sure you want to delete this quiz? This action cannot be undone!");
+    }
+</script>
+
+<!-- JavaScript Fix for Accordion -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var collapseElements = document.querySelectorAll(".accordion-collapse");
+        collapseElements.forEach(function(el) {
+            el.classList.remove("show");  // Ensure all accordion sections are collapsed initially
+        });
+    });
+</script>
+
+<!-- Custom Styling -->
+
+<style>
+    /* ✅ Default Button Styling */
+    .action-btn {
+        width: 100%; /* Full width */
+        max-width: 120px; /* Limit max width */
+        text-align: center;
+        padding: 10px 5px; /* Better spacing */
+        font-size: 0.9rem;
+    }
+    
+    /* ✅ Mobile Optimization */
+    @media (max-width: 768px) {
+        .d-flex {
+            flex-wrap: wrap; /* Allows wrapping for better responsiveness */
+            justify-content: center; /* Centers buttons */
+        }
+        
+        .action-btn {
+            width: 100%; /* Ensures buttons fit */
+            max-width: 100px; /* Prevents overly wide buttons */
+            font-size: 0.85rem; /* Adjust text size */
+            padding: 8px 10px; /* Proper spacing */
+            margin-bottom: 4px; /* Adds space between buttons */
+        }
+    
+        /* ✅ Fix Table Layout */
+        .table-responsive {
+            overflow-x: auto; /* Prevents layout breaking */
+            display: block;
+            white-space: nowrap;
+        }
+    
+        /* ✅ Adjust Action Buttons to Stack Properly */
+        .actions-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px; /* Proper spacing */
+        }
+    
+        /* ✅ Smaller Buttons */
+        .btn-sm {
+            font-size: 0.85rem;
+            padding: 6px 8px;
+        }
+    
+        /* ✅ Adjust Quiz Photo for Mobile */
+        .quiz-photo {
+            width: 60px; /* Smaller for mobile */
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+        }
+    
+        /* ✅ Adjust Feature Images */
+        .feature-img {
+            width: 100%;
+            height: 120px; /* Proper height */
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    
+        /* ✅ Ensure Modals Look Good */
+        .modal-content {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+    }
+    .icon-button {
+        background: white;
+        border-radius: 25px;
+        height: 180px; /* or match others like 200px */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      }
+      
+      .icon-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      }
+      
+      .icon-img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+      }
+      
+      .icon-grid-container {
+        background: #0A192F;
+        padding: 30px;
+        border-radius: 20px;
+    }
+    
+    .icon-block {
+        background: #112240;
+        border-radius: 20px;
+        padding: 20px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .icon-block:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 0 20px #64ffda;
+    }
+    
+    .icon-block img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 20px;
+        object-fit: cover;
+    }
+    
+
+        .feature-card {
+            background-color: #121212;
+            border: 1px solid #40E0D0;
+            border-radius: 16px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 12px #40E0D044;
+        }
+    
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 18px #40E0D0aa;
+        }
+    
+        .feature-card h5 {
+            color: #40E0D0;
+            font-weight: bold;
+        }
+    
+        .feature-card p {
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+    
+        .btn-primary {
+            background-color: #40E0D0;
+            border: none;
+            color: #121212;
+            font-weight: bold;
+        }
+    
+        .btn-success {
+            background-color: #2ecc71;
+            border: none;
+            font-weight: bold;
+        }
+    
+        .btn-info {
+            background-color: #00bcd4;
+            border: none;
+            font-weight: bold;
+        }
+    
+        .premium-code-container {
+            margin-top: 2rem;
+            text-align: center;
+            background: #112240;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #40E0D0;
+            box-shadow: 0 0 10px #40E0D0aa;
+        }
+    
+        .premium-code-container h3 {
+            color: #40E0D0;
+            text-shadow: 0 0 5px #40E0D0aa;
+        }
+    
+        .premium-code-container button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #40E0D0;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #121212;
+            transition: background 0.3s ease;
+        }
+    
+        .premium-code-container button:hover {
+            background-color: #32c6ba;
+            color: black;
+        }
+
+        .icon-label {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #40E0D0;
+            text-shadow: 0 0 6px #40E0D0aa;
+        }
+        .icon-grid-container {
+            background: #0A192F;
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #40E0D0; /* Tiffany border */
+            box-shadow: 0 0 20px #40E0D088; /* Tiffany glow */
+        }
+        
+        
+      
+
+        .fixed-bottom {
+            left: 0;
+            right: 0;
+            width: 100vw;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin: 0 !important;
+            border-top: 1px solid #40E0D0;
+            box-shadow: 0 -1px 12px #40E0D088;
+        }
+      .scrolling-wrapper {
+  overflow-x: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding-bottom: 8px;
+}
+
+.icon-card:hover {
+  transform: scale(1.05);
+}
+
+
+<!-- ✅ Custom Styles -->
+<style>
+.icon-grid-container {
+  background: #0A192F;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid #40E0D0;
+  box-shadow: 0 0 20px #40E0D088;
+  overflow-x: hidden;
+}
+
+.text-glow {
+  color: #40E0D0;
+  text-shadow: 0 0 8px #40E0D0, 0 0 14px #40E0D0;
+  font-weight: bold;
+}
+
+.scrolling-wrapper {
+  overflow-x: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrolling-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.scrolling-wrapper::-webkit-scrollbar-thumb {
+  background-color: #40E0D0;
+  border-radius: 10px;
+}
+.scrolling-wrapper::-webkit-scrollbar-track {
+  background-color: #0A192F;
+}
+.icon-grid-container {
+  background: #0A192F;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid #40E0D0;
+  box-shadow: 0 0 20px #40E0D088;
+  overflow-x: auto;
+}
+
+.text-glow {
+  color: #40E0D0;
+  text-shadow: 0 0 8px #40E0D0, 0 0 14px #40E0D0;
+  font-weight: bold;
+}
+
+.scrolling-wrapper {
+  overflow-x: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scrolling-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.scrolling-wrapper::-webkit-scrollbar-thumb {
+  background-color: #40E0D0;
+  border-radius: 10px;
+}
+.scrolling-wrapper::-webkit-scrollbar-track {
+  background-color: #0A192F;
+}
+.icon-card {
+  flex: 0 0 auto;
+  width: 160px;
+  height: 220px;
+  background-color: #0b1e2d;
+  border-radius: 16px;
+  text-align: center;
+  padding: 16px 12px;
+  box-shadow: 0 0 12px #40E0D0AA;
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+.icon-card-img {
+  width: 100%;
+  max-height: 120px;
+  object-fit: contain;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 6px #00000088);
+}
+.icon-card-label {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #40E0D0;
+  text-shadow: 0 0 4px #40E0D0;
+}
+.icon-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 22px #40E0D0;
+}
+.icon-card a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+}
+
+<style>
+  .text-glow {
+    color: #40E0D0;
+    text-shadow: 0 0 8px #40E0D0, 0 0 14px #40E0D0aa;
+  }
+
+  .text-tiffany {
+    color: #40E0D0;
+  }
+
+  .btn-glow {
+    background-color: #40E0D0;
+    color: #0f172a;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0 12px #40E0D0aa;
+    transition: all 0.3s ease;
+  }
+
+  .btn-glow:hover {
+    background-color: #2fd4c5;
+    box-shadow: 0 0 16px #40E0D0;
+    transform: scale(1.05);
+  }
+
+  .premium-code-container {
+    background: #0b1e2d;
+    border: 1px solid #40E0D0;
+    border-radius: 12px;
+    padding: 16px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 0 10px #40E0D0aa;
+  }
+
+  .roadmap-highlight .text-light {
+    font-size: 0.92rem;
+  }
+  .text-glow {
+  color: #00ffe7;
+  text-shadow: 0 0 6px #00ffe7;
+}
+
+.border-tiffany {
+  border-color: #40e0d0 !important;
+}
+
+.text-tiffany {
+  color: #40e0d0 !important;
+}
+
+.qr-image {
+  box-shadow: 0 0 12px rgba(64, 224, 208, 0.5);
+}
+
+.qr-wrapper {
+  position: relative;
+}
+
+.qr-logo {
+  box-shadow: 0 0 10px rgba(0, 255, 231, 0.6);
+}
+
+</style>
+
+</style>
+    
+
+
+    
+</style>
+{% endblock %}

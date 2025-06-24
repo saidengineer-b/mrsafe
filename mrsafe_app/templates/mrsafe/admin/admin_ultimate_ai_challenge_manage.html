@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-danger glow-title mb-4">🤖 Ultimate AI Challenge Manager</h2>
+
+    <div class="text-end mb-3">
+        <a href="{% url 'quiz_app:manage_challenges' %}" class="btn btn-primary">➕ Create New Challenge</a>
+    </div>
+
+    {% if ultimate_ai_challenges %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover text-center bg-dark text-light">
+            <thead class="table-danger text-dark">
+                <tr>
+                    <th>🎯 Title</th>
+                    <th>⚙️ Difficulty</th>
+                    <th>👤 Created By</th>
+                    <th>🛠️ Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for challenge in ultimate_ai_challenges %}
+                <tr>
+                    <td>{{ challenge.title }}</td>
+                    <td>{{ challenge.difficulty }}</td>
+                    <td>{{ challenge.created_by.username }}</td>
+                    <td>
+                        <a href="{% url 'quiz_app:edit_challenge' challenge.id %}" class="btn btn-warning btn-sm">✏️ Edit</a>
+                        <form action="{% url 'quiz_app:ultimate_ai_challenge_delete' challenge.id %}" method="post" style="display:inline;" onsubmit="return confirm('Are you sure?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">🚫 No challenges available.</div>
+    {% endif %}
+</div>
+
+<style>
+.glow-title {
+    text-shadow: 0 0 8px #ff4444aa;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

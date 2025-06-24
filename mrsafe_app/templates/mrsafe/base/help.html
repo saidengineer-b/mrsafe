@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Help Center - QuizAI{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <!-- 🔹 Header -->
+  <h1 class="text-center text-tiffany fw-bold neon-text mb-3">💬 Help Center</h1>
+  <p class="text-center text-white-50 fs-5 mb-4">
+    Need help? You're in the right place! Browse our FAQs or 
+    <a href="{% url 'quiz_app:contact' %}" class="link-tiffany">contact our team</a>.
+  </p>
+
+  <!-- 🔹 Table of Contents -->
+  <div class="summary bg-dark-blue border-tiffany shadow-lg p-4 rounded">
+    <h4 class="text-tiffany fw-bold mb-3"><i class="fas fa-list me-2"></i>Table of Contents</h4>
+    <ul class="ps-3">
+      <li><i class="fas fa-play-circle text-warning me-2"></i><a href="#getting-started" class="link-tiffany">Getting Started</a></li>
+      <li><i class="fas fa-user-circle text-warning me-2"></i><a href="#account" class="link-tiffany">Account & Login</a></li>
+      <li><i class="fas fa-coins text-warning me-2"></i><a href="#coins" class="link-tiffany">Coins & Payment</a></li>
+      <li><i class="fas fa-question-circle text-warning me-2"></i><a href="#quizzes" class="link-tiffany">Quizzes & Categories</a></li>
+      <li><i class="fas fa-tools text-warning me-2"></i><a href="#errors" class="link-tiffany">Common Issues</a></li>
+      <li><i class="fas fa-envelope text-warning me-2"></i><a href="{% url 'quiz_app:contact' %}" class="link-tiffany">Contact Support</a></li>
+    </ul>
+  </div>
+
+  <!-- 🔹 FAQ Sections -->
+  <section id="getting-started" class="faq-section">
+    <h2 class="section-title">🚀 Getting Started with QuizAI</h2>
+    <h5 class="question">How do I start using the app?</h5>
+    <p class="answer">Create a free account or log in. Then start exploring quizzes or generating lessons!</p>
+  </section>
+
+  <section id="account" class="faq-section">
+    <h2 class="section-title">🔐 Account and Login</h2>
+    <h5 class="question">I forgot my password. What should I do?</h5>
+    <p class="answer">Click <strong>"Forgot Password"</strong> on the login screen and follow the reset instructions.</p>
+
+    <h5 class="question">Can I update my email?</h5>
+    <p class="answer">Yes, go to your <strong>Profile Settings</strong> and change it anytime.</p>
+  </section>
+
+  <section id="coins" class="faq-section">
+    <h2 class="section-title">💰 Coins and Payment</h2>
+    <h5 class="question">How do I buy coins?</h5>
+    <p class="answer">Go to <strong>Balance</strong> and purchase using Google Pay or PayPal.</p>
+
+    <h5 class="question">I paid but didn't receive my coins</h5>
+    <p class="answer">Ensure you're online. If it persists, <a href="{% url 'quiz_app:contact' %}" class="link-tiffany">contact support</a>.</p>
+  </section>
+
+  <section id="quizzes" class="faq-section">
+    <h2 class="section-title">📚 Quizzes and Categories</h2>
+    <h5 class="question">How do I choose quiz types?</h5>
+    <p class="answer">From the homepage, pick a category like IQ, Science, Safety, etc.</p>
+
+    <h5 class="question">Can I retake a quiz?</h5>
+    <p class="answer">Yes, replay any quiz to improve your score or practice more.</p>
+  </section>
+
+  <section id="errors" class="faq-section">
+    <h2 class="section-title">⚠️ Common Issues</h2>
+    <h5 class="question">The app isn’t loading</h5>
+    <p class="answer">Make sure you have internet and the latest app version.</p>
+
+    <h5 class="question">I can’t log in</h5>
+    <p class="answer">Check your email and password, or use "Forgot Password".</p>
+  </section>
+
+  <section id="contact" class="faq-section text-white">
+    <h2 class="section-title">📞 Still Need Help?</h2>
+    <p>We’re here to help! <a href="{% url 'quiz_app:contact' %}" class="link-tiffany">Contact our support team</a> — we usually reply within 24 hours.</p>
+  </section>
+
+  <!-- 🔹 Footer Note -->
+  <footer class="text-center mt-5 text-white-50">
+    <p><em>This Help Center is continuously updated based on your feedback. Thank you for using <span class="text-tiffany fw-bold">QuizAI</span>!</em></p>
+  </footer>
+</div>
+
+<!-- ✅ Styling -->
+<style>
+  body {
+    background-color: #0f2027;
+    color: #f8f9fa;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .text-tiffany {
+    color: #00e6e6 !important;
+  }
+
+  .link-tiffany {
+    color: #00e6e6 !important;
+    text-decoration: none;
+  }
+
+  .link-tiffany:hover {
+    text-decoration: underline;
+  }
+
+  .neon-text {
+    text-shadow: 0 0 6px #00ffe6, 0 0 10px #00fff7;
+  }
+
+  .bg-dark-blue {
+    background-color: #1b263b;
+  }
+
+  .faq-section {
+    background-color: #1a1a1a;
+    border-left: 4px solid #00e6e6;
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 40px;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.08);
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    color: #00e6e6;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .question {
+    color: #f0f0f0;
+    font-size: 1.1rem;
+    margin-top: 1.2rem;
+  }
+
+  .answer {
+    color: #dcdcdc;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .summary ul {
+    list-style: none;
+    padding-left: 0;
+    font-size: 1rem;
+  }
+
+  .summary li {
+    margin-bottom: 10px;
+  }
+
+  footer {
+    font-size: 0.9rem;
+    color: #aab8c2;
+  }
+</style>
+{% endblock %}

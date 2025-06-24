@@ -1,0 +1,9 @@
+<!-- quiz_app/Ai_lab/error.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container text-center my-5">
+  <h2 class="text-danger fw-bold">⚠️ Something Went Wrong</h2>
+  <p class="text-light">{{ message|default:"Sorry, we couldn't process your request." }}</p>
+  <a href="javascript:history.back()" class="btn btn-secondary mt-3">🔙 Go Back</a>
+</div>
+{% endblock %}

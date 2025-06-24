@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4 px-2">
+    <h3 class="text-primary text-center">💳 Full Payment History</h3>
+
+    <div class="d-flex justify-content-between mb-3">
+        <form method="get" class="d-flex align-items-center gap-2">
+            <label for="per_page" class="text-white">Show</label>
+            <select name="per_page" id="per_page" onchange="this.form.submit()" class="form-select form-select-sm bg-dark text-white border-secondary" style="width: auto;">
+                <option value="10" {% if per_page == '10' %}selected{% endif %}>10</option>
+                <option value="20" {% if per_page == '20' %}selected{% endif %}>20</option>
+                <option value="50" {% if per_page == '50' %}selected{% endif %}>50</option>
+                <option value="1000" {% if per_page == '1000' %}selected{% endif %}>All</option>
+            </select>
+        </form>
+        <input class="form-control form-control-sm bg-dark text-white border-secondary" id="searchInput" type="text" placeholder="🔍 Filter... (method, notes)">
+    </div>
+
+    <div class="table-responsive">
+        <table id="paymentTable" class="table table-dark table-hover table-bordered text-white">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in page_obj %}
+                <tr>
+                    <td>{{ tx.created_at|date:"Y-m-d H:i" }}</td>
+                    <td><strong>{{ tx.amount }} {{ tx.currency }}</strong></td>
+                    <td class="text-info">{{ tx.get_payment_method_display }}</td>
+                    <td>
+                        {% if tx.status == "Success" %}
+                            <span class="badge bg-success">✅ {{ tx.status }}</span>
+                        {% else %}
+                            <span class="badge bg-danger">❌ {{ tx.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ tx.notes|default:"-" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-3">
+        <ul class="pagination pagination-sm">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&per_page={{ per_page }}">« Prev</a></li>
+            {% endif %}
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&per_page={{ per_page }}">Next »</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+
+<!-- Search Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('searchInput');
+        const table = document.getElementById('paymentTable');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        input.addEventListener('input', () => {
+            const search = input.value.toLowerCase();
+            for (let row of rows) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(search) ? '' : 'none';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

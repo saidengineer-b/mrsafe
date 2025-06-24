@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+{% load widget_tweaks %}
+
+{% block title %}➕ Add Premium Plan{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+            <h4 class="mb-0">➕ Add New Premium Plan</h4>
+        </div>
+        <div class="card-body px-5 py-4">
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Plan Name -->
+                <!-- Plan Name -->
+                <div class="mb-4">
+                    <label for="id_name" class="form-label">💎 Plan Name</label>
+                    {{ form.name|add_class:"form-select" }}
+                </div>
+
+
+                <!-- Duration -->
+                <div class="mb-4">
+                    <label for="id_duration_days" class="form-label">📆 Duration (in days)</label>
+                    {{ form.duration_days|add_class:"form-control" }}
+                </div>
+
+                <!-- Coin Bonus -->
+                <div class="mb-4">
+                    <label for="id_coin_bonus" class="form-label">🪙 Coin Bonus</label>
+                    {{ form.coin_bonus|add_class:"form-control" }}
+                </div>
+
+                <!-- Price -->
+                <div class="mb-4">
+                    <label for="id_price" class="form-label">💵 Price (USD)</label>
+                    {{ form.price|add_class:"form-control" }}
+                </div>
+
+                <!-- Is Active Checkbox -->
+                <div class="mb-4 d-flex align-items-center">
+                    {{ form.is_active|add_class:"form-check-input" }}
+                    <label class="form-check-label ms-2" for="id_is_active">✅ Active</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+                    💾 Save Premium Plan
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-label {
+        font-weight: 600;
+    }
+    .form-check-input {
+        transform: scale(1.4);
+        margin-right: 8px;
+    }
+</style>
+{% endblock %}

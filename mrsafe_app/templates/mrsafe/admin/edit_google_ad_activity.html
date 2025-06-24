@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Google Ad Activity</h2>
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="name">Activity Context</label>
+            <select name="name" id="name" class="form-select" required>
+                <option value="quiz_start" {% if activity.name == 'quiz_start' %}selected{% endif %}>Start Free Quiz</option>
+                <option value="quiz_result" {% if activity.name == 'quiz_result' %}selected{% endif %}>View Quiz Results</option>
+                <option value="quiz_review" {% if activity.name == 'quiz_review' %}selected{% endif %}>Review Quiz (Non-Premium)</option>
+                <option value="game_over" {% if activity.name == 'game_over' %}selected{% endif %}>Game Over Screen</option>
+                <option value="level_up" {% if activity.name == 'level_up' %}selected{% endif %}>Level Up Screen</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="ad_type">Ad Type</label>
+            <select name="ad_type" id="ad_type" class="form-select" required>
+                <option value="display" {% if activity.ad_type == 'display' %}selected{% endif %}>Display Ad</option>
+                <option value="video" {% if activity.ad_type == 'video' %}selected{% endif %}>Video Ad</option>
+                <option value="rewarded" {% if activity.ad_type == 'rewarded' %}selected{% endif %}>Rewarded Ad</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="start_date">Start Date</label>
+            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ activity.start_date|date:'Y-m-d' }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="end_date">End Date</label>
+            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ activity.end_date|date:'Y-m-d' }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="is_active">Is Active?</label>
+            <select name="is_active" id="is_active" class="form-select">
+                <option value="True" {% if activity.is_active %}selected{% endif %}>Yes</option>
+                <option value="False" {% if not activity.is_active %}selected{% endif %}>No</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+        <a href="{% url 'quiz_app:admin_dashboard' %}" class="btn btn-secondary">↩️ Cancel</a>
+    </form>
+</div>
+{% endblock %}

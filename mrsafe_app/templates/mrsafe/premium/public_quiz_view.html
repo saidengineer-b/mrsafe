@@ -1,0 +1,877 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- 🌟 Floating Particles Background -->
+<div id="particles-js" style="position:fixed; width:100%; height:100%; z-index:-1;"></div>
+
+<!-- 🚀 Main Quiz Container -->
+<div class="container mt-5 px-4 py-5 rounded-4 cosmic-card" style="max-width: 800px;">
+    <!-- 🎯 Quiz Header with Animated Title -->
+    <div class="text-center mb-4">
+        <h2 class="text-gradient fw-bold cosmic-title" data-text="{{ quiz.title }}">📖 {{ quiz.title }}</h2>
+        <p class="cosmic-description">{{ quiz.description }}</p>
+        
+        <!-- ⏳ Quiz Timer (New Feature) -->
+        <div class="timer-container mb-3" style="display: none;">
+            <div class="timer-progress">
+                <div class="timer-bar"></div>
+                <span class="timer-text">00:00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📱 QR Code Section with Animation -->
+    <div class="qr-section text-center my-4">
+        <h5 class="text-gradient mb-3">📲 Share this Quiz</h5>
+        <div class="qr-container">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ public_quiz_url|urlencode }}" 
+                 alt="QR Code" class="qr-code img-thumbnail">
+            <div class="qr-hover-effect"></div>
+        </div>
+        <p class="mt-2"><a href="{{ public_quiz_url }}" target="_blank" class="text-gradient cosmic-link">{{ public_quiz_url }}</a></p>
+    </div>
+
+    <!-- 🔊 Interactive Controls -->
+    <div class="control-panel text-center mb-4">
+        <button id="read-aloud" class="btn cosmic-btn cosmic-btn-primary me-2">
+            <span class="btn-icon">🔊</span>
+            <span class="btn-text">Read Aloud</span>
+        </button>
+        <button id="stop-reading" class="btn cosmic-btn cosmic-btn-danger me-2" style="display:none;">
+            <span class="btn-icon">⏹️</span>
+            <span class="btn-text">Stop</span>
+        </button>
+        <button id="dark-mode-toggle" class="btn cosmic-btn cosmic-btn-secondary">
+            <span class="btn-icon">🌓</span>
+            <span class="btn-text">Dark/Light</span>
+        </button>
+    </div>
+
+    <!-- 📝 Quiz Form with Enhanced UI -->
+    <form method="post" action="{% url 'quiz_app:public_quiz' quiz.id %}" id="quiz-form">
+        {% csrf_token %}
+        
+        <!-- Pagination Controls -->
+        <div class="pagination-controls d-flex justify-content-between mb-4">
+
+        </div>
+        
+        <!-- Questions Container -->
+        <div class="questions-container">
+            {% for question in questions %}
+                <div class="cosmic-question mb-4 question-page" data-question-id="{{ question.id }}" style="display: {% if forloop.first %}block{% else %}none{% endif %}">
+                    <!-- 🖼️ Question Media (Supports images/videos) -->
+                    {% if question.image %}
+                        <div class="question-media text-center mt-2">
+                            {% if question.image.url|slice:'-4:' == '.mp4' %}
+                                <video controls class="img-fluid mb-3 cosmic-media">
+                                    <source src="{{ question.image.url }}" type="video/mp4">
+                                </video>
+                            {% else %}
+                                <img src="{{ question.image.url }}" alt="Question Image" class="img-fluid mb-3 cosmic-media" onerror="this.style.display='none'">
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- ❓ Question Text -->
+                    <h5 class="question-text cosmic-question-text">
+                        <span class="question-number">{{ forloop.counter }}.</span>
+                        <span class="mathjax">{{ question.text|safe }}</span>
+                    </h5>
+                    
+                    <!-- 📌 Choices with Interactive Effects -->
+                    <div class="choices-container mt-3">
+                        {% for choice in question.choices.all %}
+                            <div class="cosmic-choice">
+                                <input class="cosmic-radio" type="radio" name="question_{{ question.id }}" 
+                                       id="choice_{{ choice.id }}" value="{{ choice.id }}" required>
+                                <label for="choice_{{ choice.id }}" class="cosmic-choice-label mathjax">
+                                    <span class="choice-letter">{{ forloop.counter|stringformat:"c"|upper }}.</span>
+                                    {{ choice.text|safe }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- ℹ️ Explanation (Hidden until submission) -->
+                    <div class="explanation-container" style="display: none;">
+                        <div class="cosmic-explanation">
+                            <h6>Explanation:</h6>
+                            <p class="explanation-text">{{ question.explanation|default:"No explanation provided." }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination Controls -->
+        <div class="pagination-controls d-flex justify-content-between mt-4">
+            <button type="button" class="btn cosmic-btn cosmic-btn-secondary prev-btn" disabled>
+                <span class="btn-icon">⬅️</span>
+                <span class="btn-text">Previous</span>
+            </button>
+            <span class="page-indicator">Question <span class="current-page">1</span> of {{ questions|length }}</span>
+            <button type="button" class="btn cosmic-btn cosmic-btn-secondary next-btn">
+                <span class="btn-icon">➡️</span>
+                <span class="btn-text">Next</span>
+            </button>
+        </div>
+        
+        <!-- 🎯 Submit Button with Confirmation -->
+        <button type="submit" class="btn cosmic-btn cosmic-btn-submit w-100 mt-4">
+            <span class="btn-icon">🚀</span>
+            <span class="btn-text">Submit Quiz</span>
+        </button>
+    </form>
+    
+    <!-- 🏆 Results Modal (Hidden) -->
+    <div class="cosmic-modal" id="results-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Quiz Results</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="result-graphic">
+                    <svg class="result-circle" viewBox="0 0 36 36">
+                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                        <path class="circle-fill" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    </svg>
+                    <div class="result-percent">0%</div>
+                </div>
+                <div class="result-details"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn cosmic-btn cosmic-btn-primary review-btn">Review Answers</button>
+                <button class="btn cosmic-btn cosmic-btn-secondary share-btn">Share Results</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 📚 Scripts and Styles -->
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script type="text/javascript" async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+    // 🎆 Initialize Particles.js and all other functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Particles.js initialization
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#40E0D0" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: "#40E0D0", opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out" }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" }
+                }
+            }
+        });
+        
+        // 🌓 Dark/Light Mode Toggle
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('light-mode');
+                this.querySelector('.btn-icon').textContent = document.body.classList.contains('light-mode') ? '🌙' : '🌓';
+            });
+        }
+        
+        // 🔉 Read Aloud Functionality
+        const readAloudBtn = document.getElementById('read-aloud');
+        const stopReadingBtn = document.getElementById('stop-reading');
+        if (readAloudBtn && stopReadingBtn) {
+            let speechSynthesis = window.speechSynthesis;
+            let currentUtterance = null;
+            let isReading = false;
+            
+            readAloudBtn.addEventListener('click', function() {
+                if (isReading) return;
+                
+                const currentQuestion = document.querySelector('.question-page[style*="display: block"]');
+                if (!currentQuestion) return;
+                
+                const questionText = currentQuestion.querySelector('.question-text').textContent;
+                const choices = Array.from(currentQuestion.querySelectorAll('.cosmic-choice-label')).map(label => label.textContent.trim());
+                
+                const textToRead = questionText + '\n\nChoices:\n' + choices.join('\n');
+                
+                currentUtterance = new SpeechSynthesisUtterance(textToRead);
+                currentUtterance.onend = function() {
+                    isReading = false;
+                    readAloudBtn.style.display = 'inline-block';
+                    stopReadingBtn.style.display = 'none';
+                };
+                
+                speechSynthesis.speak(currentUtterance);
+                isReading = true;
+                readAloudBtn.style.display = 'none';
+                stopReadingBtn.style.display = 'inline-block';
+            });
+            
+            stopReadingBtn.addEventListener('click', function() {
+                if (speechSynthesis.speaking) {
+                    speechSynthesis.cancel();
+                    isReading = false;
+                    readAloudBtn.style.display = 'inline-block';
+                    stopReadingBtn.style.display = 'none';
+                }
+            });
+        }
+        
+        // ⏳ Timer Functionality
+        const timerContainer = document.querySelector('.timer-container');
+        if (timerContainer) {
+            const timerBar = document.querySelector('.timer-bar');
+            const timerText = document.querySelector('.timer-text');
+            
+            document.querySelectorAll('.cosmic-radio').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (!timerContainer.style.display || timerContainer.style.display === 'none') {
+                        startTimer(15 * 60); // 15 minutes timer
+                    }
+                });
+            });
+            
+            function startTimer(duration) {
+                timerContainer.style.display = 'block';
+                let timer = duration, minutes, seconds;
+                const interval = setInterval(function() {
+                    minutes = parseInt(timer / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+                    
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+                    
+                    timerText.textContent = minutes + ":" + seconds;
+                    timerBar.style.width = (timer / duration * 100) + "%";
+                    
+                    if (--timer < 0) {
+                        clearInterval(interval);
+                        document.getElementById('quiz-form').submit();
+                    }
+                }, 1000);
+            }
+        }
+        
+        // 🎯 Form Submission
+        const quizForm = document.getElementById('quiz-form');
+        if (quizForm) {
+            quizForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Collect all answers
+                const formData = new FormData(quizForm);
+                const answers = {};
+                
+                for (let [key, value] of formData.entries()) {
+                    if (key.startsWith('question_')) {
+                        answers[key] = value;
+                    }
+                }
+                
+                // Check if all questions are answered
+                const totalQuestions = document.querySelectorAll('.question-page').length;
+                if (Object.keys(answers).length < totalQuestions) {
+                    alert('Please answer all questions before submitting!');
+                    return;
+                }
+                
+                // Submit the form
+                quizForm.submit();
+            });
+        }
+        
+        // 💫 Choice Hover Effects
+        document.querySelectorAll('.cosmic-choice-label').forEach(label => {
+            label.addEventListener('mouseenter', function() {
+                this.parentElement.style.transform = 'translateX(5px)';
+            });
+            label.addEventListener('mouseleave', function() {
+                this.parentElement.style.transform = 'translateX(0)';
+            });
+        });
+        
+        // 📖 Pagination Functionality - FIXED VERSION
+        const questions = document.querySelectorAll('.question-page');
+        const prevBtns = document.querySelectorAll('.prev-btn');
+        const nextBtns = document.querySelectorAll('.next-btn');
+        const pageIndicators = document.querySelectorAll('.current-page');
+        
+        if (questions.length > 0 && prevBtns.length > 0 && nextBtns.length > 0) {
+            let currentPage = 1;
+            
+            function updatePagination() {
+                // Show/hide questions
+                questions.forEach((question, index) => {
+                    question.style.display = (index + 1 === currentPage) ? 'block' : 'none';
+                });
+                
+                // Update page indicators
+                pageIndicators.forEach(indicator => {
+                    indicator.textContent = currentPage;
+                });
+                
+                // Enable/disable buttons
+                const isFirstPage = currentPage === 1;
+                const isLastPage = currentPage === questions.length;
+                
+                prevBtns.forEach(btn => {
+                    btn.disabled = isFirstPage;
+                });
+                
+                nextBtns.forEach(btn => {
+                    btn.disabled = isLastPage;
+                });
+            }
+            
+            // Previous button event listeners
+            prevBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (currentPage > 1) {
+                        currentPage--;
+                        updatePagination();
+                        
+                        // Scroll to top of questions
+                        window.scrollTo({
+                            top: document.querySelector('.questions-container').offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Next button event listeners
+            nextBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (currentPage < questions.length) {
+                        currentPage++;
+                        updatePagination();
+                        
+                        // Scroll to top of questions
+                        window.scrollTo({
+                            top: document.querySelector('.questions-container').offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Initialize pagination
+            updatePagination();
+        }
+        
+        // 🌌 Cosmic Typing Effect for Title
+        document.querySelectorAll('.cosmic-title').forEach(title => {
+            const text = title.getAttribute('data-text');
+            title.innerHTML = '';
+            
+            for (let i = 0; i < text.length; i++) {
+                setTimeout(() => {
+                    const span = document.createElement('span');
+                    span.textContent = text[i];
+                    span.style.opacity = '0';
+                    span.style.transition = `opacity 0.3s ease ${i * 0.05}s, transform 0.3s ease ${i * 0.05}s`;
+                    title.appendChild(span);
+                    
+                    setTimeout(() => {
+                        span.style.opacity = '1';
+                        span.style.transform = 'translateY(0)';
+                    }, 50);
+                }, i * 100);
+            }
+        });
+    });
+</script>
+
+<style>
+    /* 🌌 Cosmic Base Styles with Improved Contrast */
+    :root {
+        --cosmic-primary: #40E0D0;
+        --cosmic-secondary: #9370DB;
+        --cosmic-danger: #FF6B6B;
+        --cosmic-dark: #0a0f1c;
+        --cosmic-darker: #060913;
+        --cosmic-light: #f8f9fa;
+        --cosmic-card-bg: rgba(10, 15, 28, 0.95);
+        --cosmic-text: #ffffff;
+        --cosmic-text-light: #e0e0e0;
+        --cosmic-text-dark: #212529;
+        --cosmic-border: rgba(64, 224, 208, 0.3);
+    }
+    
+    .light-mode {
+        --cosmic-dark: #f8f9fa;
+        --cosmic-darker: #e9ecef;
+        --cosmic-card-bg: rgba(248, 249, 250, 0.95);
+        --cosmic-text: #212529;
+        --cosmic-text-light: #495057;
+        --cosmic-text-dark: #212529;
+        --cosmic-border: rgba(0, 0, 0, 0.1);
+    }
+    
+    body {
+        background-color: var(--cosmic-dark);
+        color: var(--cosmic-text);
+        font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+        line-height: 1.6;
+        transition: all 0.3s ease;
+    }
+    
+    /* 🪐 Cosmic Card */
+    .cosmic-card {
+        background: var(--cosmic-card-bg);
+        border: 1px solid var(--cosmic-primary);
+        box-shadow: 0 0 30px rgba(64, 224, 208, 0.3);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+    
+    .cosmic-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(64, 224, 208, 0.1) 0%, transparent 70%);
+        z-index: -1;
+        animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* 🌠 Text Gradients */
+    .text-gradient {
+        background: linear-gradient(90deg, #40E0D0, #9370DB);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+    
+    /* 🚀 Cosmic Buttons */
+    .cosmic-btn {
+        position: relative;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .cosmic-btn-primary {
+        background: linear-gradient(45deg, #40E0D0, #20B2AA);
+        color: var(--cosmic-darker);
+        box-shadow: 0 4px 15px rgba(64, 224, 208, 0.4);
+    }
+    
+    .cosmic-btn-secondary {
+        background: linear-gradient(45deg, #9370DB, #8A2BE2);
+        color: white;
+        box-shadow: 0 4px 15px rgba(147, 112, 219, 0.4);
+    }
+    
+    .cosmic-btn-danger {
+        background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+        color: white;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+    }
+    
+    .cosmic-btn-submit {
+        background: linear-gradient(45deg, #FF8C00, #FFD700);
+        color: var(--cosmic-darker);
+        box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+        font-size: 1.1rem;
+        padding: 15px 30px;
+    }
+    
+    .cosmic-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(64, 224, 208, 0.6);
+    }
+    
+    .cosmic-btn:active {
+        transform: translateY(1px);
+    }
+    
+    .cosmic-btn .btn-icon {
+        margin-right: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .cosmic-btn:hover .btn-icon {
+        transform: scale(1.2);
+    }
+    
+    /* 📱 QR Code Section */
+    .qr-section {
+        position: relative;
+        padding: 20px;
+        border-radius: 12px;
+        background: rgba(16, 25, 47, 0.7);
+        margin: 20px 0;
+        border: 1px solid var(--cosmic-border);
+    }
+    
+    .qr-container {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .qr-code {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .qr-hover-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(64, 224, 208, 0.4) 0%, transparent 70%);
+        border-radius: 12px;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .qr-container:hover .qr-hover-effect {
+        opacity: 1;
+    }
+    
+    .qr-container:hover .qr-code {
+        transform: scale(1.05);
+    }
+    
+    /* 📝 Quiz Questions */
+    .cosmic-question {
+        background: rgba(16, 25, 47, 0.8);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-left: 4px solid var(--cosmic-primary);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--cosmic-border);
+    }
+    
+    .cosmic-question:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(64, 224, 208, 0.2);
+    }
+    
+    .cosmic-question::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(64, 224, 208, 0.1) 0%, transparent 100%);
+        z-index: -1;
+    }
+    
+    .cosmic-question-text {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+        position: relative;
+        padding-left: 30px;
+        color: var(--cosmic-text);
+    }
+    
+    .cosmic-description {
+        color: var(--cosmic-text-light);
+        font-size: 1rem;
+    }
+    
+    .question-number {
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-weight: bold;
+        color: var(--cosmic-primary);
+    }
+    
+    /* 📌 Choices */
+    .cosmic-choice {
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .cosmic-choice-label {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-radius: 8px;
+        background: rgba(64, 224, 208, 0.15);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--cosmic-text);
+    }
+    
+    .cosmic-choice-label:hover {
+        background: rgba(64, 224, 208, 0.25);
+    }
+    
+    .choice-letter {
+        font-weight: bold;
+        color: var(--cosmic-primary);
+        margin-right: 10px;
+    }
+    
+    .cosmic-radio {
+        display: none;
+    }
+    
+    .cosmic-radio:checked + .cosmic-choice-label {
+        background: rgba(64, 224, 208, 0.35);
+        box-shadow: 0 0 0 2px var(--cosmic-primary);
+    }
+    
+    /* 🖼️ Media Elements */
+    .cosmic-media {
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        max-height: 300px;
+        object-fit: contain;
+        transition: all 0.3s ease;
+        border: 1px solid var(--cosmic-border);
+    }
+    
+    .cosmic-media:hover {
+        transform: scale(1.02);
+    }
+    
+    /* ⏳ Timer */
+    .timer-container {
+        background: rgba(16, 25, 47, 0.8);
+        padding: 10px;
+        border-radius: 50px;
+        margin: 0 auto 20px;
+        max-width: 300px;
+        border: 1px solid var(--cosmic-border);
+    }
+    
+    .timer-progress {
+        height: 30px;
+        background: rgba(64, 224, 208, 0.15);
+        border-radius: 15px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .timer-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(90deg, #40E0D0, #20B2AA);
+        border-radius: 15px;
+        transition: width 1s linear;
+    }
+    
+    .timer-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-weight: bold;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* 🏆 Results Modal */
+    .cosmic-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+    
+    .modal-content {
+        background: var(--cosmic-card-bg);
+        border-radius: 15px;
+        width: 90%;
+        max-width: 500px;
+        overflow: hidden;
+        box-shadow: 0 0 30px rgba(64, 224, 208, 0.5);
+        animation: modalFadeIn 0.4s ease-out;
+    }
+    
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(-50px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-header {
+        padding: 20px;
+        background: linear-gradient(90deg, #40E0D0, #9370DB);
+        color: var(--cosmic-darker);
+    }
+    
+    .modal-title {
+        margin: 0;
+        font-weight: 700;
+    }
+    
+    .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--cosmic-darker);
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .result-graphic {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        position: relative;
+    }
+    
+    .result-circle {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .circle-bg {
+        fill: none;
+        stroke: #eee;
+        stroke-width: 3;
+    }
+    
+    .circle-fill {
+        fill: none;
+        stroke: #40E0D0;
+        stroke-width: 3;
+        stroke-linecap: round;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+        transition: stroke-dasharray 1s ease-out;
+    }
+    
+    .result-percent {
+        position: absolute;
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--cosmic-primary);
+    }
+    
+    /* 🔗 Links */
+    .cosmic-link {
+        text-decoration: none;
+        font-weight: 600;
+        position: relative;
+        padding-bottom: 2px;
+    }
+    
+    .cosmic-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #40E0D0, #9370DB);
+        transition: width 0.3s ease;
+    }
+    
+    .cosmic-link:hover::after {
+        width: 100%;
+    }
+    
+    /* ✨ MathJax Overrides */
+    .mathjax {
+        font-style: normal !important;
+        font-weight: normal;
+    }
+    
+    /* 📖 Pagination Controls */
+    .pagination-controls {
+        background: rgba(16, 25, 47, 0.7);
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid var(--cosmic-border);
+    }
+    
+    .page-indicator {
+        font-weight: 600;
+        color: var(--cosmic-primary);
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    /* 📱 Responsive Design */
+    @media (max-width: 768px) {
+        .cosmic-card {
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .cosmic-btn {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .cosmic-question {
+            padding: 15px;
+        }
+        
+        .cosmic-choice-label {
+            padding: 10px;
+        }
+        
+        .pagination-controls {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .page-indicator {
+            order: -1;
+        }
+    }
+</style>
+{% endblock %}

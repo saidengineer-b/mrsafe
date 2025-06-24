@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+  <div class="edit-profile-box text-center p-4 rounded-4 shadow position-relative">
+
+    <!-- Glowing Profile Photo -->
+    <div class="profile-photo-wrapper mb-3">
+      {% if user.profile_photo %}
+        <img src="{{ user.profile_photo.url }}" alt="Profile Photo" class="profile-photo-glow">
+      {% else %}
+        <img src="{% static 'images/default.jpg' %}" alt="Default Profile Photo" class="profile-photo-glow">
+      {% endif %}
+    </div>
+
+    <!-- Username -->
+    <h3 class="glow-text mb-3">{{ user.username }}</h3>
+
+    <!-- Form -->
+    <form method="POST" enctype="multipart/form-data" class="text-start">
+      {% csrf_token %}
+
+      <div class="form-group mb-3">
+        <label for="id_first_name">First Name</label>
+        {{ form.first_name }}
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="id_last_name">Last Name</label>
+        {{ form.last_name }}
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="id_email">Email</label>
+        {{ form.email }}
+      </div>
+
+      <div class="form-group mb-4">
+        <label for="id_profile_photo">Profile Photo</label>
+        {{ form.profile_photo }}
+      </div>
+
+      <div class="btn-group d-flex justify-content-center gap-3 flex-wrap">
+        <button type="submit" class="btn-save">💾 Save</button>
+        <a href="{% url 'quiz_app:profile' %}" class="btn-cancel">❌ Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+body {
+  background-color: #0a0f1c;
+  color: #ffffff;
+}
+
+.edit-profile-box {
+  background-color: #0d111c;
+  border: 1px solid #00ffff33;
+  box-shadow: 0 0 15px #00ffff22;
+  max-width: 500px;
+  width: 100%;
+}
+
+.profile-photo-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-photo-glow {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #40e0d0;
+  box-shadow: 0 0 25px #40e0d0aa;
+  object-fit: cover;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-photo-glow:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px #40e0d0ff;
+}
+
+.glow-text {
+  color: #40e0d0;
+  text-shadow: 0 0 6px #40e0d0;
+  font-weight: bold;
+}
+
+label {
+  font-weight: bold;
+  color: #40e0d0;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #121821;
+  color: #ffffff;
+  border: 1px solid #40e0d0;
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px #40e0d044;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="file"]:focus {
+  outline: none;
+  border-color: #00ffff;
+  box-shadow: 0 0 8px #40e0d0aa;
+}
+
+.btn-save,
+.btn-cancel {
+  padding: 10px 24px;
+  font-weight: bold;
+  border-radius: 25px;
+  border: none;
+  color: #0a0f1c;
+  background: linear-gradient(90deg, #40e0d0, #00ffff);
+  box-shadow: 0 0 10px #40e0d088;
+  transition: 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-save:hover,
+.btn-cancel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px #40e0d0dd;
+}
+
+.btn-cancel {
+  background: linear-gradient(90deg, #ff4c4c, #ff8080);
+  color: white;
+}
+
+@media (max-width: 600px) {
+  .profile-photo-glow {
+    width: 100px;
+    height: 100px;
+  }
+
+  .btn-save,
+  .btn-cancel {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+</style>
+{% endblock %}

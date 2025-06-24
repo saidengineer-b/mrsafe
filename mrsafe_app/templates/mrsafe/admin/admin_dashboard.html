@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-info glow-title mb-5">⚙️ Admin Dashboard</h2>
+
+    <!-- 🌟 Metrics -->
+    <div class="row text-center mb-5">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-lg border-0 bg-gradient-primary text-white p-4">
+                <h5>👥 Total Users</h5>
+                <h3>{{ total_users }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-lg border-0 bg-gradient-success text-white p-4">
+                <h5>📖 Total Courses</h5>
+                <h3>{{ total_courses }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-lg border-0 bg-gradient-info text-white p-4">
+                <h5>🛍️ Store Items</h5>
+                <h3>{{ total_items }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-lg border-0 bg-gradient-danger text-white p-4">
+                <h5>🧠 Total Quizzes</h5>
+                <h3>{{ total_quizzes }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🌐 Admin Control Center -->
+    <h3 class="text-center text-light mb-4 glow-subtitle">🧭 Control Panel</h3>
+    <div class="admin-icon-grid">
+
+        {% comment "🔹 Main Admin Items - Reusable Block" %}
+        {% for item in admin_items %}
+            <a href="{% url item.url %}" class="admin-icon-link">
+                <div class="admin-icon-card">
+                    <img src="{% static item.icon %}" class="admin-icon-img" alt="{{ item.label }}">
+                    <p class="admin-icon-label">{{ item.label }}</p>
+                </div>
+            </a>
+        {% endfor %}
+        {% endcomment %}
+
+        <!-- ✅ Individual Cards -->
+        <a href="{% url 'quiz_app:user_management' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_users.png' %}" alt="Users" class="admin-icon-img">
+                <p class="admin-icon-label">Users</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:manage_categories' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_category_icon.png' %}" alt="Categories" class="admin-icon-img">
+                <p class="admin-icon-label">Categories</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:course_management' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_courses_icon.png' %}" alt="Courses" class="admin-icon-img">
+                <p class="admin-icon-label">Courses</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:admin_manage_masterit_sessions' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_masterit_icon.png' %}" alt="MasterIt" class="admin-icon-img">
+                <p class="admin-icon-label">MasterIt</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:quiz_manage' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_quizzes_icon.png' %}" alt="Quizzes" class="admin-icon-img">
+                <p class="admin-icon-label">Quizzes</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:ultimate_ai_challenge_manage' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_ai_challenge_icon.png' %}" alt="AI Challenges" class="admin-icon-img">
+                <p class="admin-icon-label">AI Challenges</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:admin_question_bank_manage' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_question_banks_icon.png' %}" alt="Question Banks" class="admin-icon-img">
+                <p class="admin-icon-label">Question Banks</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:store_manage' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_store_icon.png' %}" alt="Store" class="admin-icon-img">
+                <p class="admin-icon-label">Store</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:coin_manage' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_coins_icon.png' %}" alt="Coins" class="admin-icon-img">
+                <p class="admin-icon-label">Coins</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:premium_plan_manage' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_premium_icon.png' %}" alt="Premium" class="admin-icon-img">
+                <p class="admin-icon-label">Premium Plans</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:admin_reward_manage' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_reward_icon.png' %}" alt="Rewards" class="admin-icon-img">
+                <p class="admin-icon-label">Rewards</p>
+            </div>
+        </a>
+        <a href="{% url 'quiz_app:google_ads_manage' %}" class="admin-icon-link">
+            <div class="admin-icon-card">
+                <img src="{% static 'images/admin_google_ads_icon.png' %}" alt="Google Ads" class="admin-icon-img">
+                <p class="admin-icon-label">Google Ads</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- 🌟 Dashboard Styling -->
+<style>
+.glow-title {
+    font-weight: bold;
+    text-shadow: 0 0 10px #00ffffaa;
+}
+.glow-subtitle {
+    font-weight: 600;
+    text-shadow: 0 0 6px #00ffff88;
+}
+
+/* Grid Layout */
+.admin-icon-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center;
+}
+
+.admin-icon-card {
+    background: #1a1a1a;
+    border: 1px solid #00ffff33;
+    box-shadow: 0 0 15px #00ffff22;
+    border-radius: 12px;
+    text-align: center;
+    padding: 20px 15px;
+    width: 160px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.admin-icon-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 18px #00ffff66;
+}
+
+.admin-icon-img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 12px;
+}
+
+.admin-icon-label {
+    color: #00ffff;
+    font-weight: bold;
+    text-shadow: 0 0 4px #00ffff55;
+}
+
+/* Colored Card Gradients */
+.bg-gradient-primary { background: linear-gradient(45deg, #007bff, #00bfff); }
+.bg-gradient-success { background: linear-gradient(45deg, #28a745, #85e085); }
+.bg-gradient-info { background: linear-gradient(45deg, #17a2b8, #66d9e8); }
+.bg-gradient-danger { background: linear-gradient(45deg, #dc3545, #ff7675); }
+
+@media (max-width: 768px) {
+    .admin-icon-card {
+        width: 120px;
+        padding: 15px 10px;
+    }
+
+    .admin-icon-img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .admin-icon-label {
+        font-size: 0.85rem;
+    }
+}
+</style>
+{% endblock %}

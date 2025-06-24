@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="fw-bold text-center mb-4">🧑‍🎓 Manage Linked Users & Groups</h2>
+
+    <div class="accordion" id="premiumAccordion">
+        <!-- 🧑‍🎓 Manage Linked Users -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingLinkedUsers">
+                <button class="accordion-button bg-success text-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLinkedUsers">
+                    🧑‍🎓 Manage Linked Users
+                </button>
+            </h2>
+            <div id="collapseLinkedUsers" class="accordion-collapse collapse show" data-bs-parent="#premiumAccordion">
+                <div class="accordion-body">
+
+                    <!-- ✅ Linked Users Table -->
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th>Username</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for trainee in available_trainees %}
+                            <tr>
+                                <td>{{ trainee.username }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'quiz_app:view_performance' trainee.id %}" class="btn btn-info btn-sm">📊 View Performance</a>
+                                    <a href="{% url 'quiz_app:assign_quiz' trainee.id %}" class="btn btn-warning btn-sm">📌 Assign Quiz</a>
+                                    <form action="{% url 'quiz_app:remove_linked_user' trainee.id %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Remove this trainee?')">❌ Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">🚫 No trainees linked yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <!-- ✅ Group Creation -->
+                    <h4 class="mt-5 fw-bold">👥 Create a New Group</h4>
+                    <form method="POST" action="{% url 'quiz_app:create_group' %}" class="d-flex mt-3">
+                        {% csrf_token %}
+                        <input type="text" name="group_name" class="form-control me-2" placeholder="Enter Group Name" required>
+                        <button type="submit" class="btn btn-success">➕ Create Group</button>
+                    </form>
+
+                    <!-- ✅ Manage Groups -->
+                    <h4 class="mt-5 fw-bold">👥 Manage Groups</h4>
+                    <table class="table table-bordered mt-3">
+                        <thead class="table-dark text-center">
+                            <tr>
+                                <th>Group Name</th>
+                                <th>Members</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for group in groups %}
+                            <tr>
+                                <td>{{ group.name }}</td>
+                                <td>
+                                    {% if group.memberships.all %}
+                                        {% for membership in group.memberships.all %}
+                                            {{ membership.trainee.username }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">No members</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'quiz_app:assign_quiz_group' group.id %}" class="btn btn-warning btn-sm">📌 Assign Quiz</a>
+                                    <a href="{% url 'quiz_app:add_members_to_group' group.id %}" class="btn btn-info btn-sm">➕ Add Members</a>
+                                    <a href="{% url 'quiz_app:delete_group' group.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this group?')">❌ Delete</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">🚫 No groups created yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

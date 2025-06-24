@@ -1,0 +1,38 @@
+<!-- quiz_app/templates/quiz_app/public_quiz_summary.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="card mt-4 p-4 shadow-sm">
+    <h4 class="text-center text-secondary">📊  Quiz Stats</h4>
+
+    {% if quiz_summaries %}
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered table-hover text-center align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>🆔 Quiz ID</th>
+                    <th>📖 Quiz Title</th>
+                    <th>📅 Last Attempt</th>
+                    <th>👥 Completions</th>
+                    <th>🔍 Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quiz_summaries %}
+                <tr>
+                    <td>{{ quiz.quiz_id }}</td>
+                    <td>{{ quiz.title }}</td>
+                    <td>{{ quiz.last_attempt|date:"F d, Y H:i" }}</td>
+                    <td><span class="badge bg-primary">{{ quiz.completion_count }}</span></td>
+                    <td>
+                        <a href="{% url 'quiz_app:public_quiz_stats' quiz.quiz_id %}" class="btn btn-outline-info btn-sm">Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-center text-muted mt-3">🚫 No quiz summaries found.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary fw-bold">📖 My Assigned Quizzes</h2>
+    <p class="text-muted text-center">Explore and take quizzes assigned to you.</p>
+
+    {% if assigned_quizzes %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-4">
+        {% for quiz in assigned_quizzes %}
+        <div class="col">
+            <div class="card quiz-card shadow-lg border-0">
+                <img src="{{ quiz.photo.url }}" class="card-img-top quiz-image" alt="{{ quiz.title }}">
+                <div class="card-body text-center">
+                    <h5 class="card-title fw-bold">{{ quiz.title }}</h5>
+                    <p class="badge bg-secondary p-2">Level: {{ quiz.get_level_display }}</p>
+                    <p class="badge bg-warning p-2">🪙 {{ quiz.coins }} Coins</p>
+                    <div class="mt-3">
+                        <a href="{% url 'quiz_take' quiz.id %}" class="btn btn-success w-100 fw-bold">📝 Take Quiz</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center mt-5">
+        <img src="https://cdn-icons-png.flaticon.com/512/2748/2748558.png" width="150" alt="No quizzes">
+        <h4 class="text-muted mt-3">🚫 No quizzes assigned to you yet.</h4>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    /* 🔹 Styling for the quiz cards */
+    .quiz-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .quiz-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .quiz-image {
+        height: 180px;
+        object-fit: cover;
+        border-bottom: 4px solid #007bff;
+    }
+
+    .btn-success {
+        background: linear-gradient(45deg, #28a745, #218838);
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
+        transition: 0.3s;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(45deg, #218838, #1e7e34);
+        transform: scale(1.05);
+    }
+
+    .badge {
+        font-size: 14px;
+        border-radius: 8px;
+    }
+
+</style>
+{% endblock %}

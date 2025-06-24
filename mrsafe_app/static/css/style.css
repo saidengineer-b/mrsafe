@@ -1,0 +1,41 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">  <!-- Default theme -->
+
+{% if request.session.theme %}
+    <link rel="stylesheet" href="{% static 'css/' %}{{ request.session.theme }}-theme.css">
+{% endif %}
+
+
+
+{% if request.session.theme == "kids" %}
+    <link rel="stylesheet" href="{% static 'css/kids-theme.css' %}">
+{% elif request.session.theme == "doctors" %}
+    <link rel="stylesheet" href="{% static 'css/doctors-theme.css' %}">
+{% elif request.session.theme == "engineers" %}
+    <link rel="stylesheet" href="{% static 'css/engineers-theme.css' %}">
+{% elif request.session.theme == "sports" %}
+    <link rel="stylesheet" href="{% static 'css/sports-theme.css' %}">
+{% elif request.session.theme == "girls" %}
+    <link rel="stylesheet" href="{% static 'css/girls-theme.css' %}">
+{% elif request.session.theme == "general" %}
+    <link rel="stylesheet" href="{% static 'css/general-theme.css' %}">
+{% endif %}
+
+body {
+    background-color: lightgray;
+    color: black;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.test-box {
+    width: 300px;
+    height: 100px;
+    background-color: blue;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    border-radius: 10px;
+}

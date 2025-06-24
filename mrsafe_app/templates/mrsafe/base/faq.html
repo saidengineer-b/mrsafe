@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}FAQ - QuizAI{% endblock %}
+
+{% block content %}
+<div class="container my-5 text-white">
+  
+  <!-- 🔹 Header -->
+  <div class="text-center mb-4">
+    <h1 class="text-tiffany fw-bold display-5 neon-text">❓ FAQ - QuizAI</h1>
+    <p class="text-tiffany fs-5">
+      Find answers to common questions. Still need help?
+      <a href="{% url 'quiz_app:contact' %}" class="link-tiffany">Contact us</a>.
+    </p>
+  </div>
+
+  <!-- 🔹 FAQ Sections -->
+  <div class="faq-section">
+
+    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
+      <h3 class="text-tiffany fw-bold mb-2">💡 What is QuizAI?</h3>
+      <p class="text-light">QuizAI is a fun and interactive platform that lets you test your knowledge across various topics through quizzes. You can earn coins, improve your score, and challenge your friends!</p>
+    </div>
+
+    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
+      <h3 class="text-tiffany fw-bold mb-2">💰 How do I earn coins?</h3>
+      <p class="text-light">You can earn coins by completing quizzes and challenges. Coins can be used to purchase additional features or unlock new content.</p>
+    </div>
+
+    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
+      <h3 class="text-tiffany fw-bold mb-2">🔑 How do I reset my password?</h3>
+      <p class="text-light">If you've forgotten your password, click on <strong>"Forgot Password"</strong> on the login page. We'll send you a link to reset it.</p>
+    </div>
+
+    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
+      <h3 class="text-tiffany fw-bold mb-2">📞 How do I contact support?</h3>
+      <p class="text-light">If you're facing any issues or have questions, contact us through our <a href="{% url 'quiz_app:contact' %}" class="link-tiffany">support page</a>.</p>
+    </div>
+
+  </div>
+
+  <!-- 🔹 Footer Note -->
+  <footer class="text-center mt-5">
+    <p class="text-tiffany fs-6">
+      <em class="text-tiffany">We continuously update our FAQ based on user feedback. Thank you for being part of QuizAI!</em>
+    </p>
+  </footer>
+
+</div>
+
+<!-- 🔹 Custom Style -->
+<style>
+  body {
+    background-color: #0a0f2c;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .text-tiffany {
+    color: #40E0D0 !important;
+  }
+
+  .link-tiffany {
+    color: #40E0D0;
+    text-decoration: none;
+  }
+
+  .link-tiffany:hover {
+    color: #30bfbf;
+    text-decoration: underline;
+  }
+
+  .neon-text {
+    text-shadow: 0 0 8px #40E0D0, 0 0 16px #30bfbf;
+  }
+
+  .faq-section h3 {
+    font-size: 1.4rem;
+  }
+
+  .faq-section p {
+    font-size: 1rem;
+  }
+
+  .bg-dark {
+    background-color: #1a1a2e !important;
+  }
+</style>
+{% endblock %}

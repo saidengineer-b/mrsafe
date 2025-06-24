@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-glow mb-4">🌍 {{ quiz.title }} - Public Quiz Stats</h2>
+
+    <!-- 🔢 Stats Overview -->
+    <div class="row g-3 text-center mb-4">
+        <div class="col-md-3">
+            <div class="stat-box border-blue">
+                <div class="stat-label">📋 Total Attempts</div>
+                <div class="stat-value">{{ total_attempts }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box border-green">
+                <div class="stat-label">✅ Passed</div>
+                <div class="stat-value">{{ total_passed }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box border-red">
+                <div class="stat-label">❌ Failed</div>
+                <div class="stat-value">{{ total_failed }}</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box border-yellow">
+                <div class="stat-label">📈 Avg. Score</div>
+                <div class="stat-value">
+                    {% if average_score %}{{ average_score|floatformat:2 }}%{% else %}N/A{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📊 Public Results Table -->
+    <div class="card bg-dark text-white shadow-sm p-4 mt-4">
+        <h4 class="text-success text-center mb-3">📝 Public Quiz Attempts</h4>
+        <div class="table-responsive">
+            <table id="publicTable" class="table glowing-table table-hover text-center w-100">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>🆔 Session</th>
+                        <th>📊 Score</th>
+                        <th>✅ Result</th>
+                        <th>📅 Date</th>
+                        <th>🔍 Review</th>  <!-- New column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ r.session_id }}</td>
+                        <td><strong>{{ r.score }}</strong></td>
+                        <td>{% if r.passed %}<span class="text-success">Pass ✅</span>{% else %}<span class="text-danger">Fail ❌</span>{% endif %}</td>
+                        <td>{{ r.timestamp|date:"M d, Y - h:i A" }}</td>
+                        <td>
+                            <a href="{% url 'quiz_app:review_public_quiz_result' r.id %}" class="btn btn-sm btn-outline-info">🔍 Review</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center text-muted">🚫 No public results found.</td></tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>
+    </div>
+
+    <!-- 📈 Charts -->
+    <div class="row mt-5 g-4">
+        <div class="col-md-6">
+            <div class="card p-4 bg-dark text-white shadow">
+                <h5 class="text-center text-success">✅ Pass/Fail Distribution</h5>
+                <canvas id="publicPassFailChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-4 bg-dark text-white shadow">
+                <h5 class="text-center text-success">📊 Score Distribution</h5>
+                <canvas id="publicScoreChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Assets -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<!-- ✅ Init Scripts -->
+<script>
+    new DataTable('#publicTable', {
+        dom: 'Bfrtip',
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+        pageLength: 5,
+        lengthMenu: [5, 10, 15, 25]
+    });
+
+    // 📊 Public Pass/Fail Chart
+    new Chart(document.getElementById("publicPassFailChart"), {
+        type: 'doughnut',
+        data: {
+            labels: ['✅ Passed', '❌ Failed'],
+            datasets: [{
+                data: [{{ total_passed }}, {{ total_failed }}],
+                backgroundColor: ['#28a745', '#dc3545']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    // 📊 Public Score Distribution Chart
+    const scoreData = {{ score_data|safe }};
+    new Chart(document.getElementById("publicScoreChart"), {
+        type: 'bar',
+        data: {
+            labels: Object.keys(scoreData),
+            datasets: [{
+                label: 'Users per Score',
+                data: Object.values(scoreData),
+                backgroundColor: '#00f2fe'
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: 'Users' }},
+                x: { title: { display: true, text: 'Score' }}
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+</script>
+
+<!-- ✅ Styling -->
+<style>
+    .text-glow {
+        color: #17e3ff;
+        text-shadow: 0 0 6px #17e3ff;
+        font-weight: 700;
+    }
+
+    .stat-box {
+        background-color: #1a1c20;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        color: #ccc;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    .border-blue { border: 2px solid #00f2ff; }
+    .border-green { border: 2px solid #28a745; }
+    .border-red { border: 2px solid #ff4c4c; }
+    .border-yellow { border: 2px solid #f0c23e; }
+
+    .glowing-table th {
+        background-color: #1c1e22;
+        color: #00f2fe;
+    }
+
+    .glowing-table td {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
+
+    .dt-button {
+        background-color: #00f2fe;
+        color: #000;
+        border: none;
+        border-radius: 6px;
+        margin: 2px;
+    }
+
+    .dataTables_wrapper select,
+    .dataTables_wrapper input {
+        background-color: #1a1c1f;
+        color: #fff;
+        border: 1px solid #444;
+    }
+</style>
+{% endblock %}

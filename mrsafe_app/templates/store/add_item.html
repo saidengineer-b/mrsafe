@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5 add-item-container">
+    <h2 class="text-center text-gradient">✨ Add New Store Item ✨</h2>
+
+    <div class="form-card shadow-lg p-4">
+        <form method="POST" enctype="multipart/form-data" class="store-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_name">📝 Item Name</label>
+                {{ form.name }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_description">📄 Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_price">💰 Price</label>
+                {{ form.price }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_item_type">📦 Item Type</label>
+                {{ form.item_type }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_coins_amount">🪙 Coin Amount (if applicable)</label>
+                {{ form.coins_amount }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_image">🖼️ Upload Image</label>
+                {{ form.image }}
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-success btn-animated">✅ Add Item</button>
+                <a href="{% url 'quiz_app:store' %}" class="btn btn-secondary btn-animated">🔙 Back to Store</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+/* ... (same styles as before, no changes needed) ... */
+</style>
+
+
+
+<!-- 🌟 CSS Styling -->
+<style>
+    body {
+        background: linear-gradient(135deg, #f8f9fa, #e0eafc);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .add-item-container {
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .text-gradient {
+        background: linear-gradient(90deg, #007bff, #00d4ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: bold;
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        transition: transform 0.3s ease-in-out;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .form-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-weight: bold;
+        color: #007bff;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    textarea,
+    input[type="number"],
+    select,
+    input[type="file"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        transition: border 0.3s ease;
+        background: #f9f9f9;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    input[type="number"]:focus,
+    select:focus,
+    input[type="file"]:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+    }
+
+    .btn-group {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .btn-animated {
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: transform 0.3s ease, background 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-animated:hover {
+        transform: translateY(-3px);
+    }
+
+    .btn-success {
+        background: linear-gradient(90deg, #28a745, #85e085);
+        color: white;
+        border: none;
+    }
+
+    .btn-success:hover {
+        background: linear-gradient(90deg, #218838, #70db70);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(90deg, #6c757d, #aab2bd);
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background: linear-gradient(90deg, #5a6268, #939ba3);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .btn-animated {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+{% endblock %}

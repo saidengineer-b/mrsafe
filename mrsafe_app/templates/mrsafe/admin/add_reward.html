@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5 p-4 bg-white shadow-lg rounded">
+    <h2 class="text-center text-primary fw-bold">🏆 Add New Reward</h2>
+
+    <!-- ✅ Display Messages -->
+    {% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ✅ Add Reward Form -->
+    <form method="post" action="{% url 'quiz_app:add_reward' %}">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="name" class="form-label fw-bold">🏅 Reward Name:</label>
+            {{ form.name }}
+        </div>
+
+        <div class="mb-3">
+            <label for="reward_type" class="form-label fw-bold">🎖️ Reward Type:</label>
+            {{ form.reward_type }}
+        </div>
+
+        <div class="mb-3">
+            <label for="challenge_type" class="form-label fw-bold">🔥 Challenge Type:</label>
+            {{ form.challenge_type }}
+        </div>
+
+        <div class="mb-3">
+            <label for="required_points" class="form-label fw-bold">🎯 Required Points:</label>
+            {{ form.required_points }}
+        </div>
+
+        <button type="submit" class="btn btn-success w-100 mt-3">💾 Save Reward</button>
+        <a href="{% url 'quiz_app:manage_rewards' %}" class="btn btn-secondary w-100 mt-2">⬅️ Back to Rewards</a>
+    </form>
+</div>
+
+<!-- ✅ Custom Styling -->
+<style>
+    .container {
+        max-width: 600px;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+        color: #1A237E;
+    }
+
+    .btn {
+        font-size: 1.1rem;
+        font-weight: bold;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+{% endblock %}

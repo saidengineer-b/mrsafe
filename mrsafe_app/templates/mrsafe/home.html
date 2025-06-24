@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %} Home - Quiz App {% endblock %}
+
+{% block content %}
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4893531235466621"
+     crossorigin="anonymous"></script>
+     <div class="container-fluid px-3">
+
+        <!-- ✅ Floating Header -->
+        <div class="d-flex justify-content-between align-items-center sticky-top bg-dark py-3 px-3 shadow-sm" style="z-index: 1050;">
+            <div class="text-white fw-bold fs-4 glow-tiffany">QuizAI</div>
+            <div>
+                <a href="{% url 'quiz_app:store' %}" class="btn btn-outline-info btn-sm me-2">🛍 Store</a>
+                <a href="{% url 'quiz_app:profile' %}" class="btn btn-outline-info btn-sm">👤 {{ user.username }}</a>
+            </div>
+        </div>
+    
+        <!-- ✅ Welcome -->
+        <div class="text-white mt-4 mb-3">
+            <h2 class="glow-tiffany">👋 Welcome, {{ user.username }}</h2>
+            <p class="text-light">Let’s keep learning smartly and competitively!</p>
+        </div>
+
+
+<!-- ✅ Master It Section (Full Width) -->
+<div class="container-fluid mt-4 px-3">
+    <div class="bg-dark p-4 rounded-4 shadow text-center" style="
+        border: 1px solid #40E0D0;
+        box-shadow: 0 0 12px #40E0D044;
+    ">
+        <img src="{% static 'images/masterit_placeholder.png' %}" class="img-fluid rounded mb-3" style="max-height: 300px;" alt="Master It">
+        <h3 class="glow-tiffany">📚 Master It</h3>
+        <p class="text-light">Personalized AI-powered lesson builder</p>
+        <a href="{% url 'quiz_app:masterit_start' %}" class="btn btn-outline-info mt-2">🚀 Start Mastering</a>
+    </div>
+</div>
+
+
+
+<!-- ✅ Lessons and Quizzes Centered -->
+<div class="container mt-5">
+    <!-- Lessons -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="glow-tiffany">📘 My Lessons</h4>
+        <a href="{% url 'quiz_app:masterit_start' %}" class="text-info small fw-bold">➕ Create</a>
+    </div>
+    <div class="d-flex overflow-auto scroll-section gap-3 mb-4">
+        {% for session in my_sessions %}
+        <div class="card rounded bg-dark text-light shadow-sm" style="min-width: 260px;">
+            {% if session.thumbnail %}
+            <img src="{{ session.thumbnail.url }}" class="card-img-top" alt="Lesson Thumbnail">
+        {% else %}
+            <img src="{% static 'images/quizai-logo.png' %}" class="card-img-top" alt="Default Lesson">
+        {% endif %}
+        
+            <div class="card-body">
+                <h6 class="glow-tiffany">{{ session.topic }}</h6>
+                <p class="text-muted small">📅 {{ session.created_at|date:"M d, Y" }} • 📦 {{ session.total_lessons_count }} lessons</p>
+                <a href="{% url 'quiz_app:view_lesson' session.id 1 %}" class="btn btn-outline-info btn-sm w-100">▶️ Continue</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+<div class="container-fluid mt-5 px-4">
+    <h4 class="glow-tiffany mb-4 text-center">⚔️ QuizAI Challenges</h4>
+    <div class="d-flex overflow-auto gap-3 scroll-section pb-2">
+            <!-- AI Challenge -->
+        <div class="card bg-dark text-white shadow" style="min-width: 280px;">
+            <img src="{% static 'images/ai_challenge_placeholder.jpg' %}" class="card-img-top" alt="AI Challenge">
+            <div class="card-body text-center">
+                <h5 class="card-title">🤖 AI Challenge</h5>
+                <a href="{% url 'quiz_app:ai_challenge' %}" class="btn btn-outline-info w-100">🚀 Start</a>
+            </div>
+        </div>
+
+        <!-- Ultimate AI Challenge -->
+        <div class="card bg-dark text-white shadow" style="min-width: 280px;">
+            <img src="{% static 'images/banner_placeholder.jpg' %}" class="card-img-top" alt="Ultimate AI">
+            <div class="card-body text-center">
+                <h5 class="card-title">💡 Ultimate AI</h5>
+                <a href="{% url 'quiz_app:ultimate_ai_challenge_home' %}" class="btn btn-outline-warning w-100">🔥 Go Ultimate</a>
+            </div>
+        </div>
+
+        <!-- PvP Challenge -->
+        <div class="card bg-dark text-white shadow" style="min-width: 280px;">
+            <img src="{% static 'images/PvPchallenge.jpg' %}" class="card-img-top" alt="PvP Challenge">
+            <div class="card-body text-center">
+                <h5 class="card-title">⚔️ PvP Match</h5>
+                {% if some_game %}
+                    <a href="{% url 'quiz_app:pvp_game' game_id=some_game.id %}" class="btn btn-outline-light w-100">🔥 Continue Match</a>
+                {% else %}
+                    <a href="{% url 'quiz_app:create_pvp_game' %}" class="btn btn-outline-success w-100">➕ Create Match</a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    <!-- Quizzes -->
+    <div class="d-flex justify-content-between align-items-center mb-2 mt-5">
+        <h4 class="glow-tiffany">📝 My Quizzes</h4>
+        <a href="{% url 'quiz_app:quiz_list' %}" class="text-info small fw-bold">🔍 View All</a>
+    </div>
+    <div class="d-flex overflow-auto scroll-section gap-3 mb-4">
+        {% for quiz in free_quizzes %}
+        <div class="card rounded bg-dark text-light shadow-sm" style="min-width: 260px;">
+            <img src="{{ quiz.photo.url }}" class="card-img-top" alt="{{ quiz.title }}" style="height: 150px; object-fit: cover;">
+            <div class="card-body">
+                <h6 class="glow-tiffany">{{ quiz.title }}</h6>
+                <p class="text-muted small">{{ quiz.description|truncatechars:50 }}</p>
+                <a href="{% url 'quiz_app:quiz_take' quiz.id %}" class="btn btn-outline-success btn-sm w-100">🚀 Start</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+    <!-- ✅ Leaderboard -->
+    <div class="accordion mt-4" id="leaderboardAccordion">
+        <div class="accordion-item bg-dark text-white border-0">
+            <h2 class="accordion-header" id="headingLeaderboard">
+                <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLeaderboard" aria-expanded="false">
+                    📊 View Leaderboard
+                </button>
+            </h2>
+            <div id="collapseLeaderboard" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <table class="table table-bordered table-dark table-hover text-center">
+                        <thead>
+                            <tr><th>#</th><th>User</th><th>Score</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in leaderboard %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ entry.user.username }}</td>
+                                <td>{{ entry.total_score }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3">No data</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</script>
+
+
+<div class="mt-5 ai-disclaimer">
+    <h5 class="fw-bold mb-2">⚠️ Disclaimer & Important Notice</h5>
+    <p class="mb-0">
+        All quizzes, lessons, and certificates on this platform are AI-generated and for
+        educational and recreational purposes only. They do not represent accredited
+        certifications.
+    </p>
+</div>
+
+<!-- ✅ Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+<style>
+    .glow-tiffany {
+        color: #40E0D0;
+        text-shadow: 0 0 4px #40E0D0, 0 0 8px #40E0D0;
+    }
+    .scroll-section::-webkit-scrollbar {
+        height: 8px;
+    }
+    .scroll-section::-webkit-scrollbar-thumb {
+        background-color: #40E0D0;
+        border-radius: 4px;
+    }
+    
+
+    .accordion-button:not(.collapsed) {
+        color: #40E0D0;
+        background-color: #0a0a23;
+    }
+
+    .card img {
+        object-fit: cover;
+        height: 150px;
+    }
+
+    .card {
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: scale(1.03);
+    }
+    
+    .ai-disclaimer {
+        background: #1a1a1a;
+        border: 1px solid #FFD700;
+        border-radius: 15px;
+        color: #ffc107;
+        padding: 1.5rem;
+        font-family: 'Segoe UI', sans-serif;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    }
+    .ai-disclaimer h5 {
+        color: #ffcc00;
+    }
+    .ai-disclaimer p {
+        color: #f5c542;
+    }
+    
+</style>
+{% endblock %}
