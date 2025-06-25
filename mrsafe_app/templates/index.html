@@ -1,21 +1,163 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block extra_head %}
-    <!-- Additional meta tags -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="AI-powered safety inspections that save time and prevent accidents. Get instant hazard analysis from site photos.">
-    <meta property="og:title" content="Mr. Safe – AI Safety Inspection App">
-    <meta property="og:description" content="Your AI-powered partner for fast, smart safety inspections">
-    <meta property="og:image" content="{% static 'images/mrsafe-og-image.jpg' %}">
-    
-    <!-- Font Awesome for additional icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Animate.css for animations -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    
-    <!-- Custom styles -->
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section animate__animated animate__fadeIn">
+    <div class="container">
+        <h1 class="hero-title">AI-Powered Safety Inspections</h1>
+        <p class="hero-subtitle">Transform site photos into comprehensive safety reports with our advanced computer vision technology</p>
+        
+        <div class="stats-container">
+            <div class="stat-item animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">Accuracy Rate</div>
+            </div>
+            <div class="stat-item animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="stat-number">30s</div>
+                <div class="stat-label">Average Analysis Time</div>
+            </div>
+            <div class="stat-item animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="stat-number">10,000+</div>
+                <div class="stat-label">Hazards Detected</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="main-content">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card animate__animated animate__fadeInUp">
+                <div class="feature-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3 class="feature-title">1. Capture Site Photos</h3>
+                <p class="feature-text">Simply take photos of your worksite using your smartphone or upload existing images from your device.</p>
+            </div>
+            
+            <div class="feature-card animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-title">2. AI Analysis</h3>
+                <p class="feature-text">Our advanced neural networks scan for hundreds of potential safety hazards and compliance issues.</p>
+            </div>
+            
+            <div class="feature-card animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="feature-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3 class="feature-title">3. Instant Report</h3>
+                <p class="feature-text">Receive a detailed PDF report with prioritized risks and recommended corrective actions.</p>
+            </div>
+        </div>
+
+        <div class="video-container animate__animated animate__fadeIn animate__delay-1s">
+            <video controls poster="{% static 'images/video-poster.jpg' %}">
+                <source src="{% static 'images/mr-safe-demo.mp4' %}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">Ready to Transform Your Safety Process?</h2>
+        <p class="cta-text">Join hundreds of safety professionals who save hours each week with automated inspections</p>
+        <a href="{% url 'mrsafe_app:inspect' %}" class="cta-button animate__animated animate__pulse animate__infinite">Start Free Trial</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Mr. Safe</h3>
+                <p>AI-powered safety inspections that save time and prevent accidents on worksites worldwide.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Features</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Hazard Detection</a></li>
+                    <li><a href="#">Compliance Checking</a></li>
+                    <li><a href="#">Report Generation</a></li>
+                    <li><a href="#">Team Collaboration</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Company</h3>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Safety Guides</a></li>
+                    <li><a href="#">API Documentation</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2025 MrSafe.me – All rights reserved. | <a href="{% url 'mrsafe_app:privacy_policy' %}" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> | <a href="{% url 'mrsafe_app:terms_and_conditions' %}" style="color: rgba(255,255,255,0.7);">Terms of Service</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Animation triggers
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate elements when they come into view
+        const animateOnScroll = function() {
+            const elements = document.querySelectorAll('.animate__animated');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementPosition < windowHeight - 100) {
+                    const animationClass = element.classList[1];
+                    element.classList.add(animationClass);
+                }
+            });
+        };
+        
+        // Run on load and scroll
+        animateOnScroll();
+        window.addEventListener('scroll', animateOnScroll);
+        
+        // Video play/pause icon toggle
+        const video = document.querySelector('video');
+        if (video) {
+            video.addEventListener('play', function() {
+                this.setAttribute('data-playing', 'true');
+            });
+            
+            video.addEventListener('pause', function() {
+                this.removeAttribute('data-playing');
+            });
+        }
+    });
+</script>
+
     <style>
         :root {
             --primary: #4361ee;
@@ -385,164 +527,6 @@
             }
         }
     </style>
-{% endblock %}
 
-{% block content %}
-    <!-- Hero Section -->
-    <section class="hero-section animate__animated animate__fadeIn">
-        <div class="container">
-            <h1 class="hero-title">AI-Powered Safety Inspections</h1>
-            <p class="hero-subtitle">Transform site photos into comprehensive safety reports with our advanced computer vision technology</p>
-            
-            <div class="stats-container">
-                <div class="stat-item animate__animated animate__fadeInUp animate__delay-1s">
-                    <div class="stat-number">98%</div>
-                    <div class="stat-label">Accuracy Rate</div>
-                </div>
-                <div class="stat-item animate__animated animate__fadeInUp animate__delay-1s">
-                    <div class="stat-number">30s</div>
-                    <div class="stat-label">Average Analysis Time</div>
-                </div>
-                <div class="stat-item animate__animated animate__fadeInUp animate__delay-1s">
-                    <div class="stat-number">10,000+</div>
-                    <div class="stat-label">Hazards Detected</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="container">
-            <h2 class="section-title">How It Works</h2>
-            
-            <div class="features-grid">
-                <div class="feature-card animate__animated animate__fadeInUp">
-                    <div class="feature-icon">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <h3 class="feature-title">1. Capture Site Photos</h3>
-                    <p class="feature-text">Simply take photos of your worksite using your smartphone or upload existing images from your device.</p>
-                </div>
-                
-                <div class="feature-card animate__animated animate__fadeInUp animate__delay-1s">
-                    <div class="feature-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3 class="feature-title">2. AI Analysis</h3>
-                    <p class="feature-text">Our advanced neural networks scan for hundreds of potential safety hazards and compliance issues.</p>
-                </div>
-                
-                <div class="feature-card animate__animated animate__fadeInUp animate__delay-2s">
-                    <div class="feature-icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <h3 class="feature-title">3. Instant Report</h3>
-                    <p class="feature-text">Receive a detailed PDF report with prioritized risks and recommended corrective actions.</p>
-                </div>
-            </div>
-
-            <div class="video-container animate__animated animate__fadeIn animate__delay-1s">
-                <video controls poster="{% static 'images/video-poster.jpg' %}">
-                    <source src="{% static 'images/mr-safe-demo.mp4' %}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-        </div>
-    </div>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="container">
-            <h2 class="cta-title">Ready to Transform Your Safety Process?</h2>
-            <p class="cta-text">Join hundreds of safety professionals who save hours each week with automated inspections</p>
-            <a href="{% url 'mrsafe_app:inspect' %}" class="cta-button animate__animated animate__pulse animate__infinite">Start Free Trial</a>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>Mr. Safe</h3>
-                    <p>AI-powered safety inspections that save time and prevent accidents on worksites worldwide.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h3>Features</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Hazard Detection</a></li>
-                        <li><a href="#">Compliance Checking</a></li>
-                        <li><a href="#">Report Generation</a></li>
-                        <li><a href="#">Team Collaboration</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Company</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Careers</a></li>
-                        <li><a href="#">Press</a></li>
-                        <li><a href="#">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Resources</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Safety Guides</a></li>
-                        <li><a href="#">API Documentation</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="copyright">
-                &copy; 2025 MrSafe.me – All rights reserved. | <a href="{% url 'mrsafe_app:privacy_policy' %}" style="color: rgba(255,255,255,0.7);">Privacy Policy</a> | <a href="{% url 'mrsafe_app:terms_and_conditions' %}" style="color: rgba(255,255,255,0.7);">Terms of Service</a>
-            </div>
-        </div>
-    </footer>
-{% endblock %}
-
-{% block extra_scripts %}
-    <script>
-        // Animation triggers
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate elements when they come into view
-            const animateOnScroll = function() {
-                const elements = document.querySelectorAll('.animate__animated');
-                
-                elements.forEach(element => {
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const windowHeight = window.innerHeight;
-                    
-                    if (elementPosition < windowHeight - 100) {
-                        const animationClass = element.classList[1];
-                        element.classList.add(animationClass);
-                    }
-                });
-            };
-            
-            // Run on load and scroll
-            animateOnScroll();
-            window.addEventListener('scroll', animateOnScroll);
-            
-            // Video play/pause icon toggle
-            const video = document.querySelector('video');
-            if (video) {
-                video.addEventListener('play', function() {
-                    this.setAttribute('data-playing', 'true');
-                });
-                
-                video.addEventListener('pause', function() {
-                    this.removeAttribute('data-playing');
-                });
-            }
-        });
-    </script>
+  
 {% endblock %}
