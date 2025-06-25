@@ -1,46 +1,33 @@
 """
-Django settings for mrsafe.
+Django settings for Mr. Safe
 """
 
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import dj_database_url
 
+# ✅ Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(dotenv_path=BASE_DIR / ".env")  # ✅ Proper call
 
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+# ✅ Load .env ONLY for local development
+load_dotenv(dotenv_path=BASE_DIR / ".env")
 
+# ✅ Environment Variables
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-strong-default-secret-key")
+DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 
-
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-# ✅ Ensure OpenAI API Key is set
 if not OPENAI_API_KEY:
-    print("[ERROR] OpenAI API Key is missing or not loaded!")
+    print("[ERROR] OpenAI API Key is missing!")
 else:
-    print(f"[DEBUG] OpenAI API Key Loaded: {OPENAI_API_KEY[:5]}... (Masked for Security)")
+    print(f"[DEBUG] OpenAI Key Loaded: {OPENAI_API_KEY[:5]}...")
 
-# ✅ Custom User Model
-AUTH_USER_MODEL = "mrsafe_app.CustomUser"
-
-# ✅ Security settings
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-strong-secret-key")  # Use env variable
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"  # Environment-based debug mode
-
-# ✅ Allowed Hosts
-ALLOWED_HOSTS = [
-    "192.168.1.73", "192.168.1.78", "192.168.3.39",
-    "192.168.1.202", "166.87.229.1", "localhost", "127.0.0.1", "*"
-]
-
-# ✅ Installed Apps
+# ✅ Installed apps
 INSTALLED_APPS = [
-    # ✅ Ensure this is FIRST
-    
-    "mrsafe_app",  # ✅ Correct app name
+    "mrsafe_app",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -48,21 +35,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "widget_tweaks",
-      # ✅ Correctly added 'channels'
-     'ckeditor_uploader',  # ✅ Correct
-
-      'django.contrib.sites',
-
+    "ckeditor_uploader",
+    "django.contrib.sites",
 ]
-ASGI_APPLICATION = "mrsafe_project.asgi.application"
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",  # ✅ Local development
-    }
-}
-
-
 
 # ✅ Middleware
 MIDDLEWARE = [
@@ -75,14 +50,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# ✅ Root URL Configuration
-ROOT_URLCONF = "mrsafe_project.urls"
-
-# ✅ Templates Configuration
+# ✅ Templates
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],  # ✅ Ensure this is correct
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -95,38 +67,41 @@ TEMPLATES = [
     },
 ]
 
-# ✅ WSGI Application
+ROOT_URLCONF = "mrsafe_project.urls"
 WSGI_APPLICATION = "mrsafe_project.wsgi.application"
-import os
-import dj_database_url
+ASGI_APPLICATION = "mrsafe_project.asgi.application"
 
+# ✅ Database
 DATABASE_URL = os.getenv("DATABASE_URL")
-
 if DATABASE_URL:
     DATABASES = {
-        'default': dj_database_url.config(
+        "default": dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
             ssl_require=True
         )
     }
 else:
-    # Fallback for local development
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',  # ✅ uses psycopg v3
-            'NAME': 'mrsafe',
-            'USER': 'postgres',
-            'PASSWORD': 'Razan@1978',
-            'HOST': 'localhost',
-            'PORT': '5432',
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "mrsafe",
+            "USER": "postgres",
+            "PASSWORD": "Razan@1978",
+            "HOST": "localhost",
+            "PORT": "5432",
         }
     }
 
+# ✅ Channels
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
-
-
-# ✅ Password Validation
+# ✅ Authentication
+AUTH_USER_MODEL = "mrsafe_app.CustomUser"
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -134,68 +109,37 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
+LOGIN_REDIRECT_URL = "/mrsafe/"
+LOGOUT_REDIRECT_URL = "/"
+
 # ✅ Internationalization
-LANGUAGES = [
-    ("en", "English"),
-    ("ar", "Arabic"),
-]
+LANGUAGE_CODE = "en"
+LANGUAGES = [("en", "English"), ("ar", "Arabic")]
 TIME_ZONE = "UTC"
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
+LOCALE_PATHS = [BASE_DIR / "locale"]
 
-# ✅ Static Files
+# ✅ Static & Media
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# ✅ Media Files
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
-
-
-
-# ✅ Email Settings (Use Env Variables in Production)
+# ✅ Email
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.secureserver.net"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-ADMIN_EMAIL = EMAIL_HOST_USER
-
-
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "sales@mrsafe-ai.net")
 
-# ✅ Login and Logout Redirects
-LOGIN_REDIRECT_URL = "/mrsafe/"  # ✅ Redirect users to mrsafezes section
-LOGOUT_REDIRECT_URL = "/"
-
-# ✅ Locale Paths
-LOCALE_PATHS = [os.path.join(BASE_DIR, "locale")]
-
-# ✅ Language Support
-USE_I18N = True
-USE_L10N = True
-
-# Google Pay Settings
-GOOGLE_PAY_MERCHANT_ID = "your-merchant-id"
-GOOGLE_PAY_GATEWAY = "example"
-GOOGLE_PAY_API_VERSION = 2
-GOOGLE_PAY_ENVIRONMENT = "TEST"  # Change to "PRODUCTION" when live
-
-
-
-BRAINTREE_MERCHANT_ID = 'xd48m5jj2s9pfbyv'
-BRAINTREE_PUBLIC_KEY = 'hb547fq5949v7hkk'
-BRAINTREE_PRIVATE_KEY = '2681392394c97bb2f726fd0aa9df1ac4'
-BRAINTREE_ENVIRONMENT = 'sandbox'  # or 'production' later
-
-
-
-
+# ✅ CKEditor
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {
     'default': {
@@ -203,10 +147,22 @@ CKEDITOR_CONFIGS = {
         'height': 300,
         'width': 'auto',
         'extraPlugins': 'uploadimage,image2',
-        'extraPlugins': 'image2',
     }
 }
-SITE_URL = "http://127.0.0.1:8000"
 
+# ✅ Payment Gateway (Google Pay / Braintree)
+GOOGLE_PAY_MERCHANT_ID = "your-merchant-id"
+GOOGLE_PAY_GATEWAY = "example"
+GOOGLE_PAY_API_VERSION = 2
+GOOGLE_PAY_ENVIRONMENT = "TEST"
+
+BRAINTREE_MERCHANT_ID = os.getenv("BRAINTREE_MERCHANT_ID", "xd48m5jj2s9pfbyv")
+BRAINTREE_PUBLIC_KEY = os.getenv("BRAINTREE_PUBLIC_KEY", "hb547fq5949v7hkk")
+BRAINTREE_PRIVATE_KEY = os.getenv("BRAINTREE_PRIVATE_KEY", "2681392394c97bb2f726fd0aa9df1ac4")
+BRAINTREE_ENVIRONMENT = os.getenv("BRAINTREE_ENVIRONMENT", "sandbox")
+
+# ✅ Site ID
 SITE_ID = 1
 
+# ✅ Site URL (for internal use)
+SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:8000")
