@@ -5,17 +5,21 @@
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
     <!-- Ads -->
-   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4893531235466621"
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4893531235466621"
      crossorigin="anonymous"></script>
      
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}mrsafe App{% endblock %}</title>
+    <title>{% block title %}MrSafe{% endblock %}</title>
     
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Safety Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
     
     <!-- Theme Styles -->
     {% if request.user.is_authenticated and request.user.profile.theme == "kids" %}
@@ -39,165 +43,195 @@
          data-full-width-responsive="true"></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 
-    <!-- Modern Header with Glass Morphism Effect -->
-    <header class="top-navbar d-flex align-items-center justify-content-between px-4 py-3">
+    <!-- Safety Header with Industrial Design -->
+    <header class="safety-navbar d-flex align-items-center justify-content-between px-4 py-3">
         <div class="d-flex align-items-center gap-3">
             <!-- Sidebar Toggle -->
-            <button class="menu-btn btn-glass" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
+            <button class="safety-menu-btn" onclick="toggleSidebar()">
+                <i class="fas fa-bars safety-icon"></i>
+                <span class="safety-pulse"></span>
             </button>
             
+            <!-- Logo -->
+            <div class="safety-logo">
+                <i class="fas fa-hard-hat safety-logo-icon"></i>
+                <span>MrSafe</span>
+            </div>
+            
             <!-- Action Buttons -->
-            <div class="d-flex align-items-center">
-                <a href="{% url 'mrsafe_app:store' %}" class="nav-item mx-3 btn-glass">
-                    <i class="fas fa-store"></i>
-                    <span>Store</span>
+            <div class="d-flex align-items-center safety-action-buttons">
+                <a href="{% url 'mrsafe_app:store' %}" class="safety-nav-item mx-3">
+                    <i class="fas fa-toolbox safety-nav-icon"></i>
+                    <span class="safety-nav-label">Equipment</span>
                 </a>
-                <a href="#" class="nav-item mx-3 btn-glass" onclick="shareApp()">
-                    <i class="fas fa-share-alt"></i>
-                    <span>Share</span>
+                <a href="#" class="safety-nav-item mx-3" onclick="shareApp()">
+                    <i class="fas fa-shield-alt safety-nav-icon"></i>
+                    <span class="safety-nav-label">Share</span>
                 </a>
             </div>
         </div>
 
         <!-- Header Right Icons -->
-        <div class="header-right d-flex align-items-center gap-3">
-            <a href="javascript:history.back()" class="header-icon btn-glass" title="Back">
-                <i class="fas fa-arrow-left"></i>
+        <div class="safety-header-right d-flex align-items-center gap-3">
+            <a href="javascript:history.back()" class="safety-header-icon" title="Back">
+                <i class="fas fa-arrow-left safety-icon"></i>
             </a>
           
+            <!-- Emergency Button -->
+            <button class="safety-emergency-btn" onclick="triggerEmergency()">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>EMERGENCY</span>
+            </button>
+            
             <!-- Notifications -->
-            <div class="notification-container position-relative">
-                <div class="header-icon btn-glass" onclick="toggleNotifications()" title="Notifications">
-                    <i class="fas fa-bell"></i>
-                    <span id="notification-count" class="badge pulse">0</span>
+            <div class="safety-notification-container position-relative">
+                <div class="safety-header-icon" onclick="toggleNotifications()" title="Alerts">
+                    <i class="fas fa-bell safety-icon"></i>
+                    <span id="notification-count" class="safety-badge pulse">0</span>
                 </div>
                 
-                <div id="notification-dropdown" class="notification-dropdown glass-card">
-                    <h4><i class="fas fa-bell me-2"></i>Notifications</h4>
+                <div id="notification-dropdown" class="safety-notification-dropdown">
+                    <h4><i class="fas fa-bell me-2"></i>Safety Alerts</h4>
                     <ul id="notification-list">
-                        <li class="notification-item">No new notifications.</li>
+                        <li class="safety-notification-item">No new alerts.</li>
                     </ul>
-                    <button onclick="clearAllNotifications()" class="clear-btn btn-sm btn-accent">Clear All</button>
+                    <button onclick="clearAllNotifications()" class="safety-clear-btn">Acknowledge All</button>
                 </div>
             </div>
 
-            <a href="{% url 'mrsafe_app:profile' %}" class="header-icon btn-glass" title="Profile">
-                <i class="fas fa-user-circle"></i>
+            <a href="{% url 'mrsafe_app:profile' %}" class="safety-header-icon" title="Profile">
+                <i class="fas fa-user-hard-hat safety-icon"></i>
             </a>
-            <a href="{% url 'mrsafe_app:help' %}" class="header-icon btn-glass" title="Help">
-                <i class="fas fa-question-circle"></i>
+            <a href="{% url 'mrsafe_app:help' %}" class="safety-header-icon" title="Help">
+                <i class="fas fa-life-ring safety-icon"></i>
             </a>
         </div>
     </header>
 
-    <!-- Modern Sidebar with Gradient Background -->
-    <div class="sidebar" id="sidebar">
-        <button class="close-btn btn-glass" onclick="toggleSidebar()">×</button>
+    <!-- Safety Sidebar with Industrial Design -->
+    <div class="safety-sidebar" id="sidebar">
+        <button class="safety-close-btn" onclick="toggleSidebar()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Safety Status Indicator -->
+        <div class="safety-status-indicator">
+            <div class="safety-status-light green active"></div>
+            <div class="safety-status-light yellow"></div>
+            <div class="safety-status-light red"></div>
+            <span class="safety-status-text">All Systems Operational</span>
+        </div>
+        
+        <div class="safety-divider"></div>
         
         {% if request.user.is_staff %}
-        <a href="{% url 'mrsafe_app:admin_dashboard' %}" class="sidebar-item">
-            <i class="fas fa-rocket me-2"></i>Admin Dashboard
+        <a href="{% url 'mrsafe_app:admin_dashboard' %}" class="safety-sidebar-item">
+            <i class="fas fa-helmet-safety me-2"></i>Safety Dashboard
         </a>
         {% endif %}
         
-        <div class="sidebar-divider"></div>
+        <div class="safety-divider"></div>
         
-        <a href="{% url 'mrsafe_app:about' %}" class="sidebar-item">
-            <i class="fas fa-info-circle me-2"></i> About
+        <a href="{% url 'mrsafe_app:about' %}" class="safety-sidebar-item">
+            <i class="fas fa-info-circle me-2"></i> Safety Protocols
         </a>
-        <a href="{% url 'mrsafe_app:faq' %}" class="sidebar-item">
-            <i class="fas fa-question me-2"></i> FAQ
+        <a href="{% url 'mrsafe_app:faq' %}" class="safety-sidebar-item">
+            <i class="fas fa-question me-2"></i> Safety FAQ
         </a>
-        <a href="{% url 'mrsafe_app:contact' %}" class="sidebar-item">
-            <i class="fas fa-envelope me-2"></i> Contact
+        <a href="{% url 'mrsafe_app:contact' %}" class="safety-sidebar-item">
+            <i class="fas fa-phone-emergency me-2"></i> Emergency Contacts
         </a>
         
-        <div class="sidebar-divider"></div>
+        <div class="safety-divider"></div>
         
         {% if user.is_authenticated %}
-        <a href="{% url 'mrsafe_app:edit_profile' %}" class="sidebar-item">
-            <i class="fas fa-user-edit me-2"></i> Edit Profile
+        <a href="{% url 'mrsafe_app:edit_profile' %}" class="safety-sidebar-item">
+            <i class="fas fa-id-card me-2"></i> Safety Credentials
         </a>
-        <a href="{% url 'mrsafe_app:profile' %}" class="sidebar-item">
-            <i class="fas fa-user-circle me-2"></i> View Profile
+        <a href="{% url 'mrsafe_app:profile' %}" class="safety-sidebar-item">
+            <i class="fas fa-user-shield me-2"></i> Safety Profile
         </a>
         {% else %}
-        <a href="{% url 'mrsafe_app:register' %}" class="sidebar-item">
+        <a href="{% url 'mrsafe_app:register' %}" class="safety-sidebar-item">
             <i class="fas fa-user-plus me-2"></i> Register
         </a>
-        <a href="{% url 'mrsafe_app:login' %}" class="sidebar-item">
+        <a href="{% url 'mrsafe_app:login' %}" class="safety-sidebar-item">
             <i class="fas fa-sign-in-alt me-2"></i> Login
         </a>
         {% endif %}
         
-        <div class="sidebar-divider"></div>
+        <div class="safety-divider"></div>
         
-        <a href="{% url 'mrsafe_app:terms_and_conditions' %}" class="sidebar-item">
-            <i class="fas fa-file-alt me-2"></i> Terms
+        <a href="{% url 'mrsafe_app:terms_and_conditions' %}" class="safety-sidebar-item">
+            <i class="fas fa-file-contract me-2"></i> Safety Regulations
         </a>
-        <a href="{% url 'mrsafe_app:privacy_policy' %}" class="sidebar-item">
-            <i class="fas fa-shield-alt me-2"></i> Privacy
+        <a href="{% url 'mrsafe_app:privacy_policy' %}" class="safety-sidebar-item">
+            <i class="fas fa-lock me-2"></i> Data Protection
         </a>
         
-        <div class="sidebar-divider"></div>
+        <div class="safety-divider"></div>
         
-        <!-- Theme Selector -->
-        <div class="p-3">
-            <h6 class="sidebar-title"><i class="fas fa-palette me-2"></i>Choose Theme</h6>
+        <!-- Safety Theme Selector -->
+        <div class="safety-theme-selector">
+            <h6 class="safety-sidebar-title"><i class="fas fa-palette me-2"></i>Safety Theme</h6>
             <form method="POST" action="{% url 'mrsafe_app:change_theme' %}">
                 {% csrf_token %}
-                <select name="theme" class="form-select form-select-sm mb-2 theme-selector" onchange="this.form.submit()">
-                    <option value="default" {% if request.session.theme == 'default' %}selected{% endif %}>Default</option>
-                    <option value="kids" {% if request.session.theme == 'kids' %}selected{% endif %}>Kids</option>
-                    <option value="doctors" {% if request.session.theme == 'doctors' %}selected{% endif %}>Doctors</option>
-                    <option value="engineers" {% if request.session.theme == 'engineers' %}selected{% endif %}>Engineers</option>
-                    <option value="sports" {% if request.session.theme == 'sports' %}selected{% endif %}>Sports</option>
-                    <option value="girls" {% if request.session.theme == 'girls' %}selected{% endif %}>Girls</option>
-                    <option value="general" {% if request.session.theme == 'general' %}selected{% endif %}>General</option>
+                <select name="theme" class="safety-theme-select" onchange="this.form.submit()">
+                    <option value="construction" {% if request.session.theme == 'construction' %}selected{% endif %}>Construction</option>
+                    <option value="industrial" {% if request.session.theme == 'industrial' %}selected{% endif %}>Industrial</option>
+                    <option value="chemical" {% if request.session.theme == 'chemical' %}selected{% endif %}>Chemical</option>
+                    <option value="electrical" {% if request.session.theme == 'electrical' %}selected{% endif %}>Electrical</option>
+                    <option value="healthcare" {% if request.session.theme == 'healthcare' %}selected{% endif %}>Healthcare</option>
+                    <option value="general" {% if request.session.theme == 'general' %}selected{% endif %}>General Safety</option>
                 </select>
             </form>
         </div>
         
         {% if user.is_authenticated %}
-        <a href="{% url 'mrsafe_app:logout' %}" class="sidebar-item logout-item">
+        <a href="{% url 'mrsafe_app:logout' %}" class="safety-sidebar-item safety-logout-item">
             <i class="fas fa-sign-out-alt me-2"></i> Logout
         </a>
         {% endif %}
     </div>
 
-    <!-- Main Content Area with Subtle Animation -->
-    <div class="content animate__animated animate__fadeIn">
+    <!-- Main Content Area with Safety Design -->
+    <div class="safety-content">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Floating Action Button for Mobile -->
-    <button class="fab btn-accent" onclick="toggleSidebar()">
-        <i class="fas fa-bars"></i>
-    </button>
+    <!-- Safety Alert Panel -->
+    <div class="safety-alert-panel" id="safetyAlertPanel">
+        <div class="safety-alert-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="safetyAlertMessage">Emergency alert! Please evacuate immediately.</span>
+            <button class="safety-alert-close" onclick="closeSafetyAlert()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
 
-    <!-- Premium Bottom Navigation with Glow Effect -->
-    <div class="bottom-navbar d-flex justify-content-evenly align-items-center">
-        <a href="/" class="nav-item" title="Home">
-            <div class="nav-icon">
+    <!-- Safety Bottom Navigation -->
+    <div class="safety-bottom-navbar d-flex justify-content-evenly align-items-center">
+        <a href="/" class="safety-bottom-nav-item" title="Dashboard">
+            <div class="safety-bottom-nav-icon">
                 <i class="fas fa-home"></i>
             </div>
-            <span class="nav-label">Home</span>
+            <span class="safety-bottom-nav-label">Dashboard</span>
         </a>
 
-        <a href="{% url 'mrsafe_app:premium_dashboard' %}" class="nav-item premium" title="Premium">
-            <div class="nav-icon premium-icon">
-                <i class="fas fa-crown"></i>
+        <a href="{% url 'mrsafe_app:premium_dashboard' %}" class="safety-bottom-nav-item safety-premium" title="Safety Pro">
+            <div class="safety-bottom-nav-icon">
+                <i class="fas fa-hard-hat"></i>
             </div>
-            <span class="nav-label">Premium</span>
-            <div class="premium-glow"></div>
+            <span class="safety-bottom-nav-label">Safety Pro</span>
+            <div class="safety-premium-glow"></div>
         </a>
 
-        <a href="{% url 'mrsafe_app:profile' %}" class="nav-item" title="Profile">
-            <div class="nav-icon">
-                <i class="fas fa-user"></i>
+        <a href="{% url 'mrsafe_app:profile' %}" class="safety-bottom-nav-item" title="My Safety">
+            <div class="safety-bottom-nav-icon">
+                <i class="fas fa-user-shield"></i>
             </div>
-            <span class="nav-label">Profile</span>
+            <span class="safety-bottom-nav-label">My Safety</span>
         </a>
     </div>
 
@@ -216,7 +250,7 @@
             // Animate the toggle
             anime({
                 targets: '#sidebar',
-                translateX: sidebar.classList.contains("active") ? [0, -250] : [-250, 0],
+                translateX: sidebar.classList.contains("active") ? [0, -300] : [-300, 0],
                 easing: 'easeInOutQuad',
                 duration: 300
             });
@@ -229,12 +263,47 @@
             }
         }
 
+        // Emergency functionality
+        function triggerEmergency() {
+            const alertPanel = document.getElementById("safetyAlertPanel");
+            alertPanel.style.display = "block";
+            document.getElementById("safetyAlertMessage").textContent = "EMERGENCY ALERT ACTIVATED! Follow safety procedures immediately.";
+            
+            // Flash red and sound alarm
+            document.body.style.backgroundColor = "#ff0000";
+            setTimeout(() => {
+                document.body.style.backgroundColor = "";
+            }, 500);
+            
+            // Play alarm sound (commented out to prevent automatic playback)
+            // const alarmSound = new Audio('{% static "sounds/alarm.mp3" %}');
+            // alarmSound.play();
+            
+            // Send emergency notification to server
+            fetch("/emergency/", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCSRFToken(),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: "{{ request.user.id }}",
+                    location: "Unknown",
+                    type: "manual"
+                })
+            }).catch(error => console.error("Error sending emergency alert:", error));
+        }
+
+        function closeSafetyAlert() {
+            document.getElementById("safetyAlertPanel").style.display = "none";
+        }
+
         // Share functionality
         function shareApp() {
             if (navigator.share) {
                 navigator.share({
-                    title: 'mrsafe App',
-                    text: 'Check out this amazing mrsafe App!',
+                    title: 'SafetyPro App',
+                    text: 'Check out this essential safety application!',
                     url: window.location.href
                 }).then(() => console.log('Shared successfully'))
                 .catch((error) => console.error('Error sharing:', error));
@@ -242,7 +311,7 @@
                 // Fallback for browsers without Web Share API
                 const shareUrl = window.location.href;
                 navigator.clipboard.writeText(shareUrl).then(() => {
-                    showToast('Link copied to clipboard!');
+                    showToast('Safety link copied to clipboard!');
                 });
             }
         }
@@ -265,17 +334,17 @@
 
                     notificationList.innerHTML = "";
                     if (data.notifications.length === 0) {
-                        notificationList.innerHTML = `<li class="notification-item">No new notifications.</li>`;
+                        notificationList.innerHTML = `<li class="safety-notification-item">No new safety alerts.</li>`;
                     } else {
                         data.notifications.forEach(notification => {
                             const li = document.createElement("li");
-                            li.className = "notification-item";
+                            li.className = "safety-notification-item";
                             li.innerHTML = `
-                                <div class="notification-content">
-                                    <i class="fas ${notification.icon || 'fa-bell'} me-2"></i>
+                                <div class="safety-notification-content">
+                                    <i class="fas ${notification.icon || 'fa-triangle-exclamation'} me-2"></i>
                                     ${notification.message}
                                 </div>
-                                <small class="notification-time">${notification.time}</small>
+                                <small class="safety-notification-time">${notification.time}</small>
                             `;
                             li.onclick = () => markNotificationAsRead(notification.id);
                             notificationList.appendChild(li);
@@ -337,7 +406,7 @@
 
         function showToast(message) {
             const toast = document.createElement("div");
-            toast.className = "toast-message";
+            toast.className = "safety-toast-message";
             toast.textContent = message;
             document.body.appendChild(toast);
             
@@ -371,113 +440,246 @@
             // Add subtle animation to premium button
             setInterval(() => {
                 anime({
-                    targets: '.premium-glow',
+                    targets: '.safety-premium-glow',
                     opacity: [0.3, 0.7],
                     duration: 2000,
                     direction: 'alternate',
                     easing: 'easeInOutSine'
                 });
             }, 2000);
+            
+            // Check for safety alerts
+            checkSafetyAlerts();
+            setInterval(checkSafetyAlerts, 60000); // Check every minute
         });
+        
+        // Check for safety alerts from server
+        function checkSafetyAlerts() {
+            fetch("/safety-alerts/")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.alert) {
+                        const alertPanel = document.getElementById("safetyAlertPanel");
+                        alertPanel.style.display = "block";
+                        document.getElementById("safetyAlertMessage").textContent = data.message;
+                        
+                        // Flash alert color
+                        alertPanel.style.backgroundColor = data.color || "#ff0000";
+                        setTimeout(() => {
+                            alertPanel.style.backgroundColor = "";
+                        }, 1000);
+                    }
+                })
+                .catch(error => console.error("Error checking safety alerts:", error));
+        }
     </script>
 
-    <!-- Modern CSS Styles -->
+    <!-- Modern CSS Styles with Safety Theme -->
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #3f37c9;
-            --accent: #4895ef;
-            --accent-light: #4cc9f0;
-            --dark: #1a1a2e;
-            --darker: #16213e;
-            --light: #f8f9fa;
-            --gray: #6c757d;
-            --success: #4bb543;
-            --danger: #f44336;
-            --warning: #ff9800;
-            --info: #2196f3;
-            --premium: #ffd700;
+            --safety-dark: #2a2a2e;
+            --safety-darker: #1e1e22;
+            --safety-darkest: #121216;
+            --safety-light: #f8f9fa;
+            --safety-gray: #4a4a4f;
+            --safety-light-gray: #6c757d;
             
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            --glass-blur: blur(10px);
+            --safety-primary: #3a7ca5;
+            --safety-primary-dark: #2f6690;
+            --safety-secondary: #2f6690;
+            --safety-accent: #4da1a9;
+            --safety-accent-light: #6fc2c9;
+            
+            --safety-success: #4bb543;
+            --safety-warning: #f9a620;
+            --safety-danger: #d64045;
+            --safety-info: #3a7ca5;
+            --safety-emergency: #d64045;
+            
+            --safety-orange: #f9a620;
+            --safety-yellow: #ffd700;
+            --safety-green: #4bb543;
+            --safety-red: #d64045;
+            --safety-blue: #3a7ca5;
+            
+            --safety-glass: rgba(42, 42, 46, 0.8);
+            --safety-glass-border: rgba(255, 255, 255, 0.1);
+            --safety-glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            --safety-glass-blur: blur(10px);
+            
+            --safety-stripes: repeating-linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.05),
+                rgba(255, 255, 255, 0.05) 1px,
+                transparent 1px,
+                transparent 5px
+            );
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--darker), var(--dark));
-            color: var(--light);
+            background-color: var(--safety-dark);
+            color: var(--safety-light);
             margin: 0;
             padding: 0;
             min-height: 100vh;
             padding-bottom: 80px;
             padding-top: 70px;
+            background-image: var(--safety-stripes);
         }
 
-        /* Glass Morphism Effect */
-        .btn-glass {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            color: white;
-            transition: all 0.3s ease;
-        }
-
-        .btn-glass:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .glass-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            box-shadow: var(--glass-shadow);
-        }
-
-        /* Header Styles */
-        .top-navbar {
+        /* Safety Header Styles */
+        .safety-navbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background: rgba(26, 26, 46, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background-color: var(--safety-darker);
             z-index: 1000;
-            padding: 15px 20px;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+            border-bottom: 2px solid var(--safety-primary);
         }
 
-        .header-icon {
-            color: var(--light);
+        .safety-logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
             font-size: 1.2rem;
-            padding: 8px 12px;
-            border-radius: 50%;
+            color: var(--safety-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .safety-logo-icon {
+            color: var(--safety-orange);
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .safety-menu-btn {
+            background: none;
+            border: none;
+            color: var(--safety-light);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            position: relative;
             transition: all 0.3s ease;
         }
 
-        .header-icon:hover {
-            color: var(--accent);
-            background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.1);
+        .safety-menu-btn:hover {
+            color: var(--safety-accent);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .safety-pulse {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--safety-danger);
+            border-radius: 50%;
+            opacity: 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0; }
+        }
+
+        .safety-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--safety-light);
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .safety-nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--safety-accent);
+        }
+
+        .safety-nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        .safety-nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .safety-header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .safety-header-icon {
+            color: var(--safety-light);
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .safety-header-icon:hover {
+            color: var(--safety-accent);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .safety-icon {
+            transition: all 0.3s ease;
+        }
+
+        .safety-emergency-btn {
+            background-color: var(--safety-danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(214, 64, 69, 0.3);
+        }
+
+        .safety-emergency-btn:hover {
+            background-color: #c03940;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(214, 64, 69, 0.4);
         }
 
         /* Notification Styles */
-        .notification-container {
+        .safety-notification-container {
             position: relative;
         }
 
-        .badge {
+        .safety-badge {
             position: absolute;
             top: -5px;
             right: -5px;
-            background: var(--danger);
+            background-color: var(--safety-danger);
             color: white;
             border-radius: 50%;
             padding: 3px 7px;
@@ -486,8 +688,438 @@
             display: none;
         }
 
+        .safety-notification-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: var(--safety-darker);
+            border-radius: 6px;
+            padding: 15px;
+            display: none;
+            z-index: 1100;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--safety-gray);
+        }
+
+        .safety-notification-dropdown h4 {
+            color: var(--safety-accent);
+            font-size: 1rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--safety-gray);
+        }
+
+        .safety-notification-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--safety-gray);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .safety-notification-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .safety-notification-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .safety-notification-time {
+            color: var(--safety-light-gray);
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .safety-clear-btn {
+            width: 100%;
+            margin-top: 10px;
+            background-color: var(--safety-gray);
+            border: none;
+            color: var(--safety-light);
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .safety-clear-btn:hover {
+            background-color: var(--safety-primary);
+        }
+
+        /* Sidebar Styles */
+        .safety-sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 320px;
+            height: 100%;
+            background-color: var(--safety-darkest);
+            z-index: 1050;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            padding-top: 20px;
+            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
+            border-right: 2px solid var(--safety-primary);
+        }
+
+        .safety-sidebar.active {
+            left: 0;
+        }
+
+        .safety-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--safety-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .safety-close-btn:hover {
+            color: var(--safety-danger);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .safety-status-indicator {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: rgba(0, 0, 0, 0.2);
+            margin-bottom: 15px;
+        }
+
+        .safety-status-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            opacity: 0.3;
+        }
+
+        .safety-status-light.green {
+            background-color: var(--safety-green);
+        }
+
+        .safety-status-light.yellow {
+            background-color: var(--safety-yellow);
+        }
+
+        .safety-status-light.red {
+            background-color: var(--safety-danger);
+        }
+
+        .safety-status-light.active {
+            opacity: 1;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .safety-status-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--safety-light);
+            margin-left: 10px;
+        }
+
+        .safety-sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--safety-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            font-weight: 500;
+        }
+
+        .safety-sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--safety-accent);
+            padding-left: 30px;
+            color: var(--safety-accent-light);
+        }
+
+        .safety-sidebar-title {
+            color: var(--safety-accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px 25px 5px;
+            margin-bottom: 5px;
+        }
+
+        .safety-divider {
+            height: 1px;
+            background-color: var(--safety-gray);
+            margin: 15px 25px;
+            opacity: 0.5;
+        }
+
+        .safety-logout-item {
+            color: var(--safety-danger);
+            margin-top: 20px;
+        }
+
+        .safety-logout-item:hover {
+            border-left-color: var(--safety-danger);
+        }
+
+        .safety-theme-select {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: var(--safety-gray);
+            border: 1px solid var(--safety-primary);
+            color: var(--safety-light);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .safety-theme-select:focus {
+            outline: none;
+            border-color: var(--safety-accent);
+            box-shadow: 0 0 0 2px rgba(77, 161, 169, 0.3);
+        }
+
+        /* Content Area */
+        .safety-content {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Safety Alert Panel */
+        .safety-alert-panel {
+            position: fixed;
+            bottom: 80px;
+            left: 0;
+            width: 100%;
+            background-color: var(--safety-danger);
+            color: white;
+            padding: 15px 20px;
+            z-index: 1200;
+            display: none;
+            box-shadow: 0 -2px 20px rgba(214, 64, 69, 0.5);
+            animation: alertPulse 2s infinite;
+        }
+
+        @keyframes alertPulse {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.9; }
+        }
+
+        .safety-alert-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .safety-alert-content i {
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        .safety-alert-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .safety-alert-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Bottom Navigation */
+        .safety-bottom-navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--safety-darker);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 12px 0;
+            z-index: 1000;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.5);
+            border-top: 2px solid var(--safety-primary);
+        }
+
+        .safety-bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--safety-light);
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .safety-bottom-nav-item:hover {
+            color: var(--safety-accent);
+            transform: translateY(-5px);
+        }
+
+        .safety-bottom-nav-icon {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+       
+       .safety-bottom-nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .safety-premium {
+            position: relative;
+            color: var(--safety-yellow);
+        }
+
+        .safety-premium-glow {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 10px;
+            background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0) 70%);
+            z-index: -1;
+        }
+
+        /* Toast Message */
+        .safety-toast-message {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--safety-primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            z-index: 1300;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-weight: 500;
+        }
+
+        /* RTL Support */
+        .rtl-mode {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .rtl-mode .safety-sidebar {
+            left: auto;
+            right: -320px;
+            border-right: none;
+            border-left: 2px solid var(--safety-primary);
+        }
+
+        .rtl-mode .safety-sidebar.active {
+            right: 0;
+            left: auto;
+        }
+
+        .rtl-mode .safety-close-btn {
+            right: auto;
+            left: 15px;
+        }
+
+        .rtl-mode .safety-sidebar-item {
+            border-left: none;
+            border-right: 4px solid transparent;
+            padding-right: 25px;
+        }
+
+        .rtl-mode .safety-sidebar-item:hover {
+            border-left: none;
+            border-right: 4px solid var(--safety-accent);
+            padding-left: 25px;
+            padding-right: 30px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .safety-sidebar {
+                width: 280px;
+                left: -280px;
+            }
+            
+            .rtl-mode .safety-sidebar {
+                right: -280px;
+            }
+            
+            .safety-content {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .safety-nav-item {
+                display: none;
+            }
+            
+            .safety-logo span {
+                display: none;
+            }
+            
+            .safety-notification-dropdown {
+                width: 280px;
+                right: -20px;
+            }
+            
+            .rtl-mode .safety-notification-dropdown {
+                right: auto;
+                left: -20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .safety-header-right {
+                gap: 10px;
+            }
+            
+            .safety-emergency-btn span {
+                display: none;
+            }
+            
+            .safety-bottom-nav-label {
+                font-size: 0.6rem;
+            }
+            
+            .safety-bottom-nav-item {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Animation Classes */
         .pulse {
-            animation: pulse 2s infinite;
+            animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
@@ -496,353 +1128,219 @@
             100% { transform: scale(1); }
         }
 
-        .notification-dropdown {
-            position: absolute;
-            top: 50px;
-            right: 0;
-            width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
-            border-radius: 12px;
-            padding: 15px;
-            display: none;
-            z-index: 1100;
+        .shake {
+            animation: shake 0.5s;
         }
 
-        .notification-item {
-            padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            transition: background 0.3s ease;
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
 
-        .notification-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+        /* Utility Classes */
+        .text-safety-primary {
+            color: var(--safety-primary);
         }
 
-        .notification-content {
-            display: flex;
-            align-items: center;
+        .text-safety-accent {
+            color: var(--safety-accent);
         }
 
-        .notification-time {
-            color: var(--gray);
-            font-size: 0.8rem;
-            display: block;
-            margin-top: 5px;
+        .text-safety-danger {
+            color: var(--safety-danger);
         }
 
-        .clear-btn {
-            width: 100%;
-            margin-top: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: var(--light);
-            padding: 8px;
-            border-radius: 6px;
-            transition: background 0.3s ease;
+        .text-safety-warning {
+            color: var(--safety-warning);
         }
 
-        .clear-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .text-safety-success {
+            color: var(--safety-success);
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: -300px;
-            width: 300px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--darker), var(--dark));
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
-            z-index: 1050;
-            transition: left 0.3s ease;
-            overflow-y: auto;
-            padding-top: 20px;
+        .bg-safety-dark {
+            background-color: var(--safety-dark);
         }
 
-        .sidebar.active {
-            left: 0;
+        .bg-safety-darker {
+            background-color: var(--safety-darker);
         }
 
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: var(--light);
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 50%;
+        .bg-safety-primary {
+            background-color: var(--safety-primary);
         }
 
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .bg-safety-accent {
+            background-color: var(--safety-accent);
         }
 
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: var(--light);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
+        .bg-safety-danger {
+            background-color: var(--safety-danger);
         }
 
-        .sidebar-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-left: 3px solid var(--accent);
-            transform: translateX(5px);
+        .bg-safety-warning {
+            background-color: var(--safety-warning);
         }
 
-        .sidebar-title {
-            color: var(--accent);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 15px 20px 5px;
-            margin-bottom: 5px;
+        .bg-safety-success {
+            background-color: var(--safety-success);
         }
 
-        .sidebar-divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 15px 20px;
-        }
-
-        .logout-item {
-            color: var(--danger);
-            margin-top: 20px;
-        }
-
-        .logout-item:hover {
-            border-left-color: var(--danger);
-        }
-
-        .theme-selector {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--light);
-        }
-
-        /* Content Area */
-        .content {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Bottom Navigation */
-        .bottom-navbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(26, 26, 46, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px 0;
-            z-index: 1000;
-            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.3);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--light);
-            padding: 8px 15px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-item:hover {
-            color: var(--accent);
-            transform: translateY(-5px);
-        }
-
-        .nav-icon {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-label {
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        /* Premium Button */
-        .premium {
-            color: var(--premium);
-        }
-
-        .premium-icon {
-            position: relative;
-        }
-
-        .premium-glow {
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.4), transparent 70%);
-            border-radius: 50%;
-            z-index: -1;
-        }
-
-        /* Floating Action Button */
-        .fab {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            border: none;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            display: none;
-        }
-
-        .fab:hover {
-            transform: scale(1.1) translateY(-5px);
-        }
-
-        .btn-accent {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-accent:hover {
-            background: var(--accent-light);
-            color: white;
-        }
-
-        /* Toast Message */
-        .toast-message {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dark);
-            color: white;
-            padding: 12px 24px;
+        .safety-card {
+            background-color: var(--safety-darker);
             border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            z-index: 1100;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border-left: 4px solid var(--safety-primary);
         }
 
-        /* RTL Support */
-        body.rtl-mode {
-            direction: rtl;
-            text-align: right;
+        .safety-card-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--safety-accent);
+            display: flex;
+            align-items: center;
         }
 
-        body.rtl-mode .sidebar {
-            right: -300px;
-            left: auto;
+        .safety-card-header i {
+            margin-right: 10px;
         }
 
-        body.rtl-mode .sidebar.active {
-            right: 0;
-            left: auto;
+        .safety-btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            border: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        body.rtl-mode .sidebar-item {
-            border-left: none;
-            border-right: 3px solid transparent;
+        .safety-btn-primary {
+            background-color: var(--safety-primary);
+            color: white;
         }
 
-        body.rtl-mode .sidebar-item:hover {
-            border-left: none;
-            border-right: 3px solid var(--accent);
-            transform: translateX(-5px);
+        .safety-btn-primary:hover {
+            background-color: var(--safety-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(58, 124, 165, 0.3);
         }
 
-        body.rtl-mode .notification-dropdown {
-            right: auto;
-            left: 0;
+        .safety-btn-danger {
+            background-color: var(--safety-danger);
+            color: white;
         }
 
-        body.rtl-mode .close-btn {
-            right: auto;
-            left: 15px;
+        .safety-btn-danger:hover {
+            background-color: #c03940;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(214, 64, 69, 0.3);
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 280px;
-                left: -280px;
-            }
-            
-            .nav-label {
-                display: none;
-            }
-            
-            .nav-item {
-                padding: 10px;
-            }
-            
-            .nav-icon {
-                font-size: 1.5rem;
-                margin-bottom: 0;
-            }
-            
-            .fab {
-                display: flex;
-            }
-            
-            .content {
-                padding: 15px;
-            }
+        .safety-btn-accent {
+            background-color: var(--safety-accent);
+            color: white;
         }
 
-        @media (max-width: 480px) {
-            .top-navbar {
-                padding: 10px 15px;
-            }
-            
-            .header-icon {
-                padding: 6px;
-                font-size: 1rem;
-            }
-            
-            .notification-dropdown {
-                width: 280px;
-            }
+        .safety-btn-accent:hover {
+            background-color: var(--safety-accent-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(77, 161, 169, 0.3);
         }
 
-        /* Animations */
-        .animate__animated {
-            animation-duration: 0.5s;
+        /* Form Elements */
+        .safety-form-control {
+            background-color: var(--safety-gray);
+            border: 1px solid var(--safety-primary);
+            color: var(--safety-light);
+            padding: 10px 15px;
+            border-radius: 4px;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
         }
 
-        .animate__fadeIn {
-            animation-name: fadeIn;
+        .safety-form-control:focus {
+            outline: none;
+            border-color: var(--safety-accent);
+            box-shadow: 0 0 0 2px rgba(77, 161, 169, 0.3);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .safety-form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--safety-accent);
+        }
+
+        /* Table Styles */
+        .safety-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .safety-table th, .safety-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--safety-gray);
+        }
+
+        .safety-table th {
+            background-color: var(--safety-primary);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .safety-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Alert Styles */
+        .safety-alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .safety-alert i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .safety-alert-success {
+            background-color: rgba(75, 181, 67, 0.2);
+            border-left: 4px solid var(--safety-success);
+            color: var(--safety-success);
+        }
+
+        .safety-alert-warning {
+            background-color: rgba(249, 166, 32, 0.2);
+            border-left: 4px solid var(--safety-warning);
+            color: var(--safety-warning);
+        }
+
+        .safety-alert-danger {
+            background-color: rgba(214, 64, 69, 0.2);
+            border-left: 4px solid var(--safety-danger);
+            color: var(--safety-danger);
+        }
+
+        .safety-alert-info {
+            background-color: rgba(58, 124, 165, 0.2);
+            border-left: 4px solid var(--safety-info);
+            color: var(--safety-info);
         }
     </style>
 </body>
