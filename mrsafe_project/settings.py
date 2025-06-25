@@ -10,22 +10,22 @@ import dj_database_url
 # ✅ Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ✅ Load .env ONLY for local development
+# ✅ Load .env for local dev
 load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 # ✅ Environment Variables
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-strong-default-secret-key")
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
-
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
+# ✅ OpenAI Key
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     print("[ERROR] OpenAI API Key is missing!")
 else:
     print(f"[DEBUG] OpenAI Key Loaded: {OPENAI_API_KEY[:5]}...")
 
-# ✅ Installed apps
+# ✅ Installed Apps
 INSTALLED_APPS = [
     "mrsafe_app",
     "django.contrib.admin",
@@ -39,9 +39,10 @@ INSTALLED_APPS = [
     "django.contrib.sites",
 ]
 
-# ✅ Middleware
+# ✅ Middleware (WhiteNoise Added)
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # ✅ Enables static files in production
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -121,13 +122,16 @@ USE_L10N = True
 USE_TZ = True
 LOCALE_PATHS = [BASE_DIR / "locale"]
 
-# ✅ Static & Media
+# ✅ Static Files (WhiteNoise Setup)
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# ✅ WhiteNoise Static Optimization
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ✅ Email
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -150,7 +154,7 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-# ✅ Payment Gateway (Google Pay / Braintree)
+# ✅ Payment Gateway Settings
 GOOGLE_PAY_MERCHANT_ID = "your-merchant-id"
 GOOGLE_PAY_GATEWAY = "example"
 GOOGLE_PAY_API_VERSION = 2
@@ -161,8 +165,6 @@ BRAINTREE_PUBLIC_KEY = os.getenv("BRAINTREE_PUBLIC_KEY", "hb547fq5949v7hkk")
 BRAINTREE_PRIVATE_KEY = os.getenv("BRAINTREE_PRIVATE_KEY", "2681392394c97bb2f726fd0aa9df1ac4")
 BRAINTREE_ENVIRONMENT = os.getenv("BRAINTREE_ENVIRONMENT", "sandbox")
 
-# ✅ Site ID
+# ✅ Site ID & URL
 SITE_ID = 1
-
-# ✅ Site URL (for internal use)
 SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:8000")
