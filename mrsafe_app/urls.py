@@ -67,7 +67,7 @@ from .views import (contact,
                     terms_and_conditions,privacy_policy,
                     premium_membership,add_premium_plan,
                     register,profile,
-                    edit_profile,about,store_home,add_item,edit_item,premium_checkout,public_landing, )
+                    edit_profile,about,store_home,add_item,edit_item,premium_checkout,public_landing, inspect)
 
 
 from django.urls import path
@@ -82,10 +82,12 @@ from django.shortcuts import redirect
 
 
 
-
 urlpatterns = [
     
-    
+
+
+path("inspect/", inspect, name="inspect"),
+
 # urls.py
 
 

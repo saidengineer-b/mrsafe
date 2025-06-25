@@ -1,10 +1,10 @@
-{% load static %}  <!-- Make sure this is at the top for static tag to work -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mr. Safe – AI Safety Inspection App   test saeed</title>
+    <title>{% block title %}Mr. Safe – AI Safety Inspection App{% endblock %}</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -42,6 +42,8 @@
             font-size: 1rem;
             cursor: pointer;
             transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
         .cta-button:hover {
             background-color: #2563eb;
@@ -67,6 +69,7 @@
             display: block;
         }
     </style>
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     <header>
@@ -75,6 +78,7 @@
     </header>
 
     <section>
+        {% block content %}
         <h2>Instant Safety Reports from a Photo</h2>
         <p>Upload site photos and get AI-analyzed risk assessments, hazard controls, and safety action plans within seconds.</p>
         
@@ -85,7 +89,8 @@
             </video>
         </div>
 
-        <button class="cta-button">Get Started</button>
+        <a href="{% url 'mrsafe_app:inspect' %}" class="cta-button">Get Started</a>
+        {% endblock %}
     </section>
 
     <footer>
