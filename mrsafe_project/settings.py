@@ -16,7 +16,19 @@ load_dotenv(dotenv_path=BASE_DIR / ".env")
 # ✅ Environment Variables
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "your-strong-default-secret-key")
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
+# REMOVE THIS if you're not setting DJANGO_ALLOWED_HOSTS in Railway/ENV:
+# ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
+
+# ✅ This is correct for production:
+ALLOWED_HOSTS = ['www.mrsafe.me', 'mrsafe.me', '127.0.0.1', 'localhost']
+
+# ✅ CSRF trusted domains:
+CSRF_TRUSTED_ORIGINS = [
+    'https://www.mrsafe.me',
+    'https://mrsafe.me'
+]
+
+
 
 # ✅ OpenAI Key
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
