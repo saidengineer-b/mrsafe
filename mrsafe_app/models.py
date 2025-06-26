@@ -139,6 +139,12 @@ class Notification(models.Model):
 # ==============================
 # ✅ Coins System
 # ==============================
+from django.db import models, transaction
+from django.conf import settings
+
+# ==============================
+# ✅ CoinActivity: Defines each earning/spending activity
+# ==============================
 class CoinActivity(models.Model):
     ACTIVITY_TYPES = [
         ('earn', 'Earn Coins'),
@@ -155,6 +161,9 @@ class CoinActivity(models.Model):
         return f"{self.name} ({self.get_activity_type_display()} - {self.coin_amount or '?'} Coins)"
 
 
+# ==============================
+# ✅ CoinTransaction: Stores history of all coin activity
+# ==============================
 class CoinTransaction(models.Model):
     TRANSACTION_TYPES = [
         ('earned', 'Earned'),
@@ -163,7 +172,7 @@ class CoinTransaction(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     activity = models.ForeignKey(CoinActivity, on_delete=models.SET_NULL, null=True, blank=True)
-    amount = models.IntegerField()
+    amount = models.PositiveIntegerField()
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     timestamp = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
@@ -171,8 +180,53 @@ class CoinTransaction(models.Model):
 
     def __str__(self):
         activity_name = self.activity.name if self.activity else 'Unknown'
-        return f"{self.user.username} {self.transaction_type} {abs(self.amount)} coins for {activity_name}"
+        return f"{self.user.username} {self.transaction_type} {self.amount} coins for {activity_name}"
 
+
+# ==============================
+# ✅ UserCoinBalance: One-to-One balance per user
+# ==============================
+class UserCoinBalance(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    balance = models.PositiveIntegerField(default=0)
+
+    @transaction.atomic
+    def update_balance(self, amount, action, activity=None):
+        if amount <= 0:
+            return False
+
+        if action == "earn":
+            self.balance += amount
+            transaction_type = "earned"
+        elif action == "spend":
+            if self.balance < amount:
+                return False
+            self.balance -= amount
+            transaction_type = "spent"
+        else:
+            return False
+
+        self.save()
+
+        # Record transaction
+        if activity:
+            CoinTransaction.objects.create(
+                user=self.user,
+                amount=amount,
+                transaction_type=transaction_type,
+                activity=activity
+            )
+
+        return True
+
+    def add_coins(self, amount):
+        return self.update_balance(amount, action="earn")
+
+    def deduct_coins(self, amount):
+        return self.update_balance(amount, action="spend")
+
+    def __str__(self):
+        return f"{self.user.username} – {self.balance} coins"
 
 # ==============================
 # ✅ Ads / Monetization
@@ -231,6 +285,5 @@ class PaymentTransaction(models.Model):
 
     def __str__(self):
         return f"{self.user} paid {self.amount} {self.currency} via {self.get_payment_method_display()}"
-
 
 

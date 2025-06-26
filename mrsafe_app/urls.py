@@ -84,6 +84,10 @@ from django.shortcuts import redirect
 
 urlpatterns = [
     
+path('register/', register, name='register'),
+    
+path('login/', auth_views.LoginView.as_view(template_name='mrsafe/login.html'), name='login'),
+path('', home, name='home'),  # ✅ This makes /mrsafe/ go to home()
 
 
 path("inspect/", inspect, name="inspect"),
@@ -223,8 +227,7 @@ path("inspect/", inspect, name="inspect"),
 
 
     # 👤 User Authentication
-    path('register/', register, name='register'),
-    path('login/', auth_views.LoginView.as_view(template_name='quiz_app/login.html'), name='login'),
+ 
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     # 👤 Profile Management

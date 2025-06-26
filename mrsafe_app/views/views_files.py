@@ -163,8 +163,15 @@ def profile(request):
 # ✅ User Registration View
 # views.py (User Registration)
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from ..forms import CustomUserCreationForm
+from ..models import CoinActivity, UserCoinBalance
+
 def register(request):
     user_registered = False
+
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -176,25 +183,31 @@ def register(request):
             try:
                 register_activity = CoinActivity.objects.get(name="register", is_active=True)
 
-                # Get or create the user's coin balance
+                # Get or create user's coin balance
                 user_balance, created = UserCoinBalance.objects.get_or_create(user=user)
-                # Update the coin balance for the user based on registration
                 user_balance.update_balance(register_activity.coin_amount, "earn", register_activity)
-                
-                # Save the updated balance
                 user_balance.save()
-
                 user_registered = True
 
             except CoinActivity.DoesNotExist:
                 print("❌ The 'register' coin activity is not found or is inactive.")
 
-            # Redirect to the user profile page
-            return redirect('mrsafe_app:profile')
+            # Redirect or show confirmation
+            return render(request, 'mrsafe/register.html', {
+                'form': form,
+                'user_registered': user_registered
+            })
     else:
         form = CustomUserCreationForm()
 
-    return render(request, 'mrsafe_app/register.html', {'form': form, 'user_registered': user_registered})
+    return render(request, 'mrsafe/register.html', {
+        'form': form,
+        'user_registered': user_registered
+    })
+
+
+#################################
+
 from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
@@ -290,49 +303,23 @@ def login_view(request):
 
 @login_required(login_url='mrsafe_app:login')  # ✅ no app namespace
 
-  # 👈 this handles unauthenticated users
+
+
+
+
+@login_required
 def home(request):
-    # ✅ Assumes authenticated at this point
-
-    # 🔒 Check if user is premium
-    if hasattr(request.user, 'profile') and not request.user.profile.is_premium:
+    # ✅ Check premium access (if using is_premium directly)
+    if not request.user.is_premium:
         messages.warning(request, "This feature is for premium users only.")
-        return redirect('mrsafe_app:store')  # 👈 your store/membership URL
+        return redirect('mrsafe_app:store')
 
-    # ✅ Fetch free quizzes
-    free_quizzes = Quiz.objects.filter(level__iexact='free')[:6]
-
-    # ✅ Fetch leaderboard
-    leaderboard_data = QuizResult.objects.all().order_by('-score')[:10]
-
-    # ✅ Fetch an active PvP game
-    some_game = PvPChallenge.objects.filter(status="ongoing").first()
-
-    # ✅ Fetch and calculate MasterIt session progress
-    my_sessions = []
-    sessions = (
-        MasterItSession.objects.filter(user=request.user)
-        .annotate(
-            total_lessons_count=Count('lessons'),
-            completed_lessons=Count('lessons', filter=Q(lessons__is_completed=True))
-        )
-        .order_by('-created_at')[:4]
-    )
-
-    for session in sessions:
-        if session.total_lessons_count:
-            session.progress_percentage = int((session.completed_lessons / session.total_lessons_count) * 100)
-        else:
-            session.progress_percentage = 0
-
-    my_sessions = sessions
-
-    return render(request, "mrsafe_app/home.html", {
-        "free_quizzes": free_quizzes,
-        "leaderboard": leaderboard_data,
-        "my_sessions": my_sessions,
-        "some_game": some_game,
+    # ✅ Placeholder: Load any premium dashboard data you want
+    return render(request, 'mrsafe_app/home.html', {
+        "user": request.user,
+        # Add dashboard stats if needed
     })
+
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'registration/password_reset_form.html'
@@ -2082,3 +2069,4 @@ from django.shortcuts import render
 
 def public_landing(request):
     return render(request, "index.html")
+
