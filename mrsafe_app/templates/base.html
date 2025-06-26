@@ -241,27 +241,38 @@
 
     <!-- Custom JavaScript -->
     <script>
-        // Sidebar functionality
-        function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle("active");
-            localStorage.setItem("sidebarState", sidebar.classList.contains("active") ? "open" : "closed");
-            
-            // Animate the toggle
-            anime({
-                targets: '#sidebar',
-                translateX: sidebar.classList.contains("active") ? [0, -300] : [-300, 0],
-                easing: 'easeInOutQuad',
-                duration: 300
-            });
-        }
+ // Updated Sidebar functionality
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const isActive = !sidebar.classList.contains("active");
+    
+    sidebar.classList.toggle("active");
+    localStorage.setItem("sidebarState", isActive ? "open" : "closed");
+    
+    // Animate the toggle
+    anime({
+        targets: '#sidebar',
+        translateX: isActive ? 0 : -300, // Simplified animation targets
+        easing: 'easeInOutQuad',
+        duration: 300
+    });
+}
 
-        function checkSidebarState() {
-            const sidebar = document.getElementById("sidebar");
-            if (localStorage.getItem("sidebarState") === "open") {
-                sidebar.classList.add("active");
-            }
-        }
+function checkSidebarState() {
+    const sidebar = document.getElementById("sidebar");
+    if (localStorage.getItem("sidebarState") === "open") {
+        sidebar.classList.add("active");
+        // Set initial position if needed
+        sidebar.style.transform = 'translateX(0)';
+    } else {
+        sidebar.style.transform = 'translateX(-300px)';
+    }
+}
+
+// Call this on page load
+document.addEventListener('DOMContentLoaded', function() {
+    checkSidebarState();
+});
 
         // Emergency functionality
         function triggerEmergency() {
