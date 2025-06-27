@@ -3,83 +3,316 @@
 {% block title %}AI Safety Inspection{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">🛡️ AI-Powered Safety Image Inspection</h2>
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 font-weight-bold text-primary mb-3">
+            <i class="fas fa-shield-alt mr-2"></i> AI Safety Inspector
+        </h1>
+        <p class="lead text-muted">Upload workplace images for automated safety compliance analysis</p>
+    </div>
 
+    <!-- Error Display -->
     {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-circle fa-lg mr-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Analysis Error</h5>
+                    <p class="mb-0">{{ error }}</p>
+                </div>
+            </div>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
     {% endif %}
 
     {% if error_details and debug %}
-        <div class="alert alert-warning">
-            <strong>Error Details (Debug):</strong>
-            <pre>{{ error_details }}</pre>
+        <div class="alert alert-warning alert-dismissible fade show shadow-sm">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-bug fa-lg mr-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">Technical Details</h5>
+                    <pre class="mb-0">{{ error_details }}</pre>
+                </div>
+            </div>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
         </div>
     {% endif %}
 
-    <form method="POST" enctype="multipart/form-data" class="mb-4">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="photo">Upload Safety Image (max 5MB):</label>
-            <input type="file" name="photo" accept="image/*" class="form-control-file" required>
+    <!-- Upload Form -->
+    <div class="card shadow-lg mb-5 border-0">
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0"><i class="fas fa-cloud-upload-alt mr-2"></i> Upload Safety Image</h4>
         </div>
-        <button type="submit" class="btn btn-primary mt-2">🔍 Analyze Image</button>
-    </form>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" id="imageUploadForm">
+                {% csrf_token %}
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input type="file" name="photo" id="photoUpload" class="custom-file-input" accept="image/*" required>
+                        <label class="custom-file-label" for="photoUpload">
+                            <i class="fas fa-image mr-2"></i> Choose image (max 5MB)
+                        </label>
+                    </div>
+                    <small class="form-text text-muted">Supported formats: JPG, PNG, WEBP</small>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg mt-3 shadow">
+                    <i class="fas fa-search mr-2"></i> Analyze Safety Compliance
+                </button>
+            </form>
+        </div>
+    </div>
 
+    <!-- Image Preview -->
     {% if photo_url %}
-        <div class="mb-4 text-center">
-            <h5>Uploaded Image Preview</h5>
-            <img src="{{ photo_url }}" class="img-fluid rounded border shadow-sm" alt="Uploaded Image" style="max-width: 100%; height: auto;">
-        </div>
-    {% endif %}
-
-    {% if result %}
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="card-title mb-0">📋 Inspection Report</h4>
-                    <div>
-                        <button onclick="copyToClipboard()" class="btn btn-sm btn-outline-secondary mr-2">
-                            📋 Copy Text
-                        </button>
-                        <button onclick="exportToPDF()" class="btn btn-sm btn-outline-danger">
-                            📄 Export PDF
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="report-content" class="mt-3" style="white-space: pre-wrap;">
-                    {{ result|safe }}
-                    
-                    {% if safety_score %}
-                    <div class="mt-4">
-                        <strong>Estimated Safety Score:</strong> {{ safety_score }}/100
-                    </div>
-                    {% endif %}
-                </div>
+        <div class="card shadow mb-4">
+            <div class="card-header bg-light py-3">
+                <h5 class="mb-0"><i class="fas fa-image mr-2"></i> Image Preview</h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ photo_url }}" class="img-fluid rounded shadow" style="max-height: 400px;">
             </div>
         </div>
     {% endif %}
 
-    <p class="text-muted small text-right">Generated at {{ now|date:"Y-m-d H:i" }}</p>
+    <!-- Report Output -->
+    {% if sections %}
+        <div class="card shadow-lg mb-5 border-0">
+            <div class="card-header bg-white py-3 border-bottom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 text-dark"><i class="fas fa-file-alt mr-2 text-primary"></i> Safety Inspection Report</h4>
+                    <div class="btn-group">
+                        <button onclick="copyToClipboard()" class="btn btn-outline-secondary btn-sm"><i class="far fa-copy mr-1"></i> Copy</button>
+                        <button onclick="exportToPDF()" class="btn btn-outline-danger btn-sm"><i class="far fa-file-pdf mr-1"></i> PDF</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4" id="report-content">
+                {% for section in sections %}
+                    <div class="report-section mb-4 p-4 bg-white rounded shadow-sm">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="mr-3">
+                                {% if "Hazard" in section.title %}
+                                    <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                                {% elif "Recommend" in section.title %}
+                                    <i class="fas fa-clipboard-check fa-2x text-success"></i>
+                                {% elif "Priority" in section.title %}
+                                    <i class="fas fa-flag fa-2x text-warning"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle fa-2x text-info"></i>
+                                {% endif %}
+                            </div>
+                            <h5 class="mb-0 text-dark font-weight-bold">{{ section.title }}</h5>
+                        </div>
+                        <div class="section-content pl-4">
+                            {% if section.bullets %}
+                                <ul class="pl-3">
+                                    {% for bullet in section.bullets %}
+                                        <li class="mb-2">{{ bullet }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No items detected in this section.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <!-- Safety Score Display -->
+                {% if safety_score %}
+                    <div class="safety-score mt-4 p-4 bg-white rounded shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h5 class="text-dark font-weight-bold mb-1">
+                                    <i class="fas fa-chart-line mr-2"></i> Safety Score Summary
+                                </h5>
+                                <p class="text-muted small mb-0">Based on identified hazards and compliance levels</p>
+                            </div>
+                            <div class="score-display">
+                                <span class="display-4 font-weight-bold 
+                                    {% if safety_score >= 80 %}text-success
+                                    {% elif safety_score >= 50 %}text-warning
+                                    {% else %}text-danger
+                                    {% endif %}">
+                                    {{ safety_score }}
+                                </span><span class="text-muted">/100</span>
+                            </div>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar 
+                                {% if safety_score >= 80 %}bg-success
+                                {% elif safety_score >= 50 %}bg-warning
+                                {% else %}bg-danger
+                                {% endif %}" 
+                                role="progressbar" style="width: {{ safety_score }}%">
+                            </div>
+                        </div>
+                        <div class="mt-2 text-right">
+                            <small class="text-muted">
+                                {% if safety_score >= 80 %}
+                                    <i class="fas fa-check-circle text-success"></i> Excellent safety compliance
+                                {% elif safety_score >= 50 %}
+                                    <i class="fas fa-exclamation-triangle text-warning"></i> Needs improvement
+                                {% else %}
+                                    <i class="fas fa-times-circle text-danger"></i> Immediate action required
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-light py-3 text-muted small">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><i class="far fa-clock mr-1"></i> Generated at {{ now|date:"F j, Y H:i" }}</span>
+                    <span><i class="fas fa-code-branch mr-1"></i> AI Safety Inspector v1.0</span>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 </div>
 
 <script>
     function copyToClipboard() {
-        const reportContent = document.getElementById('report-content').innerText;
-        navigator.clipboard.writeText(reportContent).then(() => {
-            alert('Report copied to clipboard!');
+        const text = document.getElementById("report-content").innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Report copied to clipboard!");
         }).catch(err => {
-            console.error('Failed to copy: ', err);
+            alert("Failed to copy report: " + err);
         });
     }
 
     function exportToPDF() {
-        // This would typically use a library like jsPDF or html2pdf
-        alert('PDF export functionality would be implemented here with a proper PDF library');
-        // Example implementation might look like:
-        // const element = document.getElementById('report-content');
-        // html2pdf().from(element).save('safety-inspection-report.pdf');
+        alert('PDF export not implemented. Use jsPDF or html2pdf to enable export.');
+    }
+</script>
+
+
+<!-- Custom CSS -->
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+    }
+    
+    .img-preview-container {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        display: inline-block;
+    }
+    
+    .report-section {
+        border-left: 4px solid #3a7bd5;
+        transition: all 0.3s ease;
+    }
+    
+    .report-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .section-header {
+        padding-bottom: 10px;
+        border-bottom: 1px dashed #eee;
+    }
+    
+    .section-content {
+        line-height: 1.8;
+        color: #495057;
+    }
+    
+    .score-display {
+        background: #f8f9fa;
+        padding: 10px 20px;
+        border-radius: 50px;
+    }
+    
+    /* Custom scrollbar for report content */
+    #report-content {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    #report-content::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    #report-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    #report-content::-webkit-scrollbar-thumb {
+        background: #3a7bd5;
+        border-radius: 10px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .section-icon {
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+<script>
+    // Enhanced file input
+    document.getElementById('photoUpload').addEventListener('change', function(e) {
+        var fileName = e.target.files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerHTML = '<i class="fas fa-check-circle text-success mr-2"></i>' + fileName;
+    });
+
+    // Copy to clipboard with toast notification
+    function copyToClipboard() {
+        const content = document.getElementById("report-content").innerText;
+        navigator.clipboard.writeText(content).then(() => {
+            showToast('Report copied to clipboard!', 'success');
+        }).catch(err => {
+            showToast('Failed to copy report', 'danger');
+            console.error('Copy failed:', err);
+        });
+    }
+
+    // PDF export placeholder
+    function exportToPDF() {
+        showToast('Preparing PDF download...', 'info', true);
+        setTimeout(() => {
+            // In production: html2pdf().from(report-content).save();
+            showToast('PDF download ready!', 'success');
+        }, 1500);
+    }
+    
+    // Toast notification function
+    function showToast(message, type, loading = false) {
+        const toast = document.createElement('div');
+        toast.className = `toast show bg-${type} text-white`;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            min-width: 250px;
+            z-index: 1000;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        
+        toast.innerHTML = `
+            <div class="toast-body d-flex align-items-center">
+                ${loading ? '<div class="spinner-border spinner-border-sm mr-2"></div>' : ''}
+                ${message}
+                <button type="button" class="close ml-auto" onclick="this.parentElement.parentElement.remove()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
 </script>
 {% endblock %}

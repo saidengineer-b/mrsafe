@@ -1,4 +1,38 @@
-# mrsafe_app/views/views_ai.py
+import base64
+from django.conf import settings
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from openai import OpenAI
+from django.utils.timezone import now
+from django.core.files.storage import FileSystemStorage
+
+client = OpenAI(api_key=settings.OPENAI_API_KEY)
+import re
+
+def parse_markdown_sections(markdown_text):
+    sections = []
+    raw_sections = [s.strip() for s in markdown_text.split("##") if s.strip()]
+    
+    bullet_pattern = re.compile(r"^(\s*[-*•]|\s*\d+\.)\s+")
+
+    for section in raw_sections:
+        lines = section.splitlines()
+        title = lines[0].strip() if lines else "Untitled"
+        body_lines = lines[1:] if len(lines) > 1 else []
+
+        bullet_points = []
+        for line in body_lines:
+            if bullet_pattern.match(line.strip()):
+                clean_bullet = bullet_pattern.sub("", line.strip())
+                bullet_points.append(clean_bullet)
+
+        sections.append({
+            "title": title,
+            "bullets": bullet_points,
+        })
+
+    return sections
+
 import base64
 from django.conf import settings
 from django.shortcuts import render
@@ -91,8 +125,11 @@ Format your response with clear markdown sections:
                         .replace("```", "")
                         .strip()
             )
-            context["result"] = clean_analysis
-            context["safety_score"] = self.calculate_safety_score(clean_analysis)
+            context["sections"] = parse_markdown_sections(clean_analysis)
+
+
+            context["safety_score"] = calculate_safety_score(clean_analysis)
+
             
         except ValueError as ve:
             context["error"] = f"Validation Error: {str(ve)}"
