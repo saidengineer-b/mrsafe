@@ -89,7 +89,7 @@ path('register/', register, name='register'),
 path('login/', auth_views.LoginView.as_view(template_name='mrsafe/login.html'), name='login'),
 path('', home, name='home'),  # ✅ This makes /mrsafe/ go to home()
 
-
+path("inspect/", safety_image_test, name="safety_image_test"),
 path("inspect/", inspect, name="inspect"),
 
 # urls.py

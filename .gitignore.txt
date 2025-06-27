@@ -1,26 +1,28 @@
 # Python
 __pycache__/
 *.py[cod]
-*.sqlite3
-db.sqlite3
+*.pyo
+*.pyd
 
 # Django
 *.log
 *.pot
 *.pyc
 *.mo
-*.pyo
-*.pyd
 *.db
 *.sqlite3
 
-# Environments
+# Virtual environments
 venv/
-.env
+env/
 
-# VSCode
+# Secret files
+.env
+.env.*
+
+# VS Code
 .vscode/
 
-# OS
+# OS-specific
 .DS_Store
 Thumbs.db

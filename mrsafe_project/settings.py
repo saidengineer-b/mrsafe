@@ -5,8 +5,9 @@ Django settings for Mr. Safe
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-import dj_database_url
 
+import dj_database_url
+load_dotenv()
 # ✅ Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 

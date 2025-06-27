@@ -1,566 +1,85 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends 'base.html' %}
 
-{% block title %}AI Safety Inspector{% endblock %}
+{% block title %}AI Safety Inspection{% endblock %}
 
 {% block content %}
-<div class="safety-container">
-    <div class="safety-card">
-        <!-- Animated header section -->
-        <div class="header-animation">
-            <div class="animated-circle"></div>
-            <h1 class="safety-title">
-                <span class="gradient-text">AI Safety</span> Inspection
-            </h1>
-            <p class="safety-subtitle">Upload an image to detect safety compliance issues</p>
-        </div>
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">🛡️ AI-Powered Safety Image Inspection</h2>
 
-        <!-- Interactive upload area -->
-        <div class="upload-area" id="uploadArea">
-            <div class="upload-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-            </div>
-            <form method="post" enctype="multipart/form-data" id="uploadForm">
-                {% csrf_token %}
-                <input type="file" name="safety_image" id="safety_image" required class="file-input">
-                <label for="safety_image" class="upload-label">
-                    <span class="browse-text">Browse files</span> or drag & drop here
-                </label>
-                <div class="file-requirements">
-                    <span>Supports: JPG, PNG (Max 5MB)</span>
-                </div>
-                <button type="submit" class="analyze-button">
-                    <span class="button-text">Analyze Image</span>
-                    <span class="button-icon">→</span>
-                </button>
-            </form>
-        </div>
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
 
-        <!-- Results section with animated reveal -->
-        {% if uploaded_image_url %}
-        <div class="results-section" id="resultsSection">
-            <div class="results-header">
-                <h2>Inspection Results</h2>
-                <div class="confidence-meter">
-                    <div class="meter-fill" style="width: 85%"></div>
-                    <span>85% Safety Confidence</span>
-                </div>
-            </div>
-            
-            <div class="image-comparison">
-                <div class="original-image">
-                    <h3>Original Image</h3>
-                    <img src="{{ uploaded_image_url }}" alt="Uploaded Image" class="inspected-image">
-                </div>
-                <div class="annotated-image">
-                    <h3>Safety Analysis</h3>
-                    <img src="{{ uploaded_image_url }}" alt="Analyzed Image" class="inspected-image">
-                    <div class="safety-annotations">
-                        <!-- These would be dynamically added based on your backend analysis -->
-                        <div class="annotation" style="top: 30%; left: 45%;" data-tooltip="Hard hat required in this area">
-                            <div class="annotation-marker"></div>
-                        </div>
-                        <div class="annotation" style="top: 60%; left: 25%;" data-tooltip="Unsecured equipment detected">
-                            <div class="annotation-marker warning"></div>
-                        </div>
+    {% if error_details and debug %}
+        <div class="alert alert-warning">
+            <strong>Error Details (Debug):</strong>
+            <pre>{{ error_details }}</pre>
+        </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="mb-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="photo">Upload Safety Image (max 5MB):</label>
+            <input type="file" name="photo" accept="image/*" class="form-control-file" required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">🔍 Analyze Image</button>
+    </form>
+
+    {% if photo_url %}
+        <div class="mb-4 text-center">
+            <h5>Uploaded Image Preview</h5>
+            <img src="{{ photo_url }}" class="img-fluid rounded border shadow-sm" alt="Uploaded Image" style="max-width: 100%; height: auto;">
+        </div>
+    {% endif %}
+
+    {% if result %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="card-title mb-0">📋 Inspection Report</h4>
+                    <div>
+                        <button onclick="copyToClipboard()" class="btn btn-sm btn-outline-secondary mr-2">
+                            📋 Copy Text
+                        </button>
+                        <button onclick="exportToPDF()" class="btn btn-sm btn-outline-danger">
+                            📄 Export PDF
+                        </button>
                     </div>
                 </div>
-            </div>
-            
-            <div class="safety-findings">
-                <h3>Key Findings</h3>
-                <ul class="findings-list">
-                    <li class="finding-item compliant">
-                        <span class="finding-icon">✓</span>
-                        <span class="finding-text">Proper PPE detected on 3 workers</span>
-                    </li>
-                    <li class="finding-item non-compliant">
-                        <span class="finding-icon">!</span>
-                        <span class="finding-text">1 unsecured ladder detected</span>
-                    </li>
-                    <li class="finding-item compliant">
-                        <span class="finding-icon">✓</span>
-                        <span class="finding-text">Safety barriers properly installed</span>
-                    </li>
-                </ul>
-            </div>
-            
-            <button class="download-report-button">
-                Download Full Safety Report (PDF)
-            </button>
-        </div>
-        {% endif %}
-    </div>
-    
-    <div class="safety-tips">
-        <h3>Safety Inspection Tips</h3>
-        <div class="tips-carousel">
-            <div class="tip-card">
-                <div class="tip-icon">🛡️</div>
-                <p>Ensure all workers wear appropriate PPE for the job site</p>
-            </div>
-            <div class="tip-card">
-                <div class="tip-icon">⚠️</div>
-                <p>Check for proper signage in hazardous areas</p>
-            </div>
-            <div class="tip-card">
-                <div class="tip-icon">🔧</div>
-                <p>Inspect tools and equipment for proper condition</p>
+                
+                <div id="report-content" class="mt-3" style="white-space: pre-wrap;">
+                    {{ result|safe }}
+                    
+                    {% if safety_score %}
+                    <div class="mt-4">
+                        <strong>Estimated Safety Score:</strong> {{ safety_score }}/100
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
+
+    <p class="text-muted small text-right">Generated at {{ now|date:"Y-m-d H:i" }}</p>
 </div>
 
-<style>
-    :root {
-        --primary: #3b82f6;
-        --primary-dark: #2563eb;
-        --primary-light: #93c5fd;
-        --danger: #ef4444;
-        --warning: #f59e0b;
-        --success: #10b981;
-        --gray-100: #f3f4f6;
-        --gray-200: #e5e7eb;
-        --gray-500: #6b7280;
-        --gray-700: #374151;
-        --gray-900: #111827;
-    }
-    
-    .safety-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-    }
-    
-    .safety-card {
-        background-color: white;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        padding: 3rem;
-        margin-bottom: 2rem;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .header-animation {
-        text-align: center;
-        margin-bottom: 2.5rem;
-        position: relative;
-    }
-    
-    .animated-circle {
-        position: absolute;
-        top: -50px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 120px;
-        height: 120px;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 70%);
-        border-radius: 50%;
-        animation: pulse 3s infinite;
-    }
-    
-    @keyframes pulse {
-        0% { transform: translateX(-50%) scale(1); opacity: 0.6; }
-        50% { transform: translateX(-50%) scale(1.1); opacity: 0.3; }
-        100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
-    }
-    
-    .safety-title {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-        color: var(--gray-900);
-        font-weight: 700;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .gradient-text {
-        background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-    }
-    
-    .safety-subtitle {
-        color: var(--gray-500);
-        font-size: 1.1rem;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-    
-    .upload-area {
-        border: 2px dashed var(--gray-200);
-        border-radius: 12px;
-        padding: 2.5rem;
-        text-align: center;
-        transition: all 0.3s ease;
-        margin-bottom: 2rem;
-    }
-    
-    #uploadArea:hover {
-        border-color: var(--primary-light);
-        background-color: rgba(59, 130, 246, 0.03);
-    }
-    
-    .upload-icon {
-        margin-bottom: 1rem;
-    }
-    
-    .file-input {
-        display: none;
-    }
-    
-    .upload-label {
-        display: block;
-        cursor: pointer;
-        margin-bottom: 0.5rem;
-        font-size: 1.1rem;
-        color: var(--gray-700);
-    }
-    
-    .browse-text {
-        color: var(--primary);
-        font-weight: 600;
-        text-decoration: underline;
-    }
-    
-    .file-requirements {
-        color: var(--gray-500);
-        font-size: 0.9rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .analyze-button {
-        background-color: var(--primary);
-        color: white;
-        border: none;
-        padding: 0.8rem 2rem;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.3s ease;
-    }
-    
-    .analyze-button:hover {
-        background-color: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    }
-    
-    .button-icon {
-        font-size: 1.2rem;
-        transition: transform 0.3s ease;
-    }
-    
-    .analyze-button:hover .button-icon {
-        transform: translateX(3px);
-    }
-    
-    /* Results section styling */
-    .results-section {
-        margin-top: 3rem;
-        animation: fadeIn 0.6s ease-out;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .results-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid var(--gray-200);
-    }
-    
-    .results-header h2 {
-        color: var(--gray-900);
-        font-size: 1.8rem;
-    }
-    
-    .confidence-meter {
-        width: 200px;
-        height: 8px;
-        background-color: var(--gray-200);
-        border-radius: 4px;
-        overflow: hidden;
-        position: relative;
-    }
-    
-    .meter-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--success), #34d399);
-        border-radius: 4px;
-    }
-    
-    .confidence-meter span {
-        position: absolute;
-        top: -25px;
-        right: 0;
-        font-size: 0.9rem;
-        color: var(--gray-700);
-    }
-    
-    .image-comparison {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-    
-    .original-image, .annotated-image {
-        position: relative;
-    }
-    
-    .image-comparison h3 {
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
-        color: var(--gray-700);
-    }
-    
-    .inspected-image {
-        width: 100%;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .safety-annotations {
-        position: relative;
-    }
-    
-    .annotation {
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        transform: translate(-50%, -50%);
-        cursor: pointer;
-    }
-    
-    .annotation-marker {
-        width: 100%;
-        height: 100%;
-        background-color: var(--success);
-        border-radius: 50%;
-        border: 2px solid white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        position: relative;
-    }
-    
-    .annotation-marker.warning {
-        background-color: var(--warning);
-    }
-    
-    .annotation-marker::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 8px;
-        height: 8px;
-        background-color: white;
-        border-radius: 50%;
-    }
-    
-    .annotation:hover::before {
-        content: attr(data-tooltip);
-        position: absolute;
-        top: -40px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: var(--gray-900);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        white-space: nowrap;
-        z-index: 10;
-    }
-    
-    .safety-findings {
-        background-color: var(--gray-100);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-    }
-    
-    .safety-findings h3 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-        color: var(--gray-900);
-    }
-    
-    .findings-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .finding-item {
-        padding: 0.8rem 1rem;
-        margin-bottom: 0.5rem;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-    }
-    
-    .finding-item.compliant {
-        background-color: rgba(16, 185, 129, 0.1);
-    }
-    
-    .finding-item.non-compliant {
-        background-color: rgba(239, 68, 68, 0.1);
-    }
-    
-    .finding-icon {
-        width: 24px;
-        height: 24px;
-        background-color: var(--success);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        flex-shrink: 0;
-    }
-    
-    .finding-item.non-compliant .finding-icon {
-        background-color: var(--danger);
-    }
-    
-    .download-report-button {
-        width: 100%;
-        padding: 1rem;
-        background-color: var(--gray-900);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .download-report-button:hover {
-        background-color: var(--gray-700);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .safety-tips {
-        background-color: white;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        padding: 2rem;
-    }
-    
-    .safety-tips h3 {
-        margin-top: 0;
-        margin-bottom: 1.5rem;
-        color: var(--gray-900);
-        text-align: center;
-    }
-    
-    .tips-carousel {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-    }
-    
-    .tip-card {
-        background-color: var(--gray-100);
-        border-radius: 12px;
-        padding: 1.5rem;
-        text-align: center;
-        transition: all 0.3s ease;
-    }
-    
-    .tip-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    .tip-icon {
-        font-size: 2rem;
-        margin-bottom: 1rem;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .safety-card {
-            padding: 2rem 1.5rem;
-        }
-        
-        .image-comparison {
-            grid-template-columns: 1fr;
-        }
-        
-        .safety-title {
-            font-size: 2rem;
-        }
-    }
-</style>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('safety_image');
-        const uploadLabel = document.querySelector('.upload-label');
-        
-        // Handle drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
+    function copyToClipboard() {
+        const reportContent = document.getElementById('report-content').innerText;
+        navigator.clipboard.writeText(reportContent).then(() => {
+            alert('Report copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
         });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            if (e.dataTransfer.files.length) {
-                fileInput.files = e.dataTransfer.files;
-                updateFileNameDisplay();
-            }
-        });
-        
-        // Update display when file is selected
-        fileInput.addEventListener('change', updateFileNameDisplay);
-        
-        function updateFileNameDisplay() {
-            if (fileInput.files.length) {
-                const fileName = fileInput.files[0].name;
-                uploadLabel.innerHTML = `<span class="file-selected">${fileName}</span>`;
-            }
-        }
-        
-        // Form submission loading state
-        const uploadForm = document.getElementById('uploadForm');
-        if (uploadForm) {
-            uploadForm.addEventListener('submit', function() {
-                const button = this.querySelector('button[type="submit"]');
-                if (button) {
-                    button.innerHTML = '<span class="button-text">Analyzing...</span>';
-                    button.disabled = true;
-                }
-            });
-        }
-    });
+    }
+
+    function exportToPDF() {
+        // This would typically use a library like jsPDF or html2pdf
+        alert('PDF export functionality would be implemented here with a proper PDF library');
+        // Example implementation might look like:
+        // const element = document.getElementById('report-content');
+        // html2pdf().from(element).save('safety-inspection-report.pdf');
+    }
 </script>
 {% endblock %}
