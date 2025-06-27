@@ -1,18 +1,21 @@
 import base64
+import re
 from django.conf import settings
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from openai import OpenAI
 from django.utils.timezone import now
 from django.core.files.storage import FileSystemStorage
+from ..forms import HazardForm, RecommendationForm
+
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
-import re
+
 
 def parse_markdown_sections(markdown_text):
     sections = []
     raw_sections = [s.strip() for s in markdown_text.split("##") if s.strip()]
-    
+
     bullet_pattern = re.compile(r"^(\s*[-*•]|\s*\d+\.)\s+")
 
     for section in raw_sections:
@@ -33,20 +36,11 @@ def parse_markdown_sections(markdown_text):
 
     return sections
 
-import base64
-from django.conf import settings
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from openai import OpenAI
-from django.utils.timezone import now
-from django.core.files.storage import FileSystemStorage
-
-client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
 @csrf_exempt
 def safety_image_test(request):
     context = {}
-    
+
     if not settings.OPENAI_API_KEY:
         context["error"] = "OpenAI API key is missing"
         return render(request, "mrsafe_app/inspect.html", context)
@@ -68,32 +62,29 @@ def safety_image_test(request):
             prompt = """
 **Safety Inspection Analysis Request**
 
-You are an expert occupational safety and health inspector with 20 years of experience. Thoroughly examine this workplace image and:
+You are a senior workplace safety expert with 20+ years of field experience. You are analyzing the uploaded workplace photo. Provide your response using the following structured format:
 
-1. **Identify Unsafe Conditions**:
-   - List visible hazards (prioritize by severity)
-   - Include potential hazards not immediately visible
-   - Reference OSHA standards
-   - Rate each hazard (Low/Medium/High/Critical)
+---
 
-2. **Provide Detailed Recommendations**:
-   - Specific corrective actions
-   - Suggested PPE
-   - Training needs
-   - Engineering controls
-   - Timeline for each fix
+### Hazard #1
+- **Title**: [Short title of hazard]
+- **Severity**: Low / Medium / High / Critical
+- **Description**: [Detailed description of the hazard]
+- **OSHA Reference**: [If applicable]
 
-3. **Additional Considerations**:
-   - Potential root causes
-   - Patterns or systemic issues
-   - Environmental contributors
+#### Recommendation
+- **Action**: [Corrective action to eliminate the hazard]
+- **PPE**: [Required PPE, if any]
+- **Training**: [Required training, if any]
+- **Engineering Control**: [Control measure, if any]
+- **Timeline**: [Suggested resolution timeline]
 
-Format your response with clear markdown sections:
-## Identified Hazards
-## Recommended Actions
-## Compliance References
-## Priority Assessment
-## Additional Considerations
+---
+
+Repeat the structure for each hazard found in the image. Do not list hazards or recommendations in separate sections. Always keep each hazard and its recommendation grouped.
+
+Format your output in clean markdown as shown above.
+
             """
 
             response = client.chat.completions.create(
@@ -119,18 +110,37 @@ Format your response with clear markdown sections:
             )
 
             analysis = response.choices[0].message.content
-            # Clean and standardize the markdown output
-            clean_analysis = (
-                analysis.replace("```markdown", "")
-                        .replace("```", "")
-                        .strip()
-            )
-            context["sections"] = parse_markdown_sections(clean_analysis)
+            clean_analysis = analysis.replace("```markdown", "").replace("```", "").strip()
+            sections = parse_markdown_sections(clean_analysis)
+            context["sections"] = sections
 
+            # Prepare forms from parsed sections
+            hazard_forms = []
+            recommendation_forms = []
 
+            for section in sections:
+                title = section["title"].lower()
+                for bullet in section["bullets"]:
+                    if "severity" in bullet.lower():
+                        # Try to extract severity and OSHA using patterns
+                        severity_match = re.search(r"severity:\s*(\w+)", bullet, re.I)
+                        osha_match = re.search(r"osha.*?:\s*(.+)", bullet, re.I)
+                        hazard_forms.append(HazardForm(initial={
+                            "title": section["title"],
+                            "description": bullet,
+                            "severity": severity_match.group(1) if severity_match else "Medium",
+                            "oshas": osha_match.group(1) if osha_match else "",
+                        }))
+                    elif any(k in title for k in ["recommendation", "action"]):
+                        recommendation_forms.append(RecommendationForm(initial={
+                            "title": section["title"],
+                            "action": bullet
+                        }))
+
+            context["hazard_forms"] = hazard_forms
+            context["recommendation_forms"] = recommendation_forms
             context["safety_score"] = calculate_safety_score(clean_analysis)
 
-            
         except ValueError as ve:
             context["error"] = f"Validation Error: {str(ve)}"
         except Exception as e:
@@ -142,17 +152,16 @@ Format your response with clear markdown sections:
     context["now"] = now()
     return render(request, "mrsafe/inspect/inspect.html", context)
 
-def calculate_safety_score(self, analysis):
+
+def calculate_safety_score(analysis):
     """Calculate safety score based on hazard severity in analysis"""
     critical = analysis.count("Severity: Critical")
     high = analysis.count("Severity: High")
     medium = analysis.count("Severity: Medium")
     low = analysis.count("Severity: Low")
     
-    # Simple scoring algorithm - adjust weights as needed
     score = 100 - (critical * 20 + high * 10 + medium * 5 + low * 2)
-    return max(30, min(100, score))  # Keep between 30-100
-
+    return max(30, min(100, score))
 
 
 # mrsafe_app/views/views_inspect.py
@@ -172,4 +181,3 @@ def inspect(request):
     return render(request, "mrsafe/inspect/inspect.html", {
         "uploaded_image_url": uploaded_image_url,
     })
-

@@ -157,3 +157,36 @@ class PremiumPlanForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['name'].choices = PremiumPlan.PLAN_CHOICES
     
+  # mrsafe_app/forms.py
+from django import forms
+
+class HazardForm(forms.Form):
+    title = forms.CharField(max_length=200)
+    severity = forms.ChoiceField(choices=[('Low', 'Low'), ('Medium', 'Medium'), ('High', 'High'), ('Critical', 'Critical')])
+    description = forms.CharField(widget=forms.Textarea)
+    oshas = forms.CharField(widget=forms.Textarea, required=False)
+
+class RecommendationForm(forms.Form):
+    title = forms.CharField(max_length=200)
+    action = forms.CharField(widget=forms.Textarea)
+    ppe = forms.CharField(required=False)
+    training = forms.CharField(required=False)
+    timeline = forms.CharField(required=False)
+
+from django import forms
+
+class HazardRecommendationForm(forms.Form):
+    # Hazard Fields
+    hazard_title = forms.CharField(label="Hazard Title", max_length=200)
+    severity = forms.ChoiceField(label="Severity", choices=[
+        ('Low', 'Low'), ('Medium', 'Medium'), ('High', 'High'), ('Critical', 'Critical')
+    ])
+    description = forms.CharField(label="Description", widget=forms.Textarea)
+    osha_reference = forms.CharField(label="OSHA Reference", widget=forms.Textarea, required=False)
+
+    # Recommendation Fields
+    recommendation_action = forms.CharField(label="Recommended Action", widget=forms.Textarea)
+    ppe = forms.CharField(label="PPE", required=False)
+    training = forms.CharField(label="Training", required=False)
+    engineering_control = forms.CharField(label="Engineering Control", required=False)
+    timeline = forms.CharField(label="Timeline", required=False)
