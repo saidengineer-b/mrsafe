@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+{% block title %}My Observations{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-5">
+    <!-- Header with Animated Background -->
+    <div class="hero-header rounded-lg mb-5" style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+    ">
+        <div class="container position-relative z-index-1">
+            <h1 class="display-4 font-weight-bold text-white mb-3 animate__animated animate__fadeInDown">
+                <i class="fas fa-clipboard-list mr-2"></i> My Safety Observations
+            </h1>
+            <p class="lead text-white-50 mb-0 animate__animated animate__fadeIn animate__delay-1s">
+                Your complete workplace safety analysis history
+            </p>
+        </div>
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </div>
+
+    <!-- Observations Grid -->
+    <div class="container">
+        {% if observations %}
+        <div class="row">
+            {% for obs in observations %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card observation-card h-100 shadow-lg border-0 rounded-lg overflow-hidden hover-scale">
+                    <!-- Image with Overlay -->
+                    <div class="card-img-top-container">
+                        <img src="{{ obs.photo.url }}" class="card-img-top" alt="Observation photo">
+                        <div class="date-badge">
+                            <span class="month">{{ obs.detected_at|date:"M" }}</span>
+                            <span class="day">{{ obs.detected_at|date:"d" }}</span>
+                        </div>
+                        <div class="severity-badge">
+                            <span class="badge {% if obs.severity == 'Critical' %}bg-danger
+                                             {% elif obs.severity == 'High' %}bg-warning
+                                             {% elif obs.severity == 'Medium' %}bg-info
+                                             {% else %}bg-secondary{% endif %}">
+                                {{ obs.severity|default:"Unknown" }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Body -->
+                    <div class="card-body position-relative">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-exclamation-triangle text-danger mr-2"></i>
+                                Safety Observation
+                            </h5>
+                            <button class="btn btn-sm btn-outline-primary toggle-details" data-target="details-{{ obs.id }}">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Hazard Section -->
+                        <div class="hazard-section mb-3">
+                            <h6 class="section-title">
+                                <i class="fas fa-skull-crossbones text-danger mr-2"></i>
+                                Identified Hazard
+                            </h6>
+                            <div class="section-content">
+                                {{ obs.hazard_description|linebreaks }}
+                            </div>
+                        </div>
+                        
+                        <!-- Recommendation Section (Collapsible) -->
+                        <div class="recommendation-section">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="section-title mb-0">
+                                    <i class="fas fa-clipboard-check text-success mr-2"></i>
+                                    Recommendations
+                                </h6>
+                                <span class="badge bg-success">{{ obs.recommendations|linebreaksbr|wordcount }} actions</span>
+                            </div>
+                            <div class="section-content collapse" id="details-{{ obs.id }}">
+                                {{ obs.recommendations|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Footer -->
+                    <div class="card-footer bg-transparent border-top-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="far fa-clock mr-1"></i>
+                                {{ obs.detected_at|timesince }} ago
+                            </small>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Share">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Delete">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state text-center py-5 my-5">
+            <div class="empty-state-icon">
+                <i class="fas fa-binoculars fa-4x text-muted mb-4"></i>
+            </div>
+            <h3 class="text-muted mb-3">No Observations Found</h3>
+            <p class="text-muted mb-4">You haven't saved any safety observations yet. Start inspecting your workplace to identify hazards.</p>
+            <a href="{% url 'inspection_page' %}" class="btn btn-primary btn-lg px-4">
+                <i class="fas fa-plus mr-2"></i> New Inspection
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal for Image View -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Observation Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" id="modalImage" class="img-fluid rounded" style="max-height: 70vh;">
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times mr-2"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Base Styles */
+    .hero-header {
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .floating-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .shape {
+        position: absolute;
+        opacity: 0.1;
+        border-radius: 50%;
+        background: white;
+    }
+    
+    .shape-1 {
+        width: 150px;
+        height: 150px;
+        top: -50px;
+        right: -50px;
+    }
+    
+    .shape-2 {
+        width: 250px;
+        height: 250px;
+        bottom: -100px;
+        left: -100px;
+    }
+    
+    .shape-3 {
+        width: 80px;
+        height: 80px;
+        top: 50%;
+        right: 20%;
+    }
+    
+    /* Observation Card */
+    .observation-card {
+        transition: all 0.3s ease;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .hover-scale:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .card-img-top-container {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .observation-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .date-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .date-badge .month {
+        font-size: 10px;
+        font-weight: bold;
+        text-transform: uppercase;
+        color: #764ba2;
+    }
+    
+    .date-badge .day {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    .severity-badge {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    /* Section Styles */
+    .section-title {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+    
+    .hazard-section {
+        border-left: 3px solid #dc3545;
+        padding-left: 10px;
+        margin-bottom: 1rem;
+    }
+    
+    .recommendation-section {
+        border-left: 3px solid #28a745;
+        padding-left: 10px;
+    }
+    
+    .section-content {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        background: rgba(248, 249, 250, 0.7);
+        border-radius: 15px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .hero-header {
+            padding: 2rem 1rem;
+        }
+        
+        .display-4 {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Toggle details
+        document.querySelectorAll('.toggle-details').forEach(button => {
+            button.addEventListener('click', function() {
+                const target = this.getAttribute('data-target');
+                const collapse = new bootstrap.Collapse(document.getElementById(target), {
+                    toggle: true
+                });
+                
+                // Rotate chevron icon
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fa-chevron-down')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+        
+        // Image modal
+        document.querySelectorAll('.card-img-top').forEach(img => {
+            img.addEventListener('click', function() {
+                document.getElementById('modalImage').src = this.src;
+                var modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                modal.show();
+            });
+        });
+    });
+</script>
+
+<!-- Animate.css for animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+{% endblock %}

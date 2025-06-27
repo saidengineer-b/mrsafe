@@ -254,3 +254,14 @@ from django.shortcuts import render
 
 def inspect_success(request):
     return render(request, "mrsafe/inspect/success.html")
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from ..models import SafetyObservation
+
+@login_required
+def observation_list(request):
+    observations = SafetyObservation.objects.filter(created_by=request.user).order_by('-detected_at')
+    return render(request, "mrsafe/inspect/observation_list.html", {
+        "observations": observations
+    })

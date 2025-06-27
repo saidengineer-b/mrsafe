@@ -68,7 +68,7 @@ from .views import (contact,
                     premium_membership,add_premium_plan,
                     register,profile,
                     edit_profile,about,store_home,add_item,edit_item,premium_checkout,public_landing, 
-                    inspect,save_observation,inspect_success)
+                    inspect,save_observation,inspect_success,observation_list)
 
 
 
@@ -97,6 +97,7 @@ path("save-observation/", save_observation, name="save_observation"),
 
 path("inspect/", inspect, name="inspect"),
 path('inspect/success/', inspect_success, name='inspect_success'),
+path('observations/', observation_list, name='observation_list'),
 
 # urls.py
 
