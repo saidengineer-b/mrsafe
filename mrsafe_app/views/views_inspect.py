@@ -1,15 +1,19 @@
 import base64
-import re
 import os
+import re
+import traceback
 from dotenv import load_dotenv
-from django.conf import settings
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from openai import OpenAI
-from django.utils.timezone import now
-from django.core.files.storage import FileSystemStorage
-from ..forms import HazardForm, RecommendationForm
 
+from django.conf import settings
+from django.shortcuts import render, redirect
+from django.utils.timezone import now
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import FileSystemStorage
+from openai import OpenAI
+from django.contrib.auth import get_user_model
+
+from ..forms import HazardForm, RecommendationForm
+from ..models import SafetyObservation
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
@@ -17,25 +21,14 @@ client = OpenAI(api_key=settings.OPENAI_API_KEY)
 def parse_markdown_sections(markdown_text):
     sections = []
     raw_sections = [s.strip() for s in markdown_text.split("##") if s.strip()]
-
     bullet_pattern = re.compile(r"^(\s*[-*•]|\s*\d+\.)\s+")
 
     for section in raw_sections:
         lines = section.splitlines()
         title = lines[0].strip() if lines else "Untitled"
         body_lines = lines[1:] if len(lines) > 1 else []
-
-        bullet_points = []
-        for line in body_lines:
-            if bullet_pattern.match(line.strip()):
-                clean_bullet = bullet_pattern.sub("", line.strip())
-                bullet_points.append(clean_bullet)
-
-        sections.append({
-            "title": title,
-            "bullets": bullet_points,
-        })
-
+        bullet_points = [re.sub(bullet_pattern, "", line.strip()) for line in body_lines if bullet_pattern.match(line.strip())]
+        sections.append({"title": title, "bullets": bullet_points})
     return sections
 
 
@@ -45,14 +38,16 @@ def safety_image_test(request):
 
     if not settings.OPENAI_API_KEY:
         context["error"] = "OpenAI API key is missing"
-        return render(request, "mrsafe_app/inspect.html", context)
+        return render(request, "mrsafe/inspect/inspect.html", context)
 
     if request.method == "POST" and request.FILES.get("photo"):
         image_file = request.FILES["photo"]
+
         try:
             if image_file.size > 5 * 1024 * 1024:
                 raise ValueError("Image size exceeds 5MB")
 
+            # Save uploaded photo to media/uploads
             fs = FileSystemStorage(location="media/uploads", base_url="/media/uploads/")
             filename = fs.save(image_file.name, image_file)
             uploaded_url = fs.url(filename)
@@ -60,6 +55,12 @@ def safety_image_test(request):
 
             with fs.open(filename, "rb") as img:
                 base64_img = base64.b64encode(img.read()).decode("utf-8")
+
+            # Debug: content-type and input size
+            content_type = image_file.content_type or "image/jpeg"
+            image_ext = content_type.split("/")[-1]
+            print("[DEBUG] Content-Type:", content_type)
+            print("[DEBUG] Base64 Length:", len(base64_img))
 
             prompt = """
 **Safety Inspection Analysis Request**
@@ -86,8 +87,7 @@ You are a senior workplace safety expert with 20+ years of field experience. You
 Repeat the structure for each hazard found in the image. Do not list hazards or recommendations in separate sections. Always keep each hazard and its recommendation grouped.
 
 Format your output in clean markdown as shown above.
-
-            """
+"""
 
             response = client.chat.completions.create(
                 model="gpt-4o",
@@ -100,7 +100,7 @@ Format your output in clean markdown as shown above.
                             {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": f"data:image/{image_file.content_type.split('/')[-1]};base64,{base64_img}",
+                                    "url": f"data:image/{image_ext};base64,{base64_img}",
                                     "detail": "high"
                                 }
                             }
@@ -111,12 +111,41 @@ Format your output in clean markdown as shown above.
                 temperature=0.3,
             )
 
+            print("[DEBUG] GPT Response Object:", response)
+
+            if not response.choices or not response.choices[0].message.content:
+                raise ValueError("GPT response missing expected content.")
+
             analysis = response.choices[0].message.content
             clean_analysis = analysis.replace("```markdown", "").replace("```", "").strip()
             sections = parse_markdown_sections(clean_analysis)
             context["sections"] = sections
 
-            # Prepare forms from parsed sections
+            # Extract hazard and recommendation summary
+            hazard_lines = []
+            reco_lines = []
+            for section in sections:
+                title = section["title"].strip()
+                for bullet in section.get("bullets", []):
+                    if "severity" in bullet.lower():
+                        hazard_lines.append(f"{title}: {bullet}")
+                    elif any(x in title.lower() for x in ["recommendation", "action"]):
+                        reco_lines.append(f"{title}: {bullet}")
+
+            # Save to DB
+            user = request.user if request.user.is_authenticated else get_user_model().objects.filter(is_active=True).first()
+            if not user:
+                context["error"] = "No valid user found to assign observation."
+                return render(request, "mrsafe/inspect/inspect.html", context)
+
+            SafetyObservation.objects.create(
+                photo=image_file,
+                hazard_description="\n".join(hazard_lines),
+                recommendations="\n".join(reco_lines),
+                created_by=user
+            )
+
+            # Forms for UI
             hazard_forms = []
             recommendation_forms = []
 
@@ -124,7 +153,6 @@ Format your output in clean markdown as shown above.
                 title = section["title"].lower()
                 for bullet in section["bullets"]:
                     if "severity" in bullet.lower():
-                        # Try to extract severity and OSHA using patterns
                         severity_match = re.search(r"severity:\s*(\w+)", bullet, re.I)
                         osha_match = re.search(r"osha.*?:\s*(.+)", bullet, re.I)
                         hazard_forms.append(HazardForm(initial={
@@ -141,14 +169,13 @@ Format your output in clean markdown as shown above.
 
             context["hazard_forms"] = hazard_forms
             context["recommendation_forms"] = recommendation_forms
-            context["safety_score"] = calculate_safety_score(clean_analysis)
+            context["message"] = "✅ Safety observation successfully saved."
 
         except ValueError as ve:
             context["error"] = f"Validation Error: {str(ve)}"
         except Exception as e:
             context["error"] = f"Analysis Error: {str(e)}"
             if settings.DEBUG:
-                import traceback
                 context["error_details"] = traceback.format_exc()
 
     context["now"] = now()
@@ -168,8 +195,7 @@ def calculate_safety_score(analysis):
 
 # mrsafe_app/views/views_inspect.py
 
-from django.shortcuts import render
-from django.core.files.storage import FileSystemStorage
+
 
 def inspect(request):
     uploaded_image_url = None
@@ -183,3 +209,48 @@ def inspect(request):
     return render(request, "mrsafe/inspect/inspect.html", {
         "uploaded_image_url": uploaded_image_url,
     })
+    
+
+
+from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
+from django.shortcuts import redirect
+import os
+from django.conf import settings
+from ..models import SafetyObservation  # adjust import if needed
+
+@login_required
+def save_observation(request):
+    if request.method == 'POST':
+        photo_url = request.POST.get('photo')
+        hazard_description = request.POST.get('hazard_description', '')
+        recommendations = request.POST.get('recommendations', '')
+
+        if photo_url and photo_url.startswith('/media/'):
+            photo_path = photo_url.replace('/media/', '')
+            full_path = os.path.join(settings.MEDIA_ROOT, photo_path)
+
+            try:
+                with open(full_path, 'rb') as f:
+                    file_content = ContentFile(f.read(), name=os.path.basename(photo_path))
+
+                SafetyObservation.objects.create(
+                    photo=file_content,
+                    hazard_description=hazard_description,
+                    recommendations=recommendations,
+                    created_by=request.user  # ✅ correct field
+                )
+
+                return redirect('mrsafe_app:inspect_success')  # ensure this route exists
+
+            except FileNotFoundError:
+                print(f"[ERROR] File not found: {full_path}")
+
+        return redirect('mrsafe_app:inspect')  # fallback
+    return redirect('mrsafe_app:inspect')
+
+
+from django.shortcuts import render
+
+def inspect_success(request):
+    return render(request, "mrsafe/inspect/success.html")

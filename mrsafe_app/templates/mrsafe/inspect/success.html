@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert alert-success mt-5 text-center">
+    <h4>✅ Observation Saved!</h4>
+    <p>Your safety observation was successfully submitted.</p>
+    <a href="{% url 'mrsafe_app:safety_image_test' %}" class="btn btn-primary mt-3">Back to Inspector</a>
+</div>
+{% endblock %}
+

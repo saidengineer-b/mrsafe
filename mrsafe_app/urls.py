@@ -67,7 +67,10 @@ from .views import (contact,
                     terms_and_conditions,privacy_policy,
                     premium_membership,add_premium_plan,
                     register,profile,
-                    edit_profile,about,store_home,add_item,edit_item,premium_checkout,public_landing, inspect)
+                    edit_profile,about,store_home,add_item,edit_item,premium_checkout,public_landing, 
+                    inspect,save_observation,inspect_success)
+
+
 
 
 from django.urls import path
@@ -90,7 +93,10 @@ path('login/', auth_views.LoginView.as_view(template_name='mrsafe/login.html'), 
 path('', home, name='home'),  # ✅ This makes /mrsafe/ go to home()
 
 path("inspect/", safety_image_test, name="safety_image_test"),
+path("save-observation/", save_observation, name="save_observation"),
+
 path("inspect/", inspect, name="inspect"),
+path('inspect/success/', inspect_success, name='inspect_success'),
 
 # urls.py
 

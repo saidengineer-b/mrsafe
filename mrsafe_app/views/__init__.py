@@ -12,7 +12,7 @@ from .views_notifications import (
     clear_notifications,mark_all_as_read,
 ) 
 
-from .views_inspect import (safety_image_test,inspect) 
+from .views_inspect import (safety_image_test,inspect,save_observation,inspect_success) 
 
 
 from .views_files import (

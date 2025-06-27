@@ -301,15 +301,23 @@ class SiteInspection(models.Model):
 
     def total_observations(self):
         return self.observations.count()
+from django.conf import settings
+from django.db import models
 
 class SafetyObservation(models.Model):
     photo = models.ImageField(upload_to='observations/')
     hazard_description = models.TextField()
     recommendations = models.TextField()
     detected_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="safety_observations"  # Optional, useful for filtering
+    )
+
     site_inspection = models.ForeignKey(
-        SiteInspection,
+        'SiteInspection',  # Forward reference if SiteInspection is defined below
         on_delete=models.CASCADE,
         null=True,
         blank=True,
