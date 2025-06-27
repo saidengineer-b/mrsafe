@@ -58,3 +58,28 @@ def split_paragraphs(value):
     if not value:
         return []
     return [p.strip() for p in value.split('\n\n') if p.strip()]
+
+
+@register.filter
+def multiply(value, arg):
+    try:
+        return float(value) * float(arg)
+    except (ValueError, TypeError):
+        return ''
+
+
+
+@register.filter
+def subtract(value, arg):
+    try:
+        return float(value) - float(arg)
+    except:
+        return ''
+
+
+@register.filter
+def strip(value):
+    try:
+        return value.strip()
+    except AttributeError:
+        return value

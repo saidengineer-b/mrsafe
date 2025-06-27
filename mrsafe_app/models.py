@@ -287,3 +287,34 @@ class PaymentTransaction(models.Model):
         return f"{self.user} paid {self.amount} {self.currency} via {self.get_payment_method_display()}"
 
 
+from django.db import models
+from django.conf import settings
+
+class SiteInspection(models.Model):
+    title = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    date = models.DateTimeField(auto_now_add=True)
+    inspector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.title} @ {self.location} ({self.date.strftime('%Y-%m-%d')})"
+
+    def total_observations(self):
+        return self.observations.count()
+
+class SafetyObservation(models.Model):
+    photo = models.ImageField(upload_to='observations/')
+    hazard_description = models.TextField()
+    recommendations = models.TextField()
+    detected_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    site_inspection = models.ForeignKey(
+        SiteInspection,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="observations"
+    )
+
+    def __str__(self):
+        return f"Observation {self.id} - {self.detected_at.strftime('%Y-%m-%d %H:%M')}"
