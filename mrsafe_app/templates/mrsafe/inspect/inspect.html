@@ -89,14 +89,68 @@
             </div>
             <div class="card-body p-4" id="report-content">
                 {% for section in sections %}
+                    <!-- Hazard Section - Enhanced with danger styling -->
+                    {% if "Hazard" in section.title %}
+                    <div class="report-section hazard-section mb-4 p-4 rounded shadow-sm">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="mr-3 hazard-icon">
+                                <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0 font-weight-bold">{{ section.title }}</h5>
+                                <p class="small text-muted mb-0">Potential safety violations requiring immediate attention</p>
+                            </div>
+                            <div class="ml-auto hazard-badge">
+                                <span class="badge badge-pill badge-danger">Critical</span>
+                            </div>
+                        </div>
+                        <div class="section-content pl-4">
+                            {% if section.bullets %}
+                                <ul class="hazard-list pl-3">
+                                    {% for bullet in section.bullets %}
+                                        <li class="mb-2">{{ bullet }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No hazards detected</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Recommendation Section - Enhanced with success styling -->
+                    {% elif "Recommend" in section.title %}
+                    <div class="report-section recommendation-section mb-4 p-4 rounded shadow-sm">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="mr-3 recommendation-icon">
+                                <i class="fas fa-clipboard-check fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-0 font-weight-bold">{{ section.title }}</h5>
+                                <p class="small text-muted mb-0">Suggested improvements for safety compliance</p>
+                            </div>
+                            <div class="ml-auto recommendation-badge">
+                                <span class="badge badge-pill badge-success">Action Items</span>
+                            </div>
+                        </div>
+                        <div class="section-content pl-4">
+                            {% if section.bullets %}
+                                <ul class="recommendation-list pl-3">
+                                    {% for bullet in section.bullets %}
+                                        <li class="mb-2">{{ bullet }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">No recommendations available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Other Sections -->
+                    {% else %}
                     <div class="report-section mb-4 p-4 bg-white rounded shadow-sm">
                         <div class="d-flex align-items-center mb-3">
                             <div class="mr-3">
-                                {% if "Hazard" in section.title %}
-                                    <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
-                                {% elif "Recommend" in section.title %}
-                                    <i class="fas fa-clipboard-check fa-2x text-success"></i>
-                                {% elif "Priority" in section.title %}
+                                {% if "Priority" in section.title %}
                                     <i class="fas fa-flag fa-2x text-warning"></i>
                                 {% else %}
                                     <i class="fas fa-info-circle fa-2x text-info"></i>
@@ -116,6 +170,7 @@
                             {% endif %}
                         </div>
                     </div>
+                    {% endif %}
                 {% endfor %}
 
                 <!-- Safety Score Display -->
@@ -175,119 +230,19 @@
     function copyToClipboard() {
         const text = document.getElementById("report-content").innerText;
         navigator.clipboard.writeText(text).then(() => {
-            alert("Report copied to clipboard!");
+            showToast("Report copied to clipboard!", "success");
         }).catch(err => {
-            alert("Failed to copy report: " + err);
+            showToast("Failed to copy report: " + err, "danger");
         });
     }
 
-    function exportToPDF() {
-        alert('PDF export not implemented. Use jsPDF or html2pdf to enable export.');
-    }
-</script>
-
-
-<!-- Custom CSS -->
-<style>
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
-    }
-    
-    .img-preview-container {
-        background-color: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-        display: inline-block;
-    }
-    
-    .report-section {
-        border-left: 4px solid #3a7bd5;
-        transition: all 0.3s ease;
-    }
-    
-    .report-section:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    
-    .section-header {
-        padding-bottom: 10px;
-        border-bottom: 1px dashed #eee;
-    }
-    
-    .section-content {
-        line-height: 1.8;
-        color: #495057;
-    }
-    
-    .score-display {
-        background: #f8f9fa;
-        padding: 10px 20px;
-        border-radius: 50px;
-    }
-    
-    /* Custom scrollbar for report content */
-    #report-content {
-        max-height: 70vh;
-        overflow-y: auto;
-        padding-right: 10px;
-    }
-    
-    #report-content::-webkit-scrollbar {
-        width: 8px;
-    }
-    
-    #report-content::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
-    
-    #report-content::-webkit-scrollbar-thumb {
-        background: #3a7bd5;
-        border-radius: 10px;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .section-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .section-icon {
-            margin-bottom: 10px;
-        }
-    }
-</style>
-
-<script>
-    // Enhanced file input
-    document.getElementById('photoUpload').addEventListener('change', function(e) {
-        var fileName = e.target.files[0].name;
-        var nextSibling = e.target.nextElementSibling;
-        nextSibling.innerHTML = '<i class="fas fa-check-circle text-success mr-2"></i>' + fileName;
-    });
-
-    // Copy to clipboard with toast notification
-    function copyToClipboard() {
-        const content = document.getElementById("report-content").innerText;
-        navigator.clipboard.writeText(content).then(() => {
-            showToast('Report copied to clipboard!', 'success');
-        }).catch(err => {
-            showToast('Failed to copy report', 'danger');
-            console.error('Copy failed:', err);
-        });
-    }
-
-    // PDF export placeholder
     function exportToPDF() {
         showToast('Preparing PDF download...', 'info', true);
         setTimeout(() => {
-            // In production: html2pdf().from(report-content).save();
             showToast('PDF download ready!', 'success');
         }, 1500);
     }
     
-    // Toast notification function
     function showToast(message, type, loading = false) {
         const toast = document.createElement('div');
         toast.className = `toast show bg-${type} text-white`;
@@ -314,5 +269,149 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
+
+    // Enhanced file input
+    document.getElementById('photoUpload').addEventListener('change', function(e) {
+        var fileName = e.target.files[0].name;
+        var nextSibling = e.target.nextElementSibling;
+        nextSibling.innerHTML = '<i class="fas fa-check-circle text-success mr-2"></i>' + fileName;
+    });
 </script>
+
+<style>
+    /* Base Styles */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+    }
+    
+    .img-preview-container {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        display: inline-block;
+    }
+    
+    .report-section {
+        transition: all 0.3s ease;
+        border-left: 4px solid #3a7bd5;
+    }
+    
+    .report-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .section-content {
+        line-height: 1.8;
+        color: #495057;
+    }
+    
+    .score-display {
+        background: #f8f9fa;
+        padding: 10px 20px;
+        border-radius: 50px;
+    }
+    
+    /* Custom scrollbar */
+    #report-content {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    #report-content::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    #report-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    #report-content::-webkit-scrollbar-thumb {
+        background: #3a7bd5;
+        border-radius: 10px;
+    }
+    
+    /* Enhanced Hazard Section Styles */
+    .hazard-section {
+        background-color: #fff5f5;
+        border-left: 4px solid #dc3545;
+    }
+    
+    .hazard-icon {
+        color: #dc3545;
+        background-color: rgba(220, 53, 69, 0.1);
+        padding: 12px;
+        border-radius: 50%;
+    }
+    
+    .hazard-list li {
+        position: relative;
+        padding-left: 25px;
+        margin-bottom: 10px;
+    }
+    
+    .hazard-list li:before {
+        content: "⚠️";
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+    
+    /* Enhanced Recommendation Section Styles */
+    .recommendation-section {
+        background-color: #f0fff4;
+        border-left: 4px solid #28a745;
+    }
+    
+    .recommendation-icon {
+        color: #28a745;
+        background-color: rgba(40, 167, 69, 0.1);
+        padding: 12px;
+        border-radius: 50%;
+    }
+    
+    .recommendation-list li {
+        position: relative;
+        padding-left: 25px;
+        margin-bottom: 10px;
+    }
+    
+    .recommendation-list li:before {
+        content: "✅";
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+    
+    /* Badge Styles */
+    .hazard-badge .badge {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+        background-color: #dc3545;
+    }
+    
+    .recommendation-badge .badge {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+        background-color: #28a745;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .report-section {
+            padding: 15px;
+        }
+        
+        .hazard-icon, .recommendation-icon {
+            padding: 8px;
+            font-size: 1.5rem;
+        }
+        
+        .hazard-list li:before, .recommendation-list li:before {
+            font-size: 0.8rem;
+        }
+    }
+</style>
 {% endblock %}
