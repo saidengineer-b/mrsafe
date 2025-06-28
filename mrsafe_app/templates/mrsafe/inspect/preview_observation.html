@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">🔍 AI-Generated Safety Observation Report</h4>
+            <small class="text-white-50">Review and edit before submission</small>
+        </div>
+        
+        <div class="card-body">
+            <form method="POST" action="{% url 'mrsafe_app:save_observation' inspection_id %}">
+                {% csrf_token %}
+                <input type="hidden" name="photo_url" value="{{ photo_url }}">
+                
+                <!-- Photo Preview -->
+                {% if photo_url %}
+                <div class="mb-4 text-center">
+                    <img src="{{ photo_url }}" class="img-fluid rounded border" style="max-height: 300px;" alt="Observation Photo">
+                    <p class="text-muted mt-2">Uploaded Image Reference</p>
+                </div>
+                {% endif %}
+                
+                <!-- Hazards Section -->
+                <div class="mb-4">
+                    <h5 class="text-danger mb-3">⚠️ Identified Hazards</h5>
+                    
+                    {% if sections %}
+                        {% for section in sections %}
+                            {% if "hazard" in section.title|lower %}
+                            <div class="card mb-3 border-danger">
+                                <div class="card-header bg-danger text-white py-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <strong>{{ section.title }}</strong>
+                                        <span class="badge bg-light text-dark">
+                                            {% for bullet in section.bullets %}
+                                                {% if "severity:" in bullet|lower %}
+                                                    {{ bullet|cut:"Severity:"|cut:"severity:"|title }}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        {% for bullet in section.bullets %}
+                                            {% if "severity:" not in bullet|lower %}
+                                            <li class="mb-2">• {{ bullet }}</li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="form-group">
+                            <label class="fw-bold">Hazard Description</label>
+                            <textarea name="hazard_description" rows="8" class="form-control">{{ hazard_description }}</textarea>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Recommendations Section -->
+                <div class="mb-4">
+                    <h5 class="text-success mb-3">✅ Recommended Actions</h5>
+                    
+                    {% if sections %}
+                        {% for section in sections %}
+                            {% if "recommendation" in section.title|lower or "action" in section.title|lower %}
+                            <div class="card mb-3 border-success">
+                                <div class="card-header bg-success text-white py-2">
+                                    <strong>{{ section.title }}</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled">
+                                        {% for bullet in section.bullets %}
+                                        <li class="mb-2">• {{ bullet }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="form-group">
+                            <label class="fw-bold">Recommendations</label>
+                            <textarea name="recommendations" rows="5" class="form-control">{{ recommendations }}</textarea>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Additional Fields -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="fw-bold">Priority Level</label>
+                        <select name="priority" class="form-select">
+                            <option value="low">Low Priority</option>
+                            <option value="medium" selected>Medium Priority</option>
+                            <option value="high">High Priority</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold">Target Resolution Date</label>
+                        <input type="date" name="target_date" class="form-control" value="{{ default_date|date:'Y-m-d' }}">
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'mrsafe_app:inspection_detail' inspection_id %}" class="btn btn-outline-secondary">
+                        ← Back to Inspection
+                    </a>
+                    <div>
+                        <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#previewModal">
+                            👁️ Preview Report
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            💾 Save Observation
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="previewModalLabel">Report Preview</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-4">
+                    <h5 class="text-danger">Identified Hazards</h5>
+                    <div class="ps-3">
+                        {% if sections %}
+                            {% for section in sections %}
+                                {% if "hazard" in section.title|lower %}
+                                <p class="fw-bold mb-1">{{ section.title }}</p>
+                                <ul class="mb-3">
+                                    {% for bullet in section.bullets %}
+                                        <li>{{ bullet }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <p>{{ hazard_description|linebreaks }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h5 class="text-success">Recommended Actions</h5>
+                    <div class="ps-3">
+                        {% if sections %}
+                            {% for section in sections %}
+                                {% if "recommendation" in section.title|lower or "action" in section.title|lower %}
+                                <p class="fw-bold mb-1">{{ section.title }}</p>
+                                <ul class="mb-3">
+                                    {% for bullet in section.bullets %}
+                                        <li>{{ bullet }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <p>{{ recommendations|linebreaks }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-header {
+        font-size: 0.95rem;
+    }
+    textarea.form-control {
+        min-height: 120px;
+    }
+    .border-danger {
+        border-left: 4px solid #dc3545 !important;
+    }
+    .border-success {
+        border-left: 4px solid #28a745 !important;
+    }
+</style>
+{% endblock %}

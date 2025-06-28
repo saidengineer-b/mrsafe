@@ -70,7 +70,7 @@ from .views import (contact,
                     edit_profile,about,store_home,add_item,edit_item,premium_checkout,public_landing, 
                     inspect,save_observation,inspect_success,observation_detail,
                     observation_list,inspection_detail,inspection_create,inspection_list,site_inspection_image_test
-                    ,site_inspection_start,dashboard)
+                    ,site_inspection_start,dashboard,save_observation)
 
 
 
@@ -106,7 +106,7 @@ path('inspections/<int:inspection_id>/', inspection_detail, name='inspection_det
 path('inspections/<int:inspection_id>/test/', site_inspection_image_test, name='site_inspection_image_test'),
 path('inspections/<int:inspection_id>/start/', site_inspection_start, name='site_inspection_start'),
 path('dashboard/', dashboard, name='dashboard'),  # Add this line
-
+path("inspections/<int:inspection_id>/save/", save_observation, name="save_observation"),
 
 
   

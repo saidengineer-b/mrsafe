@@ -346,14 +346,17 @@ def observation_detail(request, pk):
         "hazards_and_recommendations": hazards_and_recommendations,
     })
 
-
-from django.core.files import File
+import re
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, get_object_or_404
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+import base64
+import traceback
 
 @csrf_exempt
 def site_inspection_image_test(request, inspection_id):
     context = {}
-
-    # Fetch the SiteInspection object using the provided inspection_id
     inspection = get_object_or_404(SiteInspection, id=inspection_id)
 
     if not settings.OPENAI_API_KEY:
@@ -364,22 +367,19 @@ def site_inspection_image_test(request, inspection_id):
         image_file = request.FILES["photo"]
 
         try:
-            if image_file.size > 5 * 1024 * 1024:  # 5MB max size
-                raise ValueError("Image size exceeds 5MB")
-
-            # Save the uploaded photo
+            # Save uploaded image
             fs = FileSystemStorage(location="media/uploads", base_url="/media/uploads/")
             filename = fs.save(image_file.name, image_file)
             uploaded_url = fs.url(filename)
             context["photo_url"] = uploaded_url
 
+            # Encode for GPT
             with fs.open(filename, "rb") as img:
                 base64_img = base64.b64encode(img.read()).decode("utf-8")
-
             content_type = image_file.content_type or "image/jpeg"
             image_ext = content_type.split("/")[-1]
 
-            # Define the AI prompt for image analysis
+            # GPT prompt
             prompt = """
             **Site Inspection Safety Analysis Request**
 
@@ -407,76 +407,60 @@ def site_inspection_image_test(request, inspection_id):
             Format your output in clean markdown as shown above.
             """
 
-            # Send the prompt and image data to the AI model (GPT-4 or another model)
+            # GPT-4o call
             response = client.chat.completions.create(
                 model="gpt-4o",
-                messages=[{
-                    "role": "system", 
-                    "content": "You are a workplace safety AI assistant."
-                }, {
-                    "role": "user",
-                    "content": [
+                messages=[
+                    {"role": "system", "content": "You are a workplace safety AI assistant."},
+                    {"role": "user", "content": [
                         {"type": "text", "text": prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/{image_ext};base64,{base64_img}",
-                                "detail": "high"
-                            }
-                        }
-                    ]
-                }], 
+                        {"type": "image_url", "image_url": {
+                            "url": f"data:image/{image_ext};base64,{base64_img}",
+                            "detail": "high"
+                        }}
+                    ]}
+                ],
                 max_tokens=1500,
                 temperature=0.3,
             )
 
             if not response.choices or not response.choices[0].message.content:
-                raise ValueError("GPT response missing expected content.")
+                raise ValueError("AI response is empty.")
 
+            # Clean up response
             analysis = response.choices[0].message.content
             clean_analysis = analysis.replace("```markdown", "").replace("```", "").strip()
 
-            # Parse the returned analysis and extract hazards and recommendations
-            sections = parse_markdown_sections(clean_analysis)
-            context["sections"] = sections
+            # Extract hazard and recommendation sections
+            def extract_sections(text):
+                hazard_sections = []
+                recommendation_sections = []
+                blocks = text.split('---')
+                for block in blocks:
+                    block = block.strip()
+                    if not block:
+                        continue
+                    hazard_match = re.search(r"###\s*Hazard.*?\n(.*?)(?=####|$)", block, re.DOTALL)
+                    reco_match = re.search(r"####\s*Recommendation.*?\n(.*)", block, re.DOTALL)
+                    if hazard_match:
+                        hazard_sections.append(hazard_match.group(1).strip())
+                    if reco_match:
+                        recommendation_sections.append(reco_match.group(1).strip())
+                return "\n\n".join(hazard_sections), "\n\n".join(recommendation_sections)
 
-            # Extract hazard and recommendation summary
-            hazard_lines = []
-            reco_lines = []
-            for section in sections:
-                title = section["title"].strip()
-                for bullet in section.get("bullets", []):
-                    if "severity" in bullet.lower():
-                        hazard_lines.append(f"{title}: {bullet}")
-                    elif any(x in title.lower() for x in ["recommendation", "action"]):
-                        reco_lines.append(f"{title}: {bullet}")
+            hazard_text, recommendation_text = extract_sections(clean_analysis)
 
-            # Get the current user (if authenticated)
-            user = request.user if request.user.is_authenticated else get_user_model().objects.filter(is_active=True).first()
-            if not user:
-                context["error"] = "No valid user found to assign observation."
-                return render(request, "mrsafe/inspect/site_inspect.html", context)
+            # Pass to template
+            context["hazard_description"] = hazard_text or clean_analysis
+            context["recommendations"] = recommendation_text or "Review the analysis above and extract the key action items."
+            context["inspection_id"] = inspection.id
 
-            # Save the SafetyObservation (with SiteInspection linked)
+            return render(request, "mrsafe/inspect/preview_observation.html", context)
 
-            with fs.open(filename, "rb") as f:
-                SafetyObservation.objects.create(
-                    photo=File(f),  # ✅ This wraps the saved file in Django File
-                    hazard_description=clean_analysis,
-                    recommendations="\n".join(reco_lines),
-                    created_by=user,
-                    site_inspection=inspection
-                )
-
-            # Instead of showing a success message, just redirect directly to the inspection detail page
-            return redirect('mrsafe_app:inspection_detail', inspection_id=inspection.id)
-
-        except ValueError as ve:
-            context["error"] = f"Validation Error: {str(ve)}"
         except Exception as e:
-            context["error"] = f"Error during photo processing: {str(e)}"
+            context["error"] = f"Error during processing: {e}"
             if settings.DEBUG:
-                context["error_details"] = traceback.format_exc()
+                context["traceback"] = traceback.format_exc()
 
     return render(request, "mrsafe/inspect/site_inspect.html", context)
 
@@ -517,3 +501,25 @@ from django.shortcuts import render
 def dashboard(request):
     # Your dashboard logic here
     return render(request, "mrsafe/inspect/dashboard.html")
+
+@csrf_exempt
+def save_observation(request, inspection_id):
+    if request.method == "POST":
+        hazard_description = request.POST.get("hazard_description", "")
+        recommendations = request.POST.get("recommendations", "")
+        photo_url = request.POST.get("photo_url", "")
+        inspection = get_object_or_404(SiteInspection, id=inspection_id)
+
+        # Get current user or fallback
+        user = request.user if request.user.is_authenticated else get_user_model().objects.first()
+
+        # Save observation
+        observation = SafetyObservation.objects.create(
+            photo=photo_url,
+            hazard_description=hazard_description,
+            recommendations=recommendations,
+            created_by=user,
+            site_inspection=inspection
+        )
+
+        return redirect("mrsafe_app:inspection_detail", inspection_id=inspection.id)
