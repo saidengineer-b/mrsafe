@@ -544,3 +544,54 @@ def safe_site_observation(request, inspection_id):
                 })
 
     return redirect('mrsafe_app:inspection_detail', inspection_id=inspection_id)
+
+from django.utils.timezone import now
+
+from django.utils.timezone import now
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+
+@login_required
+def finalize_inspection(request, inspection_id):
+    inspection = get_object_or_404(SiteInspection, id=inspection_id, inspector=request.user)
+
+    if request.method == "POST":
+        inspection.completed = True
+        inspection.completed_at = now()
+        inspection.save()
+
+    return redirect("mrsafe_app:inspection_detail", inspection_id=inspection.id)
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, HttpResponse
+from ..models import SiteInspection
+
+@login_required
+def export_inspection_pdf(request, inspection_id):
+    inspection = get_object_or_404(SiteInspection, id=inspection_id)
+
+    # For now, just return a simple text response
+    return HttpResponse(f"PDF export for inspection: {inspection.title}", content_type="text/plain")
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, HttpResponse
+from ..models import SiteInspection
+
+@login_required
+def export_inspection_ppt(request, inspection_id):
+    inspection = get_object_or_404(SiteInspection, id=inspection_id)
+
+    # Temporary placeholder response
+    return HttpResponse(f"PPT export for inspection: {inspection.title}", content_type="text/plain")
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from ..models import SiteInspection
+
+@login_required
+def inspection_full_report(request, inspection_id):
+    inspection = get_object_or_404(SiteInspection, id=inspection_id)
+
+    return render(request, "mrsafe/inspect/full_report.html", {
+        "inspection": inspection,
+        "observations": inspection.observations.all(),
+    })

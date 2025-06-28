@@ -286,15 +286,17 @@ class PaymentTransaction(models.Model):
     def __str__(self):
         return f"{self.user} paid {self.amount} {self.currency} via {self.get_payment_method_display()}"
 
-
-from django.db import models
-from django.conf import settings
+from django.utils import timezone
 
 class SiteInspection(models.Model):
     title = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     date = models.DateTimeField(auto_now_add=True)
     inspector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    # ✅ Add these fields
+    completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['-date']
@@ -304,6 +306,7 @@ class SiteInspection(models.Model):
 
     def total_observations(self):
         return self.observations.count()
+
 from django.db import models
 from django.conf import settings
 

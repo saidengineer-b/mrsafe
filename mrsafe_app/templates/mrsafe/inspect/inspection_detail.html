@@ -272,6 +272,18 @@
         </div>
     </div>
 </div>
+{% if not inspection.completed %}
+<form method="post" action="{% url 'mrsafe_app:finalize_inspection' inspection.id %}">
+    {% csrf_token %}
+    <button class="btn btn-success mt-3">✅ Finalize Inspection</button>
+</form>
+{% else %}
+<p class="text-success mt-3">Inspection finalized on {{ inspection.completed_at }}</p>
+{% endif %}
+
+<a href="{% url 'mrsafe_app:inspection_full_report' inspection.id %}" class="btn btn-outline-dark mt-3">
+    📋 View Full Report
+</a>
 
 <style>
     .inspection-detail-container {
