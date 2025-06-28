@@ -98,7 +98,7 @@ urlpatterns = [
 
  
 
-    path('create-superuser/', create_superuser_view, name='create_superuser'),
+path('create-superuser/', create_superuser_view, name='create_superuser'),
 
 
 
