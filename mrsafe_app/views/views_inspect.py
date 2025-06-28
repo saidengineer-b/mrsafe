@@ -501,6 +501,8 @@ from django.shortcuts import render
 def dashboard(request):
     # Your dashboard logic here
     return render(request, "mrsafe/inspect/dashboard.html")
+from django.core.files import File
+import os
 
 @csrf_exempt
 def save_observation(request, inspection_id):
@@ -510,16 +512,21 @@ def save_observation(request, inspection_id):
         photo_url = request.POST.get("photo_url", "")
         inspection = get_object_or_404(SiteInspection, id=inspection_id)
 
-        # Get current user or fallback
         user = request.user if request.user.is_authenticated else get_user_model().objects.first()
 
-        # Save observation
-        observation = SafetyObservation.objects.create(
-            photo=photo_url,
-            hazard_description=hazard_description,
-            recommendations=recommendations,
-            created_by=user,
-            site_inspection=inspection
-        )
+        # Convert URL back to file path (strip /media/)
+        relative_path = photo_url.replace("/media/", "")
+        file_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+
+        # Open the file as Django File object
+        with open(file_path, "rb") as f:
+            django_file = File(f)
+            observation = SafetyObservation.objects.create(
+                photo=django_file,
+                hazard_description=hazard_description,
+                recommendations=recommendations,
+                created_by=user,
+                site_inspection=inspection
+            )
 
         return redirect("mrsafe_app:inspection_detail", inspection_id=inspection.id)
