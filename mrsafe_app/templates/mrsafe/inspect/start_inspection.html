@@ -1,138 +1,91 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container py-5">
+<div class="container py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-md-8">
             <!-- Header Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-primary text-white py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h2 class="h4 mb-0">
-                            <i class="fas fa-clipboard-check me-2"></i>Analyze
-                        </h2>
-                        <span class="badge bg-light text-dark fs-6">#{{ inspection.id }}</span>
-                    </div>
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-camera me-2"></i>Upload Inspection Photo
+                    </h2>
                 </div>
                 <div class="card-body">
-                    <!-- Inspection Details -->
-                    <div class="inspection-details mb-4">
-                        <h3 class="h5 text-muted mb-3">Inspection Overview</h3>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="d-flex align-items-start">
-                                    <i class="fas fa-map-marker-alt text-primary mt-1 me-2"></i>
-                                    <div>
-                                        <p class="mb-0 text-muted small">Location</p>
-                                        <p class="mb-0 fw-bold">{{ inspection.location }}</p>
-                                    </div>
+                    <!-- Simple Mobile-Friendly Form -->
+                    <form method="POST" enctype="multipart/form-data" 
+                          action="{% url 'mrsafe_app:site_inspection_image_test' inspection.id %}">
+                        {% csrf_token %}
+                        
+                        <!-- Mobile-optimized file input -->
+                        <div class="mb-4">
+                            <label for="photo" class="form-label d-block">
+                                <div class="upload-prompt text-center p-4 border rounded bg-light">
+                                    <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
+                                    <h5 class="mb-2">Tap to Select Photo</h5>
+                                    <p class="small text-muted mb-0">JPG or PNG (Max 5MB)</p>
                                 </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="d-flex align-items-start">
-                                    <i class="fas fa-calendar-alt text-primary mt-1 me-2"></i>
-                                    <div>
-                                        <p class="mb-0 text-muted small">Date</p>
-                                        <p class="mb-0 fw-bold">{{ inspection.date }}</p>
-                                    </div>
+                            </label>
+                            <input type="file" name="photo" id="photo" 
+                                   class="form-control d-none" 
+                                   accept="image/*" 
+                                   capture="environment" 
+                                   required>
+                            
+                            <!-- Selected file preview (mobile friendly) -->
+                            <div id="filePreviewMobile" class="mt-3 text-center d-none">
+                                <div class="alert alert-success d-flex align-items-center">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <span id="fileNameMobile"></span>
+                                    <button type="button" class="btn-close ms-auto" 
+                                            onclick="clearFileSelection()"></button>
                                 </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="d-flex align-items-start">
-                                    <i class="fas fa-user-shield text-primary mt-1 me-2"></i>
-                                    <div>
-                                        <p class="mb-0 text-muted small">Inspector</p>
-                                        <p class="mb-0 fw-bold">{{ inspection.inspector.username }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="d-flex align-items-start">
-                                    <i class="fas fa-info-circle text-primary mt-1 me-2"></i>
-                                    <div>
-                                        <p class="mb-0 text-muted small">Status</p>
-                                        <p class="mb-0">
-                                            <span class="badge bg-warning text-dark">Pending</span>
-                                        </p>
-                                    </div>
-                                </div>
+                                <img id="imagePreviewMobile" src="#" 
+                                     class="img-thumbnail mt-2 d-none" 
+                                     alt="Preview" style="max-height: 200px;">
                             </div>
                         </div>
-                    </div>
 
-                    <hr class="my-4">
+                        <input type="hidden" name="inspection_id" value="{{ inspection.id }}">
 
-                    <!-- Photo Upload Section -->
-                    <div class="upload-section">
-                        <h3 class="h5 text-muted mb-3">Upload Site Photos</h3>
-                        <form method="POST" enctype="multipart/form-data" 
-                              action="{% url 'mrsafe_app:site_inspection_image_test' inspection.id %}" 
-                              class="dropzone" id="photoUploadForm">
-                            {% csrf_token %}
-                            
-                            <!-- Drag & Drop Zone -->
-                            <div class="drop-area border-2 border-dashed rounded-3 p-4 text-center mb-3">
-                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                                <h5 class="mb-2">Drag & Drop Photos Here</h5>
-                                <p class="small text-muted mb-3">or click to browse files</p>
-                                <input type="file" name="photo" id="photo" class="d-none" required>
-                                <label for="photo" class="btn btn-outline-primary px-4">
-                                    <i class="fas fa-folder-open me-2"></i>Select Files
-                                </label>
-                                <div class="mt-2 small text-muted">
-                                    Supports JPG, PNG (Max 5MB each)
-                                </div>
-                            </div>
-                            
-                            <!-- Selected files preview -->
-                            <div id="filePreview" class="d-none">
-                                <div class="d-flex align-items-center mb-2">
-                                    <i class="fas fa-image text-primary me-2"></i>
-                                    <span id="fileName" class="small"></span>
-                                    <button type="button" class="btn-close ms-auto" aria-label="Remove" id="removeFile"></button>
-                                </div>
-                            </div>
-
-                            <input type="hidden" name="inspection_id" value="{{ inspection.id }}">
-
-                            <!-- Action Buttons -->
-                            <div class="d-flex justify-content-between mt-4">
-                                <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" 
-                                   class="btn btn-outline-secondary">
-                                    <i class="fas fa-arrow-left me-2"></i>Back to Details
-                                </a>
-                                <button type="submit" class="btn btn-primary px-4" id="submitBtn" disabled>
-                                    <i class="fas fa-play me-2"></i>Analyze
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+                            <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary flex-grow-1" 
+                                    id="submitBtnMobile" disabled>
+                                <i class="fas fa-play me-1"></i> Begin Inspection
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <!-- Help Card -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-light py-3">
+            <!-- Mobile Help Tips -->
+            <div class="card">
+                <div class="card-header bg-light">
                     <h3 class="h5 mb-0">
-                        <i class="fas fa-question-circle text-primary me-2"></i>Inspection Tips
+                        <i class="fas fa-mobile-alt me-2"></i> Mobile Upload Tips
                     </h3>
                 </div>
                 <div class="card-body">
-                    <ul class="list-unstyled">
+                    <ul class="list-unstyled mb-0">
                         <li class="mb-2">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            Capture clear, well-lit photos of the entire work area
+                            <i class="fas fa-check text-success me-2"></i>
+                            Tap the upload area to open your camera or gallery
                         </li>
                         <li class="mb-2">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            Focus on potential hazards and safety equipment
+                            <i class="fas fa-check text-success me-2"></i>
+                            For best results, take photos in landscape mode
                         </li>
                         <li class="mb-2">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            Take multiple angles for comprehensive coverage
+                            <i class="fas fa-check text-success me-2"></i>
+                            Ensure good lighting when taking photos
                         </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check-circle text-success me-2"></i>
-                            Ensure workers are following proper PPE protocols
+                        <li>
+                            <i class="fas fa-check text-success me-2"></i>
+                            Hold steady for clear, focused images
                         </li>
                     </ul>
                 </div>
@@ -141,98 +94,26 @@
     </div>
 </div>
 
-<style>
-    .drop-area {
-        background-color: #f8f9fa;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    .drop-area:hover {
-        background-color: #e9ecef;
-        border-color: #0d6efd !important;
-    }
-    .drop-area.dragover {
-        background-color: #e7f1ff;
-        border-color: #0d6efd !important;
-    }
-    .card-header {
-        border-radius: 0.375rem 0.375rem 0 0 !important;
-    }
-    .inspection-details .col-md-6 {
-        border-right: 1px solid #eee;
-    }
-    .inspection-details .col-md-6:nth-child(even) {
-        border-right: none;
-    }
-</style>
-
 <script>
+    // Simple mobile-friendly file handling
     document.addEventListener('DOMContentLoaded', function() {
-        const dropArea = document.querySelector('.drop-area');
         const fileInput = document.getElementById('photo');
-        const filePreview = document.getElementById('filePreview');
-        const fileName = document.getElementById('fileName');
-        const removeFile = document.getElementById('removeFile');
-        const submitBtn = document.getElementById('submitBtn');
+        const filePreview = document.getElementById('filePreviewMobile');
+        const fileName = document.getElementById('fileNameMobile');
+        const imagePreview = document.getElementById('imagePreviewMobile');
+        const submitBtn = document.getElementById('submitBtnMobile');
         
-        // Handle drag over
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            dropArea.classList.add('dragover');
-        }
-
-        function unhighlight(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            dropArea.classList.remove('dragover');
-        }
-
-        // Handle drop
-        dropArea.addEventListener('drop', handleDrop, false);
-        dropArea.addEventListener('click', () => fileInput.click());
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            handleFiles(files);
-        }
-
-        // Handle file selection
         fileInput.addEventListener('change', function() {
-            handleFiles(this.files);
-        });
-
-        // Handle file removal
-        removeFile.addEventListener('click', function(e) {
-            e.stopPropagation();
-            fileInput.value = '';
-            filePreview.classList.add('d-none');
-            submitBtn.disabled = true;
-        });
-
-        function handleFiles(files) {
-            if (files.length > 0) {
-                const file = files[0];
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
                 
-                // Validate file type and size
-                const validTypes = ['image/jpeg', 'image/png'];
-                const maxSize = 5 * 1024 * 1024; // 5MB
-                
-                if (!validTypes.includes(file.type)) {
-                    alert('Please upload only JPG or PNG files');
+                // Basic validation
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file (JPG or PNG)');
                     return;
                 }
                 
-                if (file.size > maxSize) {
+                if (file.size > 5 * 1024 * 1024) {
                     alert('File size exceeds 5MB limit');
                     return;
                 }
@@ -240,9 +121,55 @@
                 // Display file info
                 fileName.textContent = file.name;
                 filePreview.classList.remove('d-none');
+                
+                // Show image preview if it's an image
+                if (file.type.match('image.*')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.classList.remove('d-none');
+                    }
+                    reader.readAsDataURL(file);
+                }
+                
                 submitBtn.disabled = false;
             }
-        }
+        });
     });
+    
+    function clearFileSelection() {
+        document.getElementById('photo').value = '';
+        document.getElementById('filePreviewMobile').classList.add('d-none');
+        document.getElementById('imagePreviewMobile').classList.add('d-none');
+        document.getElementById('submitBtnMobile').disabled = true;
+    }
 </script>
+
+<style>
+    /* Mobile-first responsive styles */
+    .upload-prompt {
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .upload-prompt:hover {
+        background-color: #f0f0f0 !important;
+    }
+    .btn {
+        white-space: nowrap;
+    }
+    /* Make sure file input is accessible on mobile */
+    label[for="photo"] {
+        display: block;
+        width: 100%;
+    }
+    /* Responsive image preview */
+    .img-thumbnail {
+        max-width: 100%;
+        height: auto;
+    }
+    /* Larger tap targets for mobile */
+    .btn, .upload-prompt {
+        padding: 12px;
+    }
+</style>
 {% endblock %}
