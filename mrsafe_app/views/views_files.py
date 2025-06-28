@@ -46,119 +46,35 @@ from django.shortcuts import render
 
 
 
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from ..models import SiteInspection, UserProfile
+
 @login_required
 def profile(request):
     user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
-    user_profile.check_premium_status()  # Refresh status if expired
-    quiz_results = QuizResult.objects.filter(user=request.user)
-    completed_quizzes = quiz_results.count()
-    passed_tests = quiz_results.filter(passed=True).count()
-    average_score = quiz_results.aggregate(avg_score=Avg('score'))['avg_score'] or 0
+    
 
-    assigned_quizzes = Quiz.objects.filter(assigned_trainees=request.user)
+    # ✅ Get site inspections created by the user
+    inspections = SiteInspection.objects.filter(inspector=request.user).order_by('-date')
+    total_inspections = inspections.count()
+    completed_inspections = inspections.filter(completed=True).count()
 
-    user_coins = UserCoinBalance.objects.filter(user=request.user).first()
+    # ✅ Get coin balance if used
+    user_coins = getattr(user_profile, 'coin_balance', None)
     coin_balance = user_coins.balance if user_coins else 0
 
-    ai_sessions = MasterItSession.objects.filter(user=request.user).order_by("-created_at")
-
-    user_balance, _ = UserPointBalance.objects.get_or_create(user=request.user)
-    total_points = user_balance.total_points
-    ai_points = user_balance.ai_points
-    pvp_points = user_balance.pvp_points
-    ultimate_points = user_balance.ultimate_points
-
-    rewards = Reward.objects.select_related("reward_type").all()
-    for reward in rewards:
-        UserReward.objects.get_or_create(
-            user=request.user,
-            reward=reward,
-            defaults={'is_unlocked': False}
-        )
-        if not reward.unlocked_image:
-            reward.unlocked_image = "rewards/unlocked/default_unlocked.png"
-            reward.save(update_fields=['unlocked_image'])
-
-    unlocked_rewards = UserReward.objects.filter(user=request.user, is_unlocked=True).select_related('reward')
-    unlocked_reward_ids = set(unlocked_rewards.values_list("reward_id", flat=True))
-    locked_rewards = rewards.exclude(id__in=unlocked_reward_ids)
-
-    reward_categories = {
-        "badges": {"rewards": [], "progress": 0},
-        "medals": {"rewards": [], "progress": 0},
-        "shields": {"rewards": [], "progress": 0},
-        "special": {"rewards": [], "progress": 0},
-    }
-    category_mapping = {
-        "badge": "badges",
-        "medal": "medals",
-        "shield": "shields",
-        "special": "special"
-    }
-    for reward in rewards:
-        category_key = category_mapping.get(reward.reward_type.name.lower().strip(), None)
-        if category_key in reward_categories:
-            is_unlocked = reward.id in unlocked_reward_ids
-            reward_data = {
-                "reward": reward,
-                "is_unlocked": is_unlocked,
-                "image": (
-                    reward.unlocked_image.url if is_unlocked and reward.unlocked_image
-                    else reward.locked_image.url if reward.locked_image
-                    else "/static/images/rewards/default_lock.png"
-                ),
-            }
-            reward_categories[category_key]["rewards"].append(reward_data)
-
-    for category, data in reward_categories.items():
-        total = len(data["rewards"])
-        unlocked = sum(1 for r in data["rewards"] if r["is_unlocked"])
-        data["progress"] = round((unlocked / total) * 100, 1) if total > 0 else 0
-
-    leaderboard = QuizResult.objects.values('user__username').annotate(
-        total_score=Sum('score')
-    ).order_by('-total_score')[:10]
-
-    user_ranking = "N/A"
-    leaderboard_users = [u['user__username'] for u in leaderboard]
-    if request.user.username in leaderboard_users:
-        user_ranking = leaderboard_users.index(request.user.username) + 1
-
-    certificates = CompletionCertificate.objects.filter(user=request.user).order_by("-created_at")
-
-    # ✅ Get purchased question banks
-    purchased_entries = UserPurchasedQuestionBank.objects.filter(user=request.user).select_related('question_bank')
-    question_banks = [entry.question_bank for entry in purchased_entries]
-    completed_question_banks = UserQuestionBankProgress.objects.filter(
-        user=request.user,
-        completed=True
-    ).select_related('question_bank').order_by('-id')
-
     context = {
-        "quiz_results": quiz_results,
-        "assigned_quizzes": assigned_quizzes,
-        "completed_quizzes": completed_quizzes,
-        "passed_tests": passed_tests,
-        "average_score": average_score,
+        "user_profile": user_profile,
+        "inspections": inspections,
+        "total_inspections": total_inspections,
+        "completed_inspections": completed_inspections,
         "coin_balance": coin_balance,
-        "total_points": total_points,
-        "reward_categories": reward_categories,
-        "leaderboard": leaderboard,
-        "user_ranking": user_ranking,
-        "ai_points": ai_points,
-        "pvp_points": pvp_points,
-        "ultimate_points": ultimate_points,
-        "unlocked_rewards": unlocked_rewards,
-        "locked_rewards": locked_rewards,
-        "ai_sessions": ai_sessions,
-        "certificates": certificates,
-        "question_banks": question_banks,  # ✅ added this
-        "completed_question_banks": completed_question_banks, 
-        "user_profile": user_profile
     }
 
+    return render(request, "mrsafe/profile.html", context)
 
-    return render(request, "mrsafe_app/profile.html", context)
 
 # ✅ User Registration View
 # views.py (User Registration)
@@ -281,7 +197,7 @@ def edit_profile(request):
             return redirect('mrsafe_app:profile')
     else:
         form = EditProfileForm(instance=request.user)
-    return render(request, 'mrsafe_app/edit_profile.html', {'form': form})
+    return render(request, 'mrsafe/edit_profile.html', {'form': form})
 
 
 def login_view(request):

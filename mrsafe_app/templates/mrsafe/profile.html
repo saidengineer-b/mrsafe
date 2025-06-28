@@ -1,286 +1,1049 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block content %}
+<div class="profile-container">
+  <!-- Floating Background Elements -->
+  <div class="floating-shapes">
+    <div class="shape circle-1"></div>
+    <div class="shape circle-2"></div>
+    <div class="shape triangle"></div>
+    <div class="shape wave"></div>
+  </div>
 
-<div class="container-fluid mt-5 px-3 d-flex justify-content-center">
-  <div class="profile-box p-4 rounded-4 shadow text-center position-relative">
+  <!-- Main Profile Card -->
+  <div class="profile-card glass-card">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="profile-avatar-wrapper">
+        <img src="{% if user.profile_photo %}{{ user.profile_photo.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" 
+             class="profile-avatar" 
+             alt="{{ user.username }}'s profile photo">
+        <div class="online-status {% if user.is_online %}active{% endif %}"></div>
+        <a href="{% url 'mrsafe_app:edit_profile' %}" class="edit-button pulse">
+          <i class="fas fa-pen"></i>
+        </a>
+      </div>
+      <h1 class="profile-username gradient-text">{{ user.username }}</h1>
+      <div class="profile-badge">
+        {% if user.is_premium %}
+        <span class="premium-badge"><i class="fas fa-crown"></i> Premium Member</span>
+        {% else %}
+        <span class="free-badge">Basic Member</span>
+        {% endif %}
+      </div>
+    </div>
 
-    <!-- Profile Image + Username -->
-    <img src="{% if user.profile_photo %}{{ user.profile_photo.url }}{% else %}{% static 'images/default.jpg' %}{% endif %}" class="profile-img mx-auto mb-2" alt="Profile Photo">
-    <h3 class="glow-text mb-1">{{ user.username }}</h3>
-
-    <!-- Edit Button -->
-    <a href="{% url 'quiz_app:edit_profile' %}" class="edit-icon position-absolute top-0 end-0 m-3">
-      <i class="bi bi-pencil-fill"></i>
-    </a>
-
-    <!-- Tab Buttons -->
-    <div class="tab-buttons my-3 d-flex justify-content-center gap-3">
-      <button class="btn tab-btn active" id="info-tab">Info</button>
-      <button class="btn tab-btn" id="membership-tab">Membership</button>
+    <!-- Profile Navigation -->
+    <div class="profile-nav">
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="info">
+          <i class="fas fa-user"></i>
+          <span>Profile</span>
+        </button>
+        <button class="nav-tab" data-tab="membership">
+          <i class="fas fa-gem"></i>
+          <span>Membership</span>
+        </button>
+        <button class="nav-tab" data-tab="activity">
+          <i class="fas fa-chart-line"></i>
+          <span>Activity</span>
+        </button>
+      </div>
+      <div class="nav-indicator"></div>
     </div>
 
     <!-- Tab Content -->
-    <div id="tab-box-wrapper" class="tab-content-box mt-3 text-start d-none">
-      <div id="info-content" class="tab-pane active">
-        <h6 class="glow-label mb-3">👤 Personal Information</h6>
-        <p class="white-text"><strong>Full Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-        <p class="white-text"><strong>Phone:</strong> {{ user.phone_number|default:"N/A" }}</p>
-        <p class="white-text"><strong>Email:</strong> {{ user.email }}</p>
-      </div>
-      <div id="membership-content" class="tab-pane d-none">
-        {% if user.is_premium %}
-          <h6 class="glow-label mb-3">⭐ Premium Member</h6>
-          <p class="white-text">Valid Until: {{ user.premiumprofile.end_date|date:"M d, Y" }}</p>
-        {% else %}
-          <h6 class="text-muted glow-label">🕓 Free Plan</h6>
-          <a href="{% url 'quiz_app:subscribe_premium' plan.name|default:'monthly' %}" class="btn btn-glow btn-sm mb-2">💎 Upgrade</a>
-        {% endif %}
-        <p class="white-text"><strong>🪙 Coins:</strong> {{ coin_balance }} Coins</p>
-      </div>
-    </div>
-
-    <!-- Icons Grid -->
-<!-- Icons Grid (no labels, full image fit) -->
-<!-- Icons Grid with labels positioned below image inside the card -->
-<div class="row g-3 mt-4">
-    <div class="col-6 col-md-4 text-center">
-        <a href="{% url 'quiz_app:my_stats' %}" class="text-decoration-none">
-          <div class="icon-card d-flex flex-column align-items-center justify-content-center">
-            <img src="{% static 'images/my_stats.png' %}" class="icon-img-full mb-2" alt="My Stats">
-            <div class="icon-label-tiffany">Stats</div>
+    <div class="tab-content">
+      <!-- Personal Info Tab -->
+      <div class="tab-pane active" id="info-tab">
+        <div class="info-section">
+          <h3 class="section-title"><i class="fas fa-id-card"></i> Personal Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label"><i class="fas fa-signature"></i> Full Name</span>
+              <span class="info-value">{{ user.first_name }} {{ user.last_name }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label"><i class="fas fa-envelope"></i> Email</span>
+              <span class="info-value">{{ user.email }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label"><i class="fas fa-phone"></i> Phone</span>
+              <span class="info-value">{{ user.phone_number|default:"Not provided" }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label"><i class="fas fa-calendar-alt"></i> Member Since</span>
+              <span class="info-value">{{ user.date_joined|date:"M Y" }}</span>
+            </div>
           </div>
-        </a>
+        </div>
       </div>
-          <div class="col-6 col-md-4 text-center">
-      <a href="{% url 'quiz_app:my_roadmaps' %}" class="text-decoration-none">
-        <div class="icon-card">
-          <img src="{% static 'images/ai-roadmap-banner.png' %}" class="icon-img-full mb-2" alt="My summaries">
-          <div class="icon-label-tiffany">Roadmaps</div>
-        </div>
-      </a>
-    </div>
- 
-  
-    <div class="col-6 col-md-4 text-center">
-      <a href="{% url 'quiz_app:my_masterit_lessons' %}" class="text-decoration-none">
-        <div class="icon-card">
-          <img src="{% static 'images/my_lessons.png' %}" class="icon-img-full mb-2" alt="My Lessons">
-          <div class="icon-label-tiffany">Lessons</div>
-        </div>
-      </a>
-    </div>
-  
-    <div class="col-6 col-md-4 text-center">
-      <a href="{% url 'quiz_app:my_quiz_center' %}" class="text-decoration-none">
-        <div class="icon-card">
-          <img src="{% static 'images/my_quizzes.png' %}" class="icon-img-full mb-2" alt="My Quizzes">
-          <div class="icon-label-tiffany">Quizzes</div>
-        </div>
-      </a>
-    </div>
-  
-    <div class="col-6 col-md-4 text-center">
-      <a href="{% url 'quiz_app:my_questionbank_center' %}" class="text-decoration-none">
-        <div class="icon-card">
-          <img src="{% static 'images/my_question_banks.png' %}" class="icon-img-full mb-2" alt="My Question Banks">
-          <div class="icon-label-tiffany">Question Banks</div>
-        </div>
-      </a>
-    </div>
-  
-    <div class="col-6 col-md-4 text-center">
-      <a href="{% url 'quiz_app:certificate_center' %}" class="text-decoration-none">
-        <div class="icon-card">
-          <img src="{% static 'images/my_certificates.png' %}" class="icon-img-full mb-2" alt="My Certificates">
-          <div class="icon-label-tiffany">Certificates</div>
-        </div>
-      </a>
-    </div>
-  
-    <div class="col-6 col-md-4 text-center">
-      <a href="{% url 'quiz_app:my_rewards_center' %}" class="text-decoration-none">
-        <div class="icon-card">
-          <img src="{% static 'images/my_rewards.png' %}" class="icon-img-full mb-2" alt="Rewards">
-          <div class="icon-label-tiffany">My Rewards</div>
-        </div>
-      </a>
-    </div>
-    <div class="col-6 col-md-4 text-center">
-      <a href="{% url 'quiz_app:my_summaries' %}" class="text-decoration-none">
-        <div class="icon-card">
-          <img src="{% static 'images/my_summaries.png' %}" class="icon-img-full mb-2" alt="My summaries">
-          <div class="icon-label-tiffany">Summaries</div>
-        </div>
-      </a>
-    </div>
-    <div class="col-6 col-md-4 text-center">
-      <a href="{% url 'quiz_app:my_podcasts' %}" class="text-decoration-none">
-        <div class="icon-card">
-          <img src="{% static 'images/my_podecast.png' %}" class="icon-img-full mb-2" alt="My summaries">
-          <div class="icon-label-tiffany">Podecasts</div>
-        </div>
-      </a>
-    </div>
-    <div class="col-6 col-md-4 text-center">
-      <a href="{% url 'quiz_app:my_mind_maps' %}" class="text-decoration-none">
-        <div class="icon-card">
-          <img src="{% static 'images/my_mindmaps.png' %}" class="icon-img-full mb-2" alt="My summaries">
-          <div class="icon-label-tiffany">MindMaps</div>
-        </div>
-      </a>
-    </div>
- 
 
+      <!-- Membership Tab -->
+      <div class="tab-pane" id="membership-tab">
+        <div class="membership-section">
+          {% if user.is_premium %}
+          <div class="premium-status">
+            <div class="premium-icon">
+              <i class="fas fa-crown"></i>
+            </div>
+            <h3>Premium Membership Active</h3>
+            <p>Expires on {{ user.premiumprofile.end_date|date:"F j, Y" }}</p>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: {{ membership_progress }}%"></div>
+            </div>
+            <div class="premium-features">
+              <div class="feature">
+                <i class="fas fa-check"></i>
+                <span>Unlimited Inspections</span>
+              </div>
+              <div class="feature">
+                <i class="fas fa-check"></i>
+                <span>Advanced Analytics</span>
+              </div>
+              <div class="feature">
+                <i class="fas fa-check"></i>
+                <span>Priority Support</span>
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="upgrade-section">
+            <h3>Upgrade to Premium</h3>
+            <p>Unlock all features and capabilities</p>
+            
+            <div class="pricing-cards">
+              <div class="pricing-card">
+                <h4>Monthly</h4>
+                <div class="price">$9.99<span>/month</span></div>
+                <a href="{% url 'mrsafe_app:subscribe_premium' 'monthly' %}" class="btn-upgrade">Upgrade</a>
+              </div>
+              <div class="pricing-card recommended">
+                <div class="recommended-badge">Best Value</div>
+                <h4>Yearly</h4>
+                <div class="price">$99.99<span>/year</span></div>
+                <a href="{% url 'mrsafe_app:subscribe_premium' 'yearly' %}" class="btn-upgrade">Upgrade</a>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          
+          <div class="coin-balance">
+            <h4><i class="fas fa-coins"></i> Coin Balance</h4>
+            <div class="coin-display">
+              <span class="coin-amount">{{ coin_balance }}</span>
+              <span class="coin-label">Coins</span>
+            </div>
+            <a href="#" class="btn-buy-coins">Buy More Coins</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Tab -->
+      <div class="tab-pane" id="activity-tab">
+        <div class="activity-section">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon inspection">
+                <i class="fas fa-clipboard-check"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">24</div>
+                <div class="stat-label">Inspections</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon observation">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">127</div>
+                <div class="stat-label">Observations</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon resolved">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">89</div>
+                <div class="stat-label">Resolved</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon pending">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">38</div>
+                <div class="stat-label">Pending</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="activity-chart">
+            <canvas id="activityChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <a href="{% url 'mrsafe_app:inspection_list' %}" class="action-btn">
+        <i class="fas fa-clipboard-list"></i>
+        <span>Inspections</span>
+      </a>
+      <a href="{% url 'mrsafe_app:observation_list' %}" class="action-btn">
+        <i class="fas fa-binoculars"></i>
+        <span>Observations</span>
+      </a>
+      <a href="#" class="action-btn">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </a>
+    </div>
+  </div>
 </div>
-<!-- Styles -->
+
 <style>
-body {
-  background-color: #0a0f1c;
-  color: #fff;
+:root {
+  --primary: #4361ee;
+  --secondary: #3a0ca3;
+  --accent: #f72585;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --success: #4cc9f0;
+  --warning: #f8961e;
+  --danger: #ef233c;
+  --premium: #ffd700;
+  --glass: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
 }
-.profile-box {
-  background-color: #0a0f1c;
-  border: 1px solid #00ffff33;
-  box-shadow: 0 0 15px #00ffff20;
-  max-width: 768px;
+
+.profile-container {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  overflow: hidden;
+}
+
+.floating-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
 }
-.profile-img {
-  width: 100px;
-  height: 100px;
+
+.shape {
+  position: absolute;
   border-radius: 50%;
-  border: 3px solid #40e0d0;
-  box-shadow: 0 0 20px #40e0d0;
-  object-fit: cover;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
+  animation: float 15s infinite linear;
 }
-.white-text {
+
+.circle-1 {
+  width: 300px;
+  height: 300px;
+  top: -50px;
+  left: -50px;
+  background: radial-gradient(circle, rgba(67, 97, 238, 0.1) 0%, transparent 70%);
+}
+
+.circle-2 {
+  width: 200px;
+  height: 200px;
+  bottom: -30px;
+  right: -30px;
+  background: radial-gradient(circle, rgba(247, 37, 133, 0.1) 0%, transparent 70%);
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 100px solid transparent;
+  border-right: 100px solid transparent;
+  border-bottom: 200px solid rgba(76, 201, 240, 0.05);
+  top: 30%;
+  right: 10%;
+  transform: rotate(45deg);
+  border-radius: 0;
+  animation: float-rotate 20s infinite linear;
+}
+
+.wave {
+  width: 400px;
+  height: 400px;
+  bottom: -100px;
+  left: 20%;
+  background: radial-gradient(circle, transparent 60%, rgba(248, 150, 30, 0.05) 100%);
+  animation: pulse 12s infinite ease-in-out;
+}
+
+@keyframes float {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+  100% { transform: translateY(0) rotate(360deg); }
+}
+
+@keyframes float-rotate {
+  0% { transform: rotate(45deg); }
+  100% { transform: rotate(405deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.glass-card {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  z-index: 1;
+  color: white;
+  padding: 2rem;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.profile-avatar-wrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 1.5rem;
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.online-status {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 15px;
+  height: 15px;
+  background-color: #ccc;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.online-status.active {
+  background-color: #4ade80;
+  animation: pulse 1.5s infinite;
+}
+
+.edit-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(247, 37, 133, 0.3);
+  transition: all 0.3s ease;
+}
+
+.edit-button:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+}
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+.profile-username {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.profile-badge {
+  margin-bottom: 1rem;
+}
+
+.premium-badge {
+  background: linear-gradient(135deg, var(--premium), #ff9500);
+  color: #333;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+}
+
+.premium-badge i {
+  margin-right: 5px;
+}
+
+.free-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.profile-nav {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.nav-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.nav-tab {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-tab i {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.nav-tab span {
+  font-size: 0.8rem;
+}
+
+.nav-tab.active {
   color: white;
 }
-.edit-icon {
-  font-size: 18px;
-  color: #40e0d0;
-  background: #0a0f1c;
-  border: 1px solid #40e0d0;
-  padding: 6px 10px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px #40e0d033;
+
+.nav-indicator {
+  position: absolute;
+  bottom: 0;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: all 0.3s ease;
 }
-.edit-icon:hover {
-  background-color: #40e0d0;
-  color: #0a0f1c;
+
+.tab-content {
+  margin-bottom: 2rem;
 }
-.glow-text {
-  color: #40e0d0;
-  text-shadow: 0 0 6px #40e0d0;
+
+.tab-pane {
+  display: none;
+  animation: fadeIn 0.5s ease;
 }
-.tab-buttons .tab-btn {
-  border: 1px solid #40e0d0;
-  background: transparent;
-  color: #40e0d0;
-  font-weight: bold;
-  border-radius: 30px;
-  padding: 8px 24px;
-  box-shadow: 0 0 10px #40e0d033;
-  transition: 0.3s ease;
+
+.tab-pane.active {
+  display: block;
 }
-.tab-buttons .tab-btn.active {
-  background: #40e0d0;
-  color: #0a0f1c;
-  box-shadow: 0 0 15px #40e0d0aa;
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.tab-content-box {
-  background: #0a0f1c;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 12px #40e0d033;
+
+.info-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 1.5rem;
+  backdrop-filter: blur(5px);
 }
-.glow-label {
-  color: #40e0d0;
-  text-shadow: 0 0 5px #40e0d0;
-  font-weight: bold;
+
+.section-title {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: white;
+  display: flex;
+  align-items: center;
 }
-.icon-card {
-    background-color: #0a0f1c;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 0 10px #40e0d033;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-    height: 100%;
-    display: flex;
+
+.section-title i {
+  margin-right: 10px;
+  color: var(--accent);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.info-item {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.info-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+}
+
+.info-label {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 5px;
+}
+
+.info-label i {
+  margin-right: 5px;
+  color: var(--success);
+}
+
+.info-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: white;
+}
+
+.membership-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 1.5rem;
+  backdrop-filter: blur(5px);
+}
+
+.premium-status {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.premium-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--premium), #ff9500);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+  color: #333;
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+.premium-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: white;
+}
+
+.feature i {
+  color: var(--success);
+  margin-right: 8px;
+}
+
+.upgrade-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.pricing-cards {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pricing-card {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 15px;
+  padding: 1.5rem;
+  width: 200px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.pricing-card.recommended {
+  background: rgba(67, 97, 238, 0.1);
+  border: 1px solid var(--primary);
+}
+
+.recommended-badge {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+}
+
+.price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 1rem 0;
+  color: white;
+}
+
+.price span {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-upgrade {
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  width: 100%;
+}
+
+.btn-upgrade:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+}
+
+.coin-balance {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 15px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.coin-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.coin-amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--warning);
+  margin-right: 5px;
+}
+
+.coin-label {
+  font-size: 1rem;
+  color: white;
+  align-self: flex-end;
+  margin-bottom: 5px;
+}
+
+.btn-buy-coins {
+  background: linear-gradient(135deg, var(--warning), #f3722c);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-buy-coins:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(248, 150, 30, 0.4);
+}
+
+.activity-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 1.5rem;
+  backdrop-filter: blur(5px);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.stat-icon.inspection {
+  background: rgba(67, 97, 238, 0.2);
+  color: var(--primary);
+}
+
+.stat-icon.observation {
+  background: rgba(239, 35, 60, 0.2);
+  color: var(--danger);
+}
+
+.stat-icon.resolved {
+  background: rgba(76, 201, 240, 0.2);
+  color: var(--success);
+}
+
+.stat-icon.pending {
+  background: rgba(248, 150, 30, 0.2);
+  color: var(--warning);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.activity-chart {
+  height: 250px;
+  margin-top: 1rem;
+}
+
+.quick-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 0.8rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.action-btn i {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.action-btn span {
+  font-size: 0.8rem;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 1rem;
+  }
+  
+  .glass-card {
+    padding: 1.5rem;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pricing-cards {
     flex-direction: column;
     align-items: center;
-    justify-content: center;
   }
   
-  .icon-card:hover {
-    transform: scale(1.05);
-    background-color: rgba(64, 224, 208, 0.05); /* soft tiffany background */
-    box-shadow: 0 0 20px #40e0d0aa;
+  .pricing-card {
+    width: 100%;
   }
   
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .quick-actions {
+    gap: 0.5rem;
+  }
+  
+  .action-btn {
+    padding: 0.6rem;
+    min-width: 80px;
+  }
+}
 
+@media (max-width: 480px) {
+  .profile-avatar-wrapper {
+    width: 100px;
+    height: 100px;
+  }
   
-.icon-img-full {
-  width: 100%;
-  max-width: 120px;
-  height: auto;
-  max-height: 100px;
-  object-fit: cover;
-  border-radius: 16px;
-  filter: drop-shadow(0 0 4px #020505AA);
-}
-.icon-label-tiffany {
-  color: #40e0d0;
-  font-weight: 600;
-  font-size: 0.95rem;
-  text-shadow: 0 0 4px #40e0d0aa;
-}
-@media (max-width: 768px) {
-  .icon-img-full {
-    max-height: 80px;
+  .profile-username {
+    font-size: 1.5rem;
   }
-  .icon-label-tiffany {
-    font-size: 0.85rem;
+  
+  .nav-tabs {
+    gap: 0.5rem;
   }
-  .profile-img {
-    width: 80px;
-    height: 80px;
+  
+  .nav-tab {
+    padding: 0.5rem;
+    font-size: 0.8rem;
   }
-  .tab-buttons .tab-btn {
-    padding: 6px 16px;
-    font-size: 0.9rem;
-  }
-  .icon-card {
-    padding: 16px;
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>
 
-<!-- Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-const infoTab = document.getElementById("info-tab");
-const membershipTab = document.getElementById("membership-tab");
-const tabBoxWrapper = document.getElementById("tab-box-wrapper");
-const infoContent = document.getElementById("info-content");
-const membershipContent = document.getElementById("membership-content");
-
-function openTab(tabName) {
-  tabBoxWrapper.classList.remove("d-none");
-  if (tabName === "info") {
-    infoContent.classList.remove("d-none");
-    membershipContent.classList.add("d-none");
-    infoTab.classList.add("active");
-    membershipTab.classList.remove("active");
-  } else {
-    infoContent.classList.add("d-none");
-    membershipContent.classList.remove("d-none");
-    infoTab.classList.remove("active");
-    membershipTab.classList.add("active");
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab switching functionality
+  const tabs = document.querySelectorAll('.nav-tab');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+  const navIndicator = document.querySelector('.nav-indicator');
+  
+  // Set initial position of indicator
+  const activeTab = document.querySelector('.nav-tab.active');
+  if (activeTab) {
+    const tabRect = activeTab.getBoundingClientRect();
+    const containerRect = activeTab.parentElement.getBoundingClientRect();
+    navIndicator.style.width = `${tabRect.width}px`;
+    navIndicator.style.left = `${tabRect.left - containerRect.left}px`;
   }
-}
-infoTab.addEventListener("click", () => openTab("info"));
-membershipTab.addEventListener("click", () => openTab("membership"));
+  
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      // Remove active class from all tabs and panes
+      tabs.forEach(t => t.classList.remove('active'));
+      tabPanes.forEach(p => p.classList.remove('active'));
+      
+      // Add active class to clicked tab and corresponding pane
+      this.classList.add('active');
+      const tabId = this.getAttribute('data-tab');
+      document.getElementById(`${tabId}-tab`).classList.add('active');
+      
+      // Move indicator to active tab
+      const tabRect = this.getBoundingClientRect();
+      const containerRect = this.parentElement.getBoundingClientRect();
+      navIndicator.style.width = `${tabRect.width}px`;
+      navIndicator.style.left = `${tabRect.left - containerRect.left}px`;
+    });
+  });
+  
+  // Initialize activity chart if on activity tab
+  if (document.getElementById('activity-tab').classList.contains('active')) {
+    initActivityChart();
+  }
+  
+  // Reinitialize chart when switching to activity tab
+  document.querySelector('[data-tab="activity"]').addEventListener('click', initActivityChart);
+  
+  function initActivityChart() {
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    const activityChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+        datasets: [
+          {
+            label: 'Inspections',
+            data: [12, 19, 15, 23, 18, 25, 22],
+            borderColor: '#4361ee',
+            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+            tension: 0.4,
+            fill: true
+          },
+          {
+            label: 'Observations',
+            data: [8, 15, 12, 19, 14, 21, 18],
+            borderColor: '#f72585',
+            backgroundColor: 'rgba(247, 37, 133, 0.1)',
+            tension: 0.4,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              color: 'white'
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)'
+            },
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.7)'
+            }
+          },
+          y: {
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)'
+            },
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.7)'
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  // Animation on scroll
+  const animateOnScroll = function() {
+    const elements = document.querySelectorAll('.info-item, .stat-card, .pricing-card');
+    
+    elements.forEach(element => {
+      const elementPosition = element.getBoundingClientRect().top;
+      const screenPosition = window.innerHeight / 1.2;
+      
+      if (elementPosition < screenPosition) {
+        element.style.opacity = '1';
+        element.style.transform = 'translateY(0)';
+      }
+    });
+  };
+  
+  // Set initial state for animation
+  document.querySelectorAll('.info-item, .stat-card, .pricing-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'all 0.5s ease';
+  });
+  
+  window.addEventListener('scroll', animateOnScroll);
+  animateOnScroll(); // Run once on load
+});
 </script>
-
 {% endblock %}

@@ -278,9 +278,10 @@ from ..models import SiteInspection, SafetyObservation
 @login_required
 def inspection_list(request):
     inspections = SiteInspection.objects.filter(inspector=request.user).order_by('-date')
-    return render(request, 'mrsafe/inspection/list.html', {
+    return render(request, 'mrsafe/inspect/inspection_list.html', {
         'inspections': inspections
     })
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from ..models import SiteInspection, SafetyObservation
@@ -595,3 +596,15 @@ def inspection_full_report(request, inspection_id):
         "inspection": inspection,
         "observations": inspection.observations.all(),
     })
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from ..models import SiteInspection
+
+@login_required
+def export_inspection_docx(request, inspection_id):
+    inspection = get_object_or_404(SiteInspection, id=inspection_id)
+
+    # Temporary placeholder until export logic is implemented
+    return HttpResponse(f"DOCX export for inspection: {inspection.title}", content_type="text/plain")

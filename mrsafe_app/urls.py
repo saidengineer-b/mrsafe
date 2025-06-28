@@ -71,7 +71,11 @@ from .views import (contact,
                     inspect,save_observation,inspect_success,observation_detail,
                     observation_list,inspection_detail,inspection_create,inspection_list,site_inspection_image_test
                     ,site_inspection_start,dashboard,safe_site_observation,finalize_inspection,
-                    export_inspection_pdf,export_inspection_ppt,inspection_full_report)
+                    export_inspection_pdf,export_inspection_ppt,
+                    inspection_full_report,export_inspection_docx,
+                    
+                    
+                    subscribe_premium,)
 
 
 
@@ -112,8 +116,11 @@ path("inspections/<int:inspection_id>/finalize/", finalize_inspection, name="fin
 path("inspections/<int:inspection_id>/export/pdf/", export_inspection_pdf, name="export_inspection_pdf"),
 path("inspections/<int:inspection_id>/export/ppt/", export_inspection_ppt, name="export_inspection_ppt"),
 path("inspections/<int:inspection_id>/report/",inspection_full_report, name="inspection_full_report"),
+path("inspections/<int:inspection_id>/export/docx/", export_inspection_docx, name="export_inspection_docx"),
   
     path('safety-image-test/', safety_image_test, name='safety_image_test'),
+    
+path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium"),
     
     path('admin/user-management/', user_management_view, name='user_management'),
    
