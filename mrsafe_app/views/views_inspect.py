@@ -465,9 +465,7 @@ def site_inspection_image_test(request, inspection_id):
                 site_inspection=inspection  # Link the observation to the site inspection
             )
 
-            context["message"] = "✅ Site inspection observation successfully saved."
-
-            # Redirect back to the site inspection detail page after saving the observation
+            # Instead of showing a success message, just redirect directly to the inspection detail page
             return redirect('mrsafe_app:inspection_detail', inspection_id=inspection.id)
 
         except ValueError as ve:
