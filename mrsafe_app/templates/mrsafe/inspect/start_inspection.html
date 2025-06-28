@@ -1,31 +1,248 @@
 {% extends "base.html" %}
-
 {% block content %}
-    <h3>Start Site Inspection - {{ inspection.id }}</h3>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="h4 mb-0">
+                            <i class="fas fa-clipboard-check me-2"></i>Analyze
+                        </h2>
+                        <span class="badge bg-light text-dark fs-6">#{{ inspection.id }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Inspection Details -->
+                    <div class="inspection-details mb-4">
+                        <h3 class="h5 text-muted mb-3">Inspection Overview</h3>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-map-marker-alt text-primary mt-1 me-2"></i>
+                                    <div>
+                                        <p class="mb-0 text-muted small">Location</p>
+                                        <p class="mb-0 fw-bold">{{ inspection.location }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-calendar-alt text-primary mt-1 me-2"></i>
+                                    <div>
+                                        <p class="mb-0 text-muted small">Date</p>
+                                        <p class="mb-0 fw-bold">{{ inspection.date }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-user-shield text-primary mt-1 me-2"></i>
+                                    <div>
+                                        <p class="mb-0 text-muted small">Inspector</p>
+                                        <p class="mb-0 fw-bold">{{ inspection.inspector.username }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-info-circle text-primary mt-1 me-2"></i>
+                                    <div>
+                                        <p class="mb-0 text-muted small">Status</p>
+                                        <p class="mb-0">
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <p>Ready to begin the inspection for the following site:</p>
-    <p><strong>Location:</strong> {{ inspection.location }}</p>
-    <p><strong>Date:</strong> {{ inspection.date }}</p>
-    <p><strong>Inspector:</strong> {{ inspection.inspector.username }}</p>
+                    <hr class="my-4">
 
-    <hr>
+                    <!-- Photo Upload Section -->
+                    <div class="upload-section">
+                        <h3 class="h5 text-muted mb-3">Upload Site Photos</h3>
+                        <form method="POST" enctype="multipart/form-data" 
+                              action="{% url 'mrsafe_app:site_inspection_image_test' inspection.id %}" 
+                              class="dropzone" id="photoUploadForm">
+                            {% csrf_token %}
+                            
+                            <!-- Drag & Drop Zone -->
+                            <div class="drop-area border-2 border-dashed rounded-3 p-4 text-center mb-3">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                <h5 class="mb-2">Drag & Drop Photos Here</h5>
+                                <p class="small text-muted mb-3">or click to browse files</p>
+                                <input type="file" name="photo" id="photo" class="d-none" required>
+                                <label for="photo" class="btn btn-outline-primary px-4">
+                                    <i class="fas fa-folder-open me-2"></i>Select Files
+                                </label>
+                                <div class="mt-2 small text-muted">
+                                    Supports JPG, PNG (Max 5MB each)
+                                </div>
+                            </div>
+                            
+                            <!-- Selected files preview -->
+                            <div id="filePreview" class="d-none">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-image text-primary me-2"></i>
+                                    <span id="fileName" class="small"></span>
+                                    <button type="button" class="btn-close ms-auto" aria-label="Remove" id="removeFile"></button>
+                                </div>
+                            </div>
 
-    <!-- Form to upload a photo for the site inspection -->
-    <form method="POST" enctype="multipart/form-data" action="{% url 'mrsafe_app:site_inspection_image_test' inspection.id %}">
-        {% csrf_token %}
+                            <input type="hidden" name="inspection_id" value="{{ inspection.id }}">
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" 
+                                   class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Details
+                                </a>
+                                <button type="submit" class="btn btn-primary px-4" id="submitBtn" disabled>
+                                    <i class="fas fa-play me-2"></i>Analyze
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-question-circle text-primary me-2"></i>Inspection Tips
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Capture clear, well-lit photos of the entire work area
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Focus on potential hazards and safety equipment
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Take multiple angles for comprehensive coverage
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Ensure workers are following proper PPE protocols
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .drop-area {
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .drop-area:hover {
+        background-color: #e9ecef;
+        border-color: #0d6efd !important;
+    }
+    .drop-area.dragover {
+        background-color: #e7f1ff;
+        border-color: #0d6efd !important;
+    }
+    .card-header {
+        border-radius: 0.375rem 0.375rem 0 0 !important;
+    }
+    .inspection-details .col-md-6 {
+        border-right: 1px solid #eee;
+    }
+    .inspection-details .col-md-6:nth-child(even) {
+        border-right: none;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropArea = document.querySelector('.drop-area');
+        const fileInput = document.getElementById('photo');
+        const filePreview = document.getElementById('filePreview');
+        const fileName = document.getElementById('fileName');
+        const removeFile = document.getElementById('removeFile');
+        const submitBtn = document.getElementById('submitBtn');
         
-        <!-- File input for uploading the inspection photo -->
-        <label for="photo">Upload Inspection Photo:</label>
-        <input type="file" name="photo" id="photo" required><br><br>
-        
-        <!-- Hidden input to pass inspection_id -->
-        <input type="hidden" name="inspection_id" value="{{ inspection.id }}">
+        // Handle drag over
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
 
-        <!-- Submit button to start the inspection -->
-        <button type="submit" class="btn btn-primary mt-3">Start Inspection</button>
-    </form>
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
 
-    <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="btn btn-secondary mt-3">
-        Back to Inspection Details
-    </a>
+        function highlight(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropArea.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropArea.classList.remove('dragover');
+        }
+
+        // Handle drop
+        dropArea.addEventListener('drop', handleDrop, false);
+        dropArea.addEventListener('click', () => fileInput.click());
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        // Handle file selection
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        // Handle file removal
+        removeFile.addEventListener('click', function(e) {
+            e.stopPropagation();
+            fileInput.value = '';
+            filePreview.classList.add('d-none');
+            submitBtn.disabled = true;
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                
+                // Validate file type and size
+                const validTypes = ['image/jpeg', 'image/png'];
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                
+                if (!validTypes.includes(file.type)) {
+                    alert('Please upload only JPG or PNG files');
+                    return;
+                }
+                
+                if (file.size > maxSize) {
+                    alert('File size exceeds 5MB limit');
+                    return;
+                }
+                
+                // Display file info
+                fileName.textContent = file.name;
+                filePreview.classList.remove('d-none');
+                submitBtn.disabled = false;
+            }
+        }
+    });
+</script>
 {% endblock %}
