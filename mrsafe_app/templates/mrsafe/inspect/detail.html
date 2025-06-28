@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Site Inspection: {{ inspection.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ inspection.title }}</h2>
+    <p><strong>Location:</strong> {{ inspection.location }}</p>
+    <p><strong>Date:</strong> {{ inspection.date }}</p>
+    <p><strong>Inspector:</strong> {{ inspection.inspector }}</p>
+
+    <hr>
+    <h4>Add New Observation</h4>
+    <form method="POST" action="{% url 'mrsafe_app:safety_image_test' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="inspection_id" value="{{ inspection.id }}">
+        <div class="form-group">
+            <label>Upload Photo</label>
+            <input type="file" name="photo" required class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Analyze and Add Observation</button>
+    </form>
+
+    <hr>
+    <h4>Saved Observations</h4>
+    <ul>
+        {% for obs in inspection.observations.all %}
+            <li>{{ obs.hazard_description|truncatechars:100 }} - {{ obs.detected_at }}</li>
+        {% empty %}
+            <li>No observations yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

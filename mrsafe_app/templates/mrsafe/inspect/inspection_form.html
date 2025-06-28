@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}New Site Inspection{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4"><i class="fas fa-plus-circle mr-2"></i>Create New Site Inspection</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary mt-2">
+            <i class="fas fa-save mr-1"></i> Save Inspection
+        </button>
+    </form>
+</div>
+{% endblock %}

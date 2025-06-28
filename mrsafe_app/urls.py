@@ -68,7 +68,9 @@ from .views import (contact,
                     premium_membership,add_premium_plan,
                     register,profile,
                     edit_profile,about,store_home,add_item,edit_item,premium_checkout,public_landing, 
-                    inspect,save_observation,inspect_success,observation_list)
+                    inspect,save_observation,inspect_success,observation_detail,
+                    observation_list,inspection_detail,inspection_create,inspection_list,site_inspection_image_test
+                    ,site_inspection_start,dashboard)
 
 
 
@@ -77,12 +79,7 @@ from django.urls import path
 
 
 
-
 from django.shortcuts import redirect
-
-
-
-
 
 
 urlpatterns = [
@@ -98,8 +95,18 @@ path("save-observation/", save_observation, name="save_observation"),
 path("inspect/", inspect, name="inspect"),
 path('inspect/success/', inspect_success, name='inspect_success'),
 path('observations/', observation_list, name='observation_list'),
+path("observation/<int:pk>/", observation_detail, name="observation_detail"),
 
-# urls.py
+path('inspections/', inspection_list, name='inspection_list'),
+path('inspections/create/', inspection_create, name='inspection_create'),
+path('inspections/<int:inspection_id>/', inspection_detail, name='inspection_detail'),
+
+
+    # Site Inspection Image Test (New View)
+path('inspections/<int:inspection_id>/test/', site_inspection_image_test, name='site_inspection_image_test'),
+path('inspections/<int:inspection_id>/start/', site_inspection_start, name='site_inspection_start'),
+path('dashboard/', dashboard, name='dashboard'),  # Add this line
+
 
 
   

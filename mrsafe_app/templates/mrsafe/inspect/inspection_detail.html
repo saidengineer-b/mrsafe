@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid inspection-detail-container">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- Header Section with Export Options -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="display-5 fw-bold text-primary">
+                        <i class="bi bi-clipboard2-pulse me-2"></i>Site Inspection Report
+                    </h2>
+                    <span class="badge bg-{% if inspection.is_completed %}success{% else %}warning{% endif %} fs-6 p-3">
+                        {% if inspection.is_completed %}Completed{% else %}In Progress{% endif %}
+                    </span>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-download me-2"></i>Export
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><button class="dropdown-item" id="copyReportBtn"><i class="bi bi-clipboard me-2"></i>Copy Report</button></li>
+                        <li><button class="dropdown-item" id="exportPdfBtn"><i class="bi bi-file-earmark-pdf me-2"></i>Export as PDF</button></li>
+                        <li><button class="dropdown-item" id="exportPptBtn"><i class="bi bi-file-earmark-ppt me-2"></i>Export as PowerPoint</button></li>
+                        <li><button class="dropdown-item" id="printReportBtn"><i class="bi bi-printer me-2"></i>Print Report</button></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Inspection Summary Card -->
+            <div class="card shadow-lg mb-4 border-0 bg-white">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="bi bi-info-circle-fill me-2"></i>Inspection Summary
+                    </h4>
+                </div>
+                <div class="card-body bg-white">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Inspection ID</h6>
+                                <p class="fs-5 fw-bold text-dark">{{ inspection.id }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Inspector</h6>
+                                <p class="fs-5 text-dark">
+                                    <i class="bi bi-person-badge me-2"></i>{{ inspection.inspector.username }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Date</h6>
+                                <p class="fs-5 text-dark">
+                                    <i class="bi bi-calendar-event me-2"></i>{{ inspection.date }}
+                                </p>
+                            </div>
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Location</h6>
+                                <p class="fs-5 text-dark">
+                                    <i class="bi bi-geo-alt-fill me-2"></i>{{ inspection.location }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar for Completion Status -->
+                    {% if not inspection.is_completed %}
+                    <div class="progress mt-3" style="height: 10px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" 
+                             style="width: {{ inspection.completion_percentage }}%" 
+                             aria-valuenow="{{ inspection.completion_percentage }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ inspection.completion_percentage }}% complete</small>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Observations Section -->
+            <div class="card shadow-lg mb-4 border-0 bg-white">
+                <div class="card-header bg-gradient-danger text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Safety Observations
+                            <span class="badge bg-white text-danger ms-2">{{ observations|length }}</span>
+                        </h4>
+                        <button class="btn btn-sm btn-light" data-bs-toggle="collapse" data-bs-target="#observationsCollapse">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body bg-white collapse show" id="observationsCollapse">
+                    {% if observations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Photo</th>
+                                        <th>Hazard</th>
+                                        <th>Risk Level</th>
+                                        <th>Detected</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for observation in observations %}
+                                    <tr>
+                                        <td>
+                                            {% if observation.photo %}
+                                            <img src="{{ observation.photo.url }}" alt="Observation Photo" 
+                                                 class="img-thumbnail rounded" style="width: 80px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                            <div class="bg-light d-flex align-items-center justify-content-center" 
+                                                 style="width: 80px; height: 60px;">
+                                                <i class="bi bi-image text-muted fs-4"></i>
+                                            </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <strong class="text-dark">{{ observation.hazard_description|truncatechars:30 }}</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-{% if observation.risk_level == 'High' %}danger{% elif observation.risk_level == 'Medium' %}warning{% else %}info{% endif %}">
+                                                {{ observation.risk_level }}
+                                            </span>
+                                        </td>
+                                        <td class="text-dark">{{ observation.detected_at|date:"M d, Y" }}</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-outline-primary me-2 copy-hazard-btn" 
+                                                        data-hazard="{{ observation.hazard_description }}"
+                                                        title="Copy Hazard">
+                                                    <i class="bi bi-clipboard"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-secondary view-details-btn"
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#observationModal{{ observation.id }}"
+                                                        title="View Details">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> No safety observations found for this inspection.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-grid gap-3 d-md-flex justify-content-md-center mb-5">
+                <a href="{% url 'mrsafe_app:site_inspection_start' inspection.id %}" class="btn btn-primary btn-lg px-4 me-md-2">
+                    <i class="bi bi-play-circle-fill me-2"></i> Continue Inspection
+                </a>
+                
+                <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="bi bi-arrow-left-circle-fill me-2"></i> Back to Overview
+                </a>
+                
+                {% if not inspection.is_completed %}
+                <a href="#" class="btn btn-success btn-lg px-4 ms-md-2">
+                    <i class="bi bi-check-circle-fill me-2"></i> Complete Inspection
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Observation Detail Modals -->
+{% for observation in observations %}
+<div class="modal fade" id="observationModal{{ observation.id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header bg-{% if observation.risk_level == 'High' %}danger{% elif observation.risk_level == 'Medium' %}warning{% else %}info{% endif %} text-white">
+                <h5 class="modal-title">Observation Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-white">
+                <div class="row">
+                    <!-- Photo Column -->
+                    <div class="col-md-5">
+                        <div class="observation-photo-container mb-3 shadow-sm">
+                            {% if observation.photo %}
+                            <img src="{{ observation.photo.url }}" alt="Observation Photo" 
+                                 class="img-fluid rounded" style="max-height: 300px; width: 100%; object-fit: contain;">
+                            {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center" 
+                                 style="height: 200px; border-radius: 8px;">
+                                <i class="bi bi-image text-muted fs-1"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="observation-meta bg-light p-3 rounded">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">Detected At:</span>
+                                <span class="fw-medium">{{ observation.detected_at }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">Risk Level:</span>
+                                <span class="badge bg-{% if observation.risk_level == 'High' %}danger{% elif observation.risk_level == 'Medium' %}warning{% else %}info{% endif %}">
+                                    {{ observation.risk_level }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Details Column -->
+                    <div class="col-md-7">
+                        <div class="hazard-section mb-3">
+                            <div class="hazard-content bg-white p-3 rounded border">
+                                <p class="mb-0 text-dark">{{ observation.hazard_description }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="recommendations-section mb-3">
+                            <div class="recommendations-content bg-white p-3 rounded border">
+                                <p class="mb-0 text-dark">{{ observation.recommendations }}</p>
+                            </div>
+                        </div>
+                        
+                        {% if observation.additional_notes %}
+                        <div class="notes-section">
+                            <div class="notes-content bg-white p-3 rounded border">
+                                <p class="mb-0 text-dark">{{ observation.additional_notes }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="{% url 'mrsafe_app:observation_detail' observation.id %}" class="btn btn-primary">
+                    <i class="bi bi-box-arrow-up-right me-2"></i>View Full Details
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Toast Notifications -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="exportToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Report exported successfully!
+        </div>
+    </div>
+    
+    <div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-primary text-white">
+            <strong class="me-auto">Copied</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Content copied to clipboard!
+        </div>
+    </div>
+</div>
+
+<style>
+    .inspection-detail-container {
+        background-color: #f8f9fa;
+        padding: 2rem 0;
+    }
+    
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+    }
+    
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    }
+    
+    .badge {
+        border-radius: 10px;
+        padding: 0.5em 1em;
+        font-weight: 500;
+    }
+    
+    .observation-photo-container {
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+    
+    .observation-photo-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-content {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-footer {
+        border-top: 1px solid #dee2e6;
+    }
+    
+    .hazard-content, 
+    .recommendations-content,
+    .notes-content {
+        min-height: 80px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .text-dark {
+        color: #333 !important;
+    }
+    
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .table tbody td {
+        vertical-align: middle;
+    }
+    
+    .copy-hazard-btn:hover, 
+    .view-details-btn:hover {
+        transform: scale(1.1);
+        transition: transform 0.2s;
+    }
+    
+    @media print {
+        .inspection-detail-container {
+            background-color: white;
+            padding: 0;
+        }
+        .card {
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+        .btn, .dropdown-menu {
+            display: none !important;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Initialize toasts
+        const exportToast = new bootstrap.Toast(document.getElementById('exportToast'));
+        const copyToast = new bootstrap.Toast(document.getElementById('copyToast'));
+        
+        // Copy hazard functionality
+        document.querySelectorAll('.copy-hazard-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const hazardText = this.getAttribute('data-hazard');
+                navigator.clipboard.writeText(hazardText).then(() => {
+                    copyToast.show();
+                });
+            });
+        });
+        
+        // Export buttons functionality
+        document.getElementById('copyReportBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implement copy report logic here
+            exportToast.show();
+        });
+        
+        document.getElementById('exportPdfBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implement PDF export logic here
+            exportToast.show();
+        });
+        
+        document.getElementById('exportPptBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implement PPT export logic here
+            exportToast.show();
+        });
+        
+        document.getElementById('printReportBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.print();
+        });
+        
+        // Add animation to progress bar when it comes into view
+        const progressBar = document.querySelector('.progress-bar');
+        if (progressBar) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        progressBar.style.width = progressBar.getAttribute('aria-valuenow') + '%';
+                    }
+                });
+            });
+            observer.observe(progressBar);
+        }
+        
+        // Fix for modal shaking issue
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('show.bs.modal', function () {
+                document.body.style.overflow = 'hidden';
+                document.body.style.paddingRight = '0';
+            });
+            
+            modal.addEventListener('hidden.bs.modal', function () {
+                document.body.style.overflow = 'auto';
+                document.body.style.paddingRight = '0';
+            });
+        });
+    });
+</script>
+{% endblock %}

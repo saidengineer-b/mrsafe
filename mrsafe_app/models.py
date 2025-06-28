@@ -296,13 +296,16 @@ class SiteInspection(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     inspector = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['-date']
+
     def __str__(self):
         return f"{self.title} @ {self.location} ({self.date.strftime('%Y-%m-%d')})"
 
     def total_observations(self):
         return self.observations.count()
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 
 class SafetyObservation(models.Model):
     photo = models.ImageField(upload_to='observations/')
@@ -313,16 +316,18 @@ class SafetyObservation(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="safety_observations"  # Optional, useful for filtering
+        related_name="safety_observations"
     )
 
     site_inspection = models.ForeignKey(
-        'SiteInspection',  # Forward reference if SiteInspection is defined below
+        'SiteInspection',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="observations"
     )
+
+    structured_json = models.JSONField(null=True, blank=True)  # ✅ ADD THIS FIELD
 
     def __str__(self):
         return f"Observation {self.id} - {self.detected_at.strftime('%Y-%m-%d %H:%M')}"

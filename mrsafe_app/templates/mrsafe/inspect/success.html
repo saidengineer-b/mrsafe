@@ -1,9 +1,24 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="alert alert-success mt-5 text-center">
     <h4>✅ Observation Saved!</h4>
     <p>Your safety observation was successfully submitted.</p>
-    <a href="{% url 'mrsafe_app:safety_image_test' %}" class="btn btn-primary mt-3">Back to Inspector</a>
+
+    {% if observation %}
+        {% if observation.site_inspection %}
+            <!-- If the observation is linked to a SiteInspection -->
+            <a href="{% url 'mrsafe_app:inspection_detail' observation.site_inspection.id %}" class="btn btn-success mt-3">
+                🔙 Back to Site Inspection
+            </a>
+        {% else %}
+            <!-- If no SiteInspection linked -->
+            <a href="{% url 'mrsafe_app:safety_image_test' %}" class="btn btn-primary mt-3">
+                🔁 Back to Inspector
+            </a>
+        {% endif %}
+    {% else %}
+        <p>No observation found. Please try again.</p>
+    {% endif %}
 </div>
 {% endblock %}
-

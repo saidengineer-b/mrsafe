@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h3>Start Site Inspection - {{ inspection.id }}</h3>
+
+    <p>Ready to begin the inspection for the following site:</p>
+    <p><strong>Location:</strong> {{ inspection.location }}</p>
+    <p><strong>Date:</strong> {{ inspection.date }}</p>
+    <p><strong>Inspector:</strong> {{ inspection.inspector.username }}</p>
+
+    <hr>
+
+    <!-- Form to upload a photo for the site inspection -->
+    <form method="POST" enctype="multipart/form-data" action="{% url 'mrsafe_app:site_inspection_image_test' inspection.id %}">
+        {% csrf_token %}
+        
+        <!-- File input for uploading the inspection photo -->
+        <label for="photo">Upload Inspection Photo:</label>
+        <input type="file" name="photo" id="photo" required><br><br>
+        
+        <!-- Hidden input to pass inspection_id -->
+        <input type="hidden" name="inspection_id" value="{{ inspection.id }}">
+
+        <!-- Submit button to start the inspection -->
+        <button type="submit" class="btn btn-primary mt-3">Start Inspection</button>
+    </form>
+
+    <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="btn btn-secondary mt-3">
+        Back to Inspection Details
+    </a>
+{% endblock %}

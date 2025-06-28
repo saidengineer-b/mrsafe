@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="alert alert-success mt-5 text-center">
+    <h4>✅ Site Inspection Observation Saved!</h4>
+    <p>Your site inspection observation was successfully submitted.</p>
+
+    {% if observation %}
+        <p><strong>Observation ID:</strong> {{ observation.id }}</p>
+        <p><strong>Hazard Description:</strong> {{ observation.hazard_description }}</p>
+        <p><strong>Recommendations:</strong> {{ observation.recommendations }}</p>
+    {% endif %}
+
+    <!-- Button to go back to the inspection details if available -->
+    {% if observation.site_inspection %}
+        <a href="{% url 'mrsafe_app:inspection_detail' observation.site_inspection.id %}" class="btn btn-success mt-3">
+            🔙 Back to Site Inspection
+        </a>
+    {% endif %}
+</div>
+{% endblock %}

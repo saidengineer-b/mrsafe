@@ -190,3 +190,29 @@ class HazardRecommendationForm(forms.Form):
     training = forms.CharField(label="Training", required=False)
     engineering_control = forms.CharField(label="Engineering Control", required=False)
     timeline = forms.CharField(label="Timeline", required=False)
+
+from django import forms
+from .models import SiteInspection
+class SiteInspectionForm(forms.ModelForm):
+    class Meta:
+        model = SiteInspection
+        fields = ['title', 'location']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'location': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def inspection_create(request):
+    if request.method == 'POST':
+        form = SiteInspectionForm(request.POST)
+        if form.is_valid():
+            inspection = form.save(commit=False)
+            inspection.inspector = request.user
+            inspection.save()
+            return redirect('mrsafe_app:inspection_detail', inspection_id=inspection.id)
+    else:
+        form = SiteInspectionForm()
+    
+    return render(request, 'mrsafe/inspection/create.html', {'form': form})

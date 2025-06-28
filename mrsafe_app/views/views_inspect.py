@@ -32,6 +32,7 @@ def parse_markdown_sections(markdown_text):
     return sections
 
 
+
 @csrf_exempt
 def safety_image_test(request):
     context = {}
@@ -182,6 +183,7 @@ Format your output in clean markdown as shown above.
     return render(request, "mrsafe/inspect/inspect.html", context)
 
 
+
 def calculate_safety_score(analysis):
     """Calculate safety score based on hazard severity in analysis"""
     critical = analysis.count("Severity: Critical")
@@ -265,3 +267,253 @@ def observation_list(request):
     return render(request, "mrsafe/inspect/observation_list.html", {
         "observations": observations
     })
+###################################################################################
+
+####################site inspection##########################################
+# views/site_inspection_views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from ..models import SiteInspection, SafetyObservation
+
+@login_required
+def inspection_list(request):
+    inspections = SiteInspection.objects.filter(inspector=request.user).order_by('-date')
+    return render(request, 'mrsafe/inspection/list.html', {
+        'inspections': inspections
+    })
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from ..models import SiteInspection, SafetyObservation
+
+@login_required
+def inspection_detail(request, inspection_id):
+    # Ensure the user is the inspector of this SiteInspection
+    inspection = get_object_or_404(SiteInspection, id=inspection_id, inspector=request.user)
+
+    # Fetch related SafetyObservations and order by detection time
+    observations = SafetyObservation.objects.filter(site_inspection=inspection).order_by('-detected_at')
+
+    # Render the page with the new template and pass the inspection and observations context
+    return render(request, 'mrsafe/inspect/inspection_detail.html', {
+        'inspection': inspection,
+        'observations': observations,
+    })
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from ..forms import SiteInspectionForm  # make sure this form is defined
+from ..models import SiteInspection
+from django.urls import reverse
+
+
+@login_required
+def inspection_create(request):
+    if request.method == 'POST':
+        form = SiteInspectionForm(request.POST)
+        if form.is_valid():
+            inspection = form.save(commit=False)
+            inspection.inspector = request.user
+            inspection.save()
+            return redirect('mrsafe_app:inspection_detail', inspection_id=inspection.id)
+
+
+    else:
+        form = SiteInspectionForm()
+    return render(request, 'mrsafe/inspect/create.html', {'form': form})
+
+from django.shortcuts import render, get_object_or_404
+from ..models import SafetyObservation
+
+def observation_detail(request, pk):
+    # Fetch the SafetyObservation object
+    obs = get_object_or_404(SafetyObservation, pk=pk)
+
+    # Split the hazard description and recommendations
+    hazard_lines = obs.hazard_description.split("\n") if obs.hazard_description else []
+    reco_lines = obs.recommendations.split("\n") if obs.recommendations else []
+
+    # Combine hazards and recommendations in a structured format
+    hazards_and_recommendations = []
+    for hazard, reco in zip(hazard_lines, reco_lines):
+        hazards_and_recommendations.append({
+            'hazard': hazard,
+            'recommendation': reco
+        })
+
+    return render(request, "mrsafe/inspect/observation_detail.html", {
+        "obs": obs,
+        "hazards_and_recommendations": hazards_and_recommendations,
+    })
+
+
+
+@csrf_exempt
+def site_inspection_image_test(request, inspection_id):
+    context = {}
+
+    # Fetch the SiteInspection object using the provided inspection_id
+    inspection = get_object_or_404(SiteInspection, id=inspection_id)
+
+    if not settings.OPENAI_API_KEY:
+        context["error"] = "OpenAI API key is missing"
+        return render(request, "mrsafe/inspect/site_inspect.html", context)
+
+    if request.method == "POST" and request.FILES.get("photo"):
+        image_file = request.FILES["photo"]
+
+        try:
+            if image_file.size > 5 * 1024 * 1024:  # 5MB max size
+                raise ValueError("Image size exceeds 5MB")
+
+            # Save the uploaded photo
+            fs = FileSystemStorage(location="media/uploads", base_url="/media/uploads/")
+            filename = fs.save(image_file.name, image_file)
+            uploaded_url = fs.url(filename)
+            context["photo_url"] = uploaded_url
+
+            with fs.open(filename, "rb") as img:
+                base64_img = base64.b64encode(img.read()).decode("utf-8")
+
+            content_type = image_file.content_type or "image/jpeg"
+            image_ext = content_type.split("/")[-1]
+
+            # Define the AI prompt for image analysis
+            prompt = """
+            **Site Inspection Safety Analysis Request**
+
+            You are a senior workplace safety expert with 20+ years of field experience. You are analyzing the uploaded workplace photo related to a site inspection. Provide your response using the following structured format:
+
+            ---
+
+            ### Hazard #1
+            - **Title**: [Short title of hazard]
+            - **Severity**: Low / Medium / High / Critical
+            - **Description**: [Detailed description of the hazard]
+            - **OSHA Reference**: [If applicable]
+
+            #### Recommendation
+            - **Action**: [Corrective action to eliminate the hazard]
+            - **PPE**: [Required PPE, if any]
+            - **Training**: [Required training, if any]
+            - **Engineering Control**: [Control measure, if any]
+            - **Timeline**: [Suggested resolution timeline]
+
+            ---
+
+            Repeat the structure for each hazard found in the image. Do not list hazards or recommendations in separate sections. Always keep each hazard and its recommendation grouped.
+
+            Format your output in clean markdown as shown above.
+            """
+
+            # Send the prompt and image data to the AI model (GPT-4 or another model)
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[{
+                    "role": "system", 
+                    "content": "You are a workplace safety AI assistant."
+                }, {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/{image_ext};base64,{base64_img}",
+                                "detail": "high"
+                            }
+                        }
+                    ]
+                }], 
+                max_tokens=1500,
+                temperature=0.3,
+            )
+
+            if not response.choices or not response.choices[0].message.content:
+                raise ValueError("GPT response missing expected content.")
+
+            analysis = response.choices[0].message.content
+            clean_analysis = analysis.replace("```markdown", "").replace("```", "").strip()
+
+            # Parse the returned analysis and extract hazards and recommendations
+            sections = parse_markdown_sections(clean_analysis)
+            context["sections"] = sections
+
+            # Extract hazard and recommendation summary
+            hazard_lines = []
+            reco_lines = []
+            for section in sections:
+                title = section["title"].strip()
+                for bullet in section.get("bullets", []):
+                    if "severity" in bullet.lower():
+                        hazard_lines.append(f"{title}: {bullet}")
+                    elif any(x in title.lower() for x in ["recommendation", "action"]):
+                        reco_lines.append(f"{title}: {bullet}")
+
+            # Get the current user (if authenticated)
+            user = request.user if request.user.is_authenticated else get_user_model().objects.filter(is_active=True).first()
+            if not user:
+                context["error"] = "No valid user found to assign observation."
+                return render(request, "mrsafe/inspect/site_inspect.html", context)
+
+            # Save the SafetyObservation (with SiteInspection linked)
+            SafetyObservation.objects.create(
+                photo=image_file,
+                hazard_description=clean_analysis,  # Using the extracted hazard description
+                recommendations="\n".join(reco_lines),  # Using the extracted recommendations
+                created_by=user,
+                site_inspection=inspection  # Link the observation to the site inspection
+            )
+
+            context["message"] = "✅ Site inspection observation successfully saved."
+
+            # Redirect back to the site inspection detail page
+            return redirect('mrsafe_app:inspection_detail', inspection_id=inspection.id)
+
+        except ValueError as ve:
+            context["error"] = f"Validation Error: {str(ve)}"
+        except Exception as e:
+            context["error"] = f"Error during photo processing: {str(e)}"
+            if settings.DEBUG:
+                context["error_details"] = traceback.format_exc()
+
+    return render(request, "mrsafe/inspect/site_inspect.html", context)
+
+
+
+# views.py
+@csrf_exempt
+def site_inspection_start(request, inspection_id):
+    # Fetch the SiteInspection object using the provided inspection_id
+    inspection = get_object_or_404(SiteInspection, id=inspection_id)
+
+    if request.method == "POST" and request.FILES.get("photo"):
+        image_file = request.FILES["photo"]
+
+        try:
+            # Validate the image size (max 5MB)
+            if image_file.size > 5 * 1024 * 1024:
+                raise ValueError("Image size exceeds 5MB")
+
+            # Save the uploaded photo
+            fs = FileSystemStorage(location="media/uploads", base_url="/media/uploads/")
+            filename = fs.save(image_file.name, image_file)
+            uploaded_url = fs.url(filename)
+
+            # Now, we redirect to the image analysis view
+            return redirect('mrsafe_app:site_inspection_image_test', inspection_id=inspection.id)
+
+        except ValueError as ve:
+            context["error"] = f"Validation Error: {str(ve)}"
+        except Exception as e:
+            context["error"] = f"Error during photo processing: {str(e)}"
+            if settings.DEBUG:
+                context["error_details"] = traceback.format_exc()
+
+    return render(request, 'mrsafe/inspect/start_inspection.html', {'inspection': inspection})
+
+from django.shortcuts import render
+
+def dashboard(request):
+    # Your dashboard logic here
+    return render(request, "mrsafe/dashboard.html")
