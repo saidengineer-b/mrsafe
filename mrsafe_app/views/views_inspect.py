@@ -501,32 +501,46 @@ from django.shortcuts import render
 def dashboard(request):
     # Your dashboard logic here
     return render(request, "mrsafe/inspect/dashboard.html")
-from django.core.files import File
+from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
+from django.shortcuts import redirect, get_object_or_404, render
+from django.conf import settings
 import os
+from urllib.parse import unquote
+from ..models import SafetyObservation, SiteInspection
 
-@csrf_exempt
-def save_observation(request, inspection_id):
-    if request.method == "POST":
-        hazard_description = request.POST.get("hazard_description", "")
-        recommendations = request.POST.get("recommendations", "")
-        photo_url = request.POST.get("photo_url", "")
+@login_required
+def safe_site_observation(request, inspection_id):
+    if request.method == 'POST':
+        photo_url = request.POST.get('photo_url')
+        hazard_description = request.POST.get('hazard_description', '')
+        recommendations = request.POST.get('recommendations', '')
         inspection = get_object_or_404(SiteInspection, id=inspection_id)
 
-        user = request.user if request.user.is_authenticated else get_user_model().objects.first()
+        if photo_url and photo_url.startswith('/media/'):
+            photo_path = unquote(photo_url.replace('/media/', ''))
+            full_path = os.path.join(settings.MEDIA_ROOT, photo_path)
 
-        # Convert URL back to file path (strip /media/)
-        relative_path = photo_url.replace("/media/", "")
-        file_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+            try:
+                with open(full_path, 'rb') as f:
+                    file_content = ContentFile(f.read(), name=os.path.basename(photo_path))
 
-        # Open the file as Django File object
-        with open(file_path, "rb") as f:
-            django_file = File(f)
-            observation = SafetyObservation.objects.create(
-                photo=django_file,
-                hazard_description=hazard_description,
-                recommendations=recommendations,
-                created_by=user,
-                site_inspection=inspection
-            )
+                SafetyObservation.objects.create(
+                    photo=file_content,
+                    hazard_description=hazard_description,
+                    recommendations=recommendations,
+                    created_by=request.user,
+                    site_inspection=inspection
+                )
 
-        return redirect("mrsafe_app:inspection_detail", inspection_id=inspection.id)
+                return redirect('mrsafe_app:inspection_detail', inspection_id=inspection.id)
+
+            except FileNotFoundError:
+                return render(request, "mrsafe/inspect/preview_observation.html", {
+                    "error": f"File not found: {photo_url}",
+                    "inspection_id": inspection.id,
+                    "hazard_description": hazard_description,
+                    "recommendations": recommendations,
+                })
+
+    return redirect('mrsafe_app:inspection_detail', inspection_id=inspection_id)

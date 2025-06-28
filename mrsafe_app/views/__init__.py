@@ -15,7 +15,7 @@ from .views_notifications import (
 from .views_inspect import (safety_image_test,inspect,save_observation,inspect_success,
                             observation_list,inspection_detail,inspection_create,inspection_list,
                             observation_detail,site_inspection_image_test,site_inspection_start,
-                            dashboard,save_observation) 
+                            dashboard,safe_site_observation) 
 
 
 from .views_files import (
