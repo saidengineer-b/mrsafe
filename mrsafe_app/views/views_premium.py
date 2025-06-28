@@ -132,12 +132,6 @@ def premium_dashboard(request):
 
 
 
-@login_required
-def manage_quizzes(request):
-    trainer_quizzes = Quiz.objects.filter(created_by=request.user)
-    return render(request, 'mrsafe_app/premium/manage_quizzes.html', {
-        'trainer_quizzes': trainer_quizzes
-    })
     
 #upgrade_membership______________________________________________________________________________
 from django.shortcuts import render, redirect
@@ -155,80 +149,6 @@ def upgrade_membership(request):
     return redirect("mrsafe_app:premium_dashboard")  # Redirect back to the dashboard
 
 
-
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.contrib import messages
-
-@login_required
-def add_trainee(request):
-    if not request.user.is_premium:
-        return redirect("home")  # ✅ Only premium users can add trainees
-
-    available_trainees = User.objects.filter(is_premium=False, is_superuser=False)
-
-    if request.method == "POST":
-        trainee_id = request.POST.get("trainee")  # ✅ Get trainee ID from form
-        trainee = get_object_or_404(User, id=trainee_id)
-
-        # ✅ Ensure `trainees` is a ManyToManyField in the User model
-        request.user.trainees.add(trainee)  # 🔹 Add trainee to the trainer
-
-        messages.success(request, f"Trainee {trainee.username} added successfully!")
-        print(f"DEBUG: Added {trainee.username} as trainee for {request.user.username}")
-
-        return redirect("premium_dashboard")  # ✅ Redirect back to dashboard
-
-    return render(request, "mrsafe_app/premium/add_trainee.html", {"trainees": available_trainees})
-
-# add trainee page-------------------------------------------------------------------------#
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
-@login_required
-def add_trainee_page(request):
-    """
-    ✅ Display a page to allow a trainer (premium user) to add a trainee.
-    """
-    if not request.user.is_premium:
-        return redirect("home")  # Only premium users can access
-
-    # Get all users excluding trainers/admins
-    trainees = User.objects.filter(is_premium=False, is_superuser=False)
-
-    return render(request, "mrsafe_app/premium/add_trainee.html", {"trainees": trainees})
-
-
-
-
-
-# Add voice-to-text functionality
-def extract_text_from_voice(request):
-    if request.method == "POST":
-        audio_file = request.FILES.get('audio_file')
-        if not audio_file:
-            return JsonResponse({"error": "No audio file uploaded."}, status=400)
-
-        try:
-            # Convert audio to text (you can integrate with speech-to-text API or use pytesseract for audio recognition)
-            extracted_text = pytesseract.image_to_string(audio_file)  # Example OCR for voice file handling
-            
-            if not extracted_text:
-                return JsonResponse({"error": "No text extracted from the audio."}, status=400)
-
-            return JsonResponse({"text": extracted_text}, status=200)
-
-        except Exception as e:
-            print(f"❌ Error extracting text from voice: {e}")
-            return JsonResponse({"error": f"Unexpected error: {e}"}, status=400)
-
-    return JsonResponse({"error": "Invalid request method"}, status=400)
 
 
 #########################################################################################

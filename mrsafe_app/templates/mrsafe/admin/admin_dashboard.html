@@ -2,195 +2,1726 @@
 {% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="text-center text-info glow-title mb-5">⚙️ Admin Dashboard</h2>
+<div class="admin-dashboard-container">
+  <!-- Floating Background Elements -->
+  <div class="floating-shapes">
+    <div class="shape circle-1"></div>
+    <div class="shape circle-2"></div>
+    <div class="shape triangle"></div>
+    <div class="shape wave"></div>
+  </div>
 
-    <!-- 🌟 Metrics -->
-    <div class="row text-center mb-5">
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-lg border-0 bg-gradient-primary text-white p-4">
-                <h5>👥 Total Users</h5>
-                <h3>{{ total_users }}</h3>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-lg border-0 bg-gradient-success text-white p-4">
-                <h5>📖 Total Courses</h5>
-                <h3>{{ total_courses }}</h3>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-lg border-0 bg-gradient-info text-white p-4">
-                <h5>🛍️ Store Items</h5>
-                <h3>{{ total_items }}</h3>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-lg border-0 bg-gradient-danger text-white p-4">
-                <h5>🧠 Total Quizzes</h5>
-                <h3>{{ total_quizzes }}</h3>
-            </div>
-        </div>
+  <!-- Main Dashboard Card -->
+  <div class="dashboard-card glass-card">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <h1 class="dashboard-title gradient-text">
+        <i class="fas fa-shield-alt"></i> Admin Command Center
+      </h1>
+      <div class="admin-badge">
+        <i class="fas fa-star"></i> Super Admin
+      </div>
     </div>
 
-    <!-- 🌐 Admin Control Center -->
-    <h3 class="text-center text-light mb-4 glow-subtitle">🧭 Control Panel</h3>
-    <div class="admin-icon-grid">
+    <!-- Real-time Metrics -->
+    <div class="metrics-grid">
+      <div class="metric-card metric-users">
+        <div class="metric-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="metric-info">
+          <h3>{{ total_users }}</h3>
+          <p>Total Users</p>
+        </div>
+        <div class="metric-trend up">
+          <i class="fas fa-arrow-up"></i> 12.5%
+        </div>
+      </div>
 
-        {% comment "🔹 Main Admin Items - Reusable Block" %}
-        {% for item in admin_items %}
-            <a href="{% url item.url %}" class="admin-icon-link">
-                <div class="admin-icon-card">
-                    <img src="{% static item.icon %}" class="admin-icon-img" alt="{{ item.label }}">
-                    <p class="admin-icon-label">{{ item.label }}</p>
+      <div class="metric-card metric-premium">
+        <div class="metric-icon">
+          <i class="fas fa-crown"></i>
+        </div>
+        <div class="metric-info">
+          <h3>{{ premium_users }}</h3>
+          <p>Premium Users</p>
+        </div>
+        <div class="metric-trend up">
+          <i class="fas fa-arrow-up"></i> 8.3%
+        </div>
+      </div>
+
+      <div class="metric-card metric-revenue">
+        <div class="metric-icon">
+          <i class="fas fa-coins"></i>
+        </div>
+        <div class="metric-info">
+          <h3>${{ monthly_revenue|floatformat:2 }}</h3>
+          <p>Monthly Revenue</p>
+        </div>
+        <div class="metric-trend up">
+          <i class="fas fa-arrow-up"></i> 22.1%
+        </div>
+      </div>
+
+      <div class="metric-card metric-items">
+        <div class="metric-icon">
+          <i class="fas fa-store"></i>
+        </div>
+        <div class="metric-info">
+          <h3>{{ total_items }}</h3>
+          <p>Store Items</p>
+        </div>
+        <div class="metric-trend down">
+          <i class="fas fa-arrow-down"></i> 3.2%
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Navigation Tabs -->
+    <div class="admin-tabs">
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="users">
+          <i class="fas fa-user-cog"></i> User Management
+        </button>
+        <button class="tab-btn" data-tab="plans">
+          <i class="fas fa-gem"></i> Subscription Plans
+        </button>
+        <button class="tab-btn" data-tab="coins">
+          <i class="fas fa-coins"></i> Coin Economy
+        </button>
+        <button class="tab-btn" data-tab="store">
+          <i class="fas fa-store"></i> Digital Store
+        </button>
+      </div>
+      <div class="tab-indicator"></div>
+      
+      <!-- Tab Content -->
+      <div class="tabs-content">
+        <!-- Users Tab -->
+        <div class="tab-pane active" id="users-tab">
+          <div class="tab-header">
+            <h3><i class="fas fa-user-friends"></i> User Management</h3>
+            <div class="search-box">
+              <input type="text" placeholder="Search users...">
+              <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+          </div>
+          
+          <div class="user-table-container">
+            <table class="user-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                  <th>Plan</th>
+                  <th>Coins</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>{{ user.id }}</td>
+                  <td>
+                    <div class="user-avatar">
+                    
+                      <span>{{ user.username }}</span>
+                    </div>
+                  </td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    <span class="status-badge {% if user.is_active %}active{% else %}inactive{% endif %}">
+                      {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="plan-badge {% if user.is_premium %}premium{% else %}free{% endif %}">
+                      {% if user.is_premium %}Premium{% else %}Free{% endif %}
+                    </span>
+                  </td>
+                  <td>{{ user.coin_balance }}</td>
+                  <td>
+                    <div class="action-buttons">
+                      <button class="btn-edit" data-user-id="{{ user.id }}">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn-delete" data-user-id="{{ user.id }}">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            
+            <div class="table-footer">
+              <div class="pagination">
+                <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                <span class="page-info">1-10 of {{ total_users }}</span>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+              </div>
+              <button class="btn-add-user">
+                <i class="fas fa-plus"></i> Add New User
+              </button>
+            </div>
+          </div>
+        </div>
+        
+
+         <!-- Plans Tab -->
+            <div class="tab-pane" id="plans-tab">
+            <div class="tab-header">
+                <h3><i class="fas fa-gem"></i> Subscription Plans</h3>
+                <div class="plan-header-actions">
+                <a href="{% url 'mrsafe_app:premium_membership' %}" class="btn-view-memberships">
+                    <i class="fas fa-eye"></i> View Memberships
+                </a>
+                <button class="btn-add-plan">
+                    <i class="fas fa-plus"></i> Create New Plan
+                </button>
                 </div>
-            </a>
-        {% endfor %}
-        {% endcomment %}
-
-        <!-- ✅ Individual Cards -->
-        <a href="{% url 'quiz_app:user_management' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_users.png' %}" alt="Users" class="admin-icon-img">
-                <p class="admin-icon-label">Users</p>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:manage_categories' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_category_icon.png' %}" alt="Categories" class="admin-icon-img">
-                <p class="admin-icon-label">Categories</p>
+  
+         
+          <div class="plans-grid">
+            {% for plan in subscription_plans %}
+            <div class="plan-card">
+              <div class="plan-header">
+                <h4>{{ plan.name }}</h4>
+                <span class="plan-price">${{ plan.price }}/{{ plan.billing_cycle }}</span>
+              </div>
+              <div class="plan-features">
+                {% for feature in plan.features.all %}
+                <div class="feature-item">
+                  <i class="fas fa-check"></i>
+                  <span>{{ feature.name }}</span>
+                </div>
+                {% endfor %}
+              </div>
+              <div class="plan-stats">
+                <div class="stat-item">
+                  <i class="fas fa-users"></i>
+                  <span>{{ plan.subscribers_count }} subscribers</span>
+                </div>
+                <div class="stat-item">
+                  <i class="fas fa-coins"></i>
+                  <span>{{ plan.monthly_revenue|floatformat:2 }} MRR</span>
+                </div>
+              </div>
+              <div class="plan-actions">
+                <button class="btn-edit-plan" data-plan-id="{{ plan.id }}">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn-delete-plan" data-plan-id="{{ plan.id }}">
+                  <i class="fas fa-trash-alt"></i> Delete
+                </button>
+              </div>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:course_management' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_courses_icon.png' %}" alt="Courses" class="admin-icon-img">
-                <p class="admin-icon-label">Courses</p>
+            {% endfor %}
+          </div>
+        </div>
+        
+        <!-- Coins Tab -->
+        <div class="tab-pane" id="coins-tab">
+          <div class="tab-header">
+            <h3><i class="fas fa-coins"></i> Coin Economy</h3>
+            <div class="coin-controls">
+              <button class="btn-add-coin-package">
+                <i class="fas fa-plus"></i> Add Package
+              </button>
+              <button class="btn-adjust-rates">
+                <i class="fas fa-sliders-h"></i> Adjust Rates
+              </button>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:admin_manage_masterit_sessions' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_masterit_icon.png' %}" alt="MasterIt" class="admin-icon-img">
-                <p class="admin-icon-label">MasterIt</p>
+          </div>
+          
+          <div class="coin-stats">
+            <div class="stat-card">
+              <h4>Total Coins in Circulation</h4>
+              <div class="stat-value">{{ total_coins }}</div>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:quiz_manage' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_quizzes_icon.png' %}" alt="Quizzes" class="admin-icon-img">
-                <p class="admin-icon-label">Quizzes</p>
+            <div class="stat-card">
+              <h4>Coins Purchased (30d)</h4>
+              <div class="stat-value">{{ monthly_coin_purchases }}</div>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:ultimate_ai_challenge_manage' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_ai_challenge_icon.png' %}" alt="AI Challenges" class="admin-icon-img">
-                <p class="admin-icon-label">AI Challenges</p>
+            <div class="stat-card">
+              <h4>Average Purchase</h4>
+              <div class="stat-value">{{ avg_coin_purchase }}</div>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:admin_question_bank_manage' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_question_banks_icon.png' %}" alt="Question Banks" class="admin-icon-img">
-                <p class="admin-icon-label">Question Banks</p>
+          </div>
+          
+          <div class="coin-packages">
+            <h4>Coin Packages</h4>
+            <table class="packages-table">
+              <thead>
+                <tr>
+                  <th>Package</th>
+                  <th>Coins</th>
+                  <th>Price</th>
+                  <th>Value</th>
+                  <th>Popularity</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for package in coin_packages %}
+                <tr>
+                  <td>{{ package.name }}</td>
+                  <td>{{ package.coin_amount }}</td>
+                  <td>${{ package.price }}</td>
+                  <td>
+                    <div class="value-rating">
+                      {% with stars=package.value_rating %}
+                        {% for i in "12345" %}
+                          <i class="fas fa-star{% if forloop.counter > stars %}-o{% endif %}"></i>
+                        {% endfor %}
+                      {% endwith %}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="popularity-bar">
+                      <div class="bar-fill" style="width: {{ package.popularity }}%"></div>
+                    </div>
+                  </td>
+                  <td>
+                    <button class="btn-edit-package" data-package-id="{{ package.id }}">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-delete-package" data-package-id="{{ package.id }}">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Store Tab -->
+        <div class="tab-pane" id="store-tab">
+          <div class="tab-header">
+            <h3><i class="fas fa-store"></i> Digital Store</h3>
+            <button class="btn-add-item">
+              <i class="fas fa-plus"></i> Add New Item
+            </button>
+          </div>
+          
+          <div class="store-filters">
+            <div class="filter-group">
+              <label>Category:</label>
+              <select>
+                <option>All Categories</option>
+                {% for category in store_categories %}
+                <option>{{ category.name }}</option>
+                {% endfor %}
+              </select>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:store_manage' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_store_icon.png' %}" alt="Store" class="admin-icon-img">
-                <p class="admin-icon-label">Store</p>
+            <div class="filter-group">
+              <label>Status:</label>
+              <select>
+                <option>All Statuses</option>
+                <option>Active</option>
+                <option>Draft</option>
+                <option>Archived</option>
+              </select>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:coin_manage' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_coins_icon.png' %}" alt="Coins" class="admin-icon-img">
-                <p class="admin-icon-label">Coins</p>
+            <div class="filter-group">
+              <label>Sort By:</label>
+              <select>
+                <option>Most Popular</option>
+                <option>Newest</option>
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+              </select>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:premium_plan_manage' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_premium_icon.png' %}" alt="Premium" class="admin-icon-img">
-                <p class="admin-icon-label">Premium Plans</p>
+          </div>
+          
+          <div class="store-items-grid">
+            {% for item in store_items %}
+            <div class="store-item-card">
+              <div class="item-image">
+                <img src="{{ item.image.url }}" alt="{{ item.name }}">
+                <div class="item-badge">{{ item.category }}</div>
+              </div>
+              <div class="item-details">
+                <h4>{{ item.name }}</h4>
+                <p class="item-description">{{ item.short_description }}</p>
+                <div class="item-meta">
+                  <span class="item-price">{{ item.price }} coins</span>
+                  <span class="item-sales">{{ item.sales_count }} sold</span>
+                </div>
+              </div>
+              <div class="item-actions">
+                <button class="btn-edit-item" data-item-id="{{ item.id }}">
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="btn-toggle-status" data-item-id="{{ item.id }}">
+                  <i class="fas fa-power-off"></i> {% if item.is_active %}Deactivate{% else %}Activate{% endif %}
+                </button>
+              </div>
             </div>
-        </a>
-        <a href="{% url 'quiz_app:admin_reward_manage' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_reward_icon.png' %}" alt="Rewards" class="admin-icon-img">
-                <p class="admin-icon-label">Rewards</p>
-            </div>
-        </a>
-        <a href="{% url 'quiz_app:google_ads_manage' %}" class="admin-icon-link">
-            <div class="admin-icon-card">
-                <img src="{% static 'images/admin_google_ads_icon.png' %}" alt="Google Ads" class="admin-icon-img">
-                <p class="admin-icon-label">Google Ads</p>
-            </div>
-        </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- 🌟 Dashboard Styling -->
 <style>
-.glow-title {
-    font-weight: bold;
-    text-shadow: 0 0 10px #00ffffaa;
+:root {
+  --primary: #4361ee;
+  --secondary: #3a0ca3;
+  --accent: #f72585;
+  --success: #4cc9f0;
+  --warning: #f8961e;
+  --danger: #ef233c;
+  --dark: #0f172a;
+  --light: #f8fafc;
+  --glass: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
 }
-.glow-subtitle {
+
+.admin-dashboard-container {
+  position: relative;
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  overflow-x: hidden;
+}
+
+.floating-shapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
+  animation: float 15s infinite linear;
+}
+
+.circle-1 {
+  width: 300px;
+  height: 300px;
+  top: -50px;
+  left: -50px;
+  background: radial-gradient(circle, rgba(67, 97, 238, 0.1) 0%, transparent 70%);
+}
+
+.circle-2 {
+  width: 200px;
+  height: 200px;
+  bottom: -30px;
+  right: -30px;
+  background: radial-gradient(circle, rgba(247, 37, 133, 0.1) 0%, transparent 70%);
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 100px solid transparent;
+  border-right: 100px solid transparent;
+  border-bottom: 200px solid rgba(76, 201, 240, 0.05);
+  top: 30%;
+  right: 10%;
+  transform: rotate(45deg);
+  border-radius: 0;
+  animation: float-rotate 20s infinite linear;
+}
+
+.wave {
+  width: 400px;
+  height: 400px;
+  bottom: -100px;
+  left: 20%;
+  background: radial-gradient(circle, transparent 60%, rgba(248, 150, 30, 0.05) 100%);
+  animation: pulse 12s infinite ease-in-out;
+}
+
+@keyframes float {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+  100% { transform: translateY(0) rotate(360deg); }
+}
+
+@keyframes float-rotate {
+  0% { transform: rotate(45deg); }
+  100% { transform: rotate(405deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.glass-card {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  z-index: 1;
+  color: white;
+  padding: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard-title i {
+  font-size: 1.5rem;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.admin-badge {
+  background: linear-gradient(135deg, var(--warning), #ff9500);
+  color: #333;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 3px 10px rgba(248, 150, 30, 0.3);
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.metric-card {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 15px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.metric-card:hover::before {
+  opacity: 1;
+}
+
+.metric-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.metric-users .metric-icon {
+  background: rgba(67, 97, 238, 0.2);
+  color: var(--primary);
+}
+
+.metric-premium .metric-icon {
+  background: rgba(255, 215, 0, 0.2);
+  color: var(--warning);
+}
+
+.metric-revenue .metric-icon {
+  background: rgba(76, 201, 240, 0.2);
+  color: var(--success);
+}
+
+.metric-items .metric-icon {
+  background: rgba(239, 35, 60, 0.2);
+  color: var(--danger);
+}
+
+.metric-info h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  line-height: 1;
+}
+
+.metric-info p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.metric-trend {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+}
+
+.metric-trend.up {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.metric-trend.down {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+}
+
+.admin-tabs {
+  margin-top: 2rem;
+}
+
+.tabs-header {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  position: relative;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-btn i {
+  font-size: 1rem;
+}
+
+.tab-btn.active {
+  color: white;
+}
+
+.tab-indicator {
+  position: absolute;
+  bottom: -1px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 3px 3px 0 0;
+  transition: all 0.3s ease;
+}
+
+.tabs-content {
+  margin-top: 1.5rem;
+}
+
+.tab-pane {
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.tab-header h3 {
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 0.3rem 0.3rem 0.3rem 1rem;
+  border: 1px solid var(--glass-border);
+}
+
+.search-box input {
+  background: transparent;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  width: 200px;
+}
+
+.search-box input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search-box input:focus {
+  outline: none;
+}
+
+.search-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+  background: var(--secondary);
+  transform: scale(1.05);
+}
+
+.btn-add-user,
+.btn-add-plan,
+.btn-add-coin-package,
+.btn-add-item {
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-add-user:hover,
+.btn-add-plan:hover,
+.btn-add-coin-package:hover,
+.btn-add-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+}
+
+.user-table-container {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.user-table th {
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.user-avatar img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.status-badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.status-badge.inactive {
+  background: rgba(108, 117, 125, 0.2);
+  color: #6c757d;
+}
+
+.plan-badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.plan-badge.premium {
+  background: rgba(255, 215, 0, 0.2);
+  color: var(--warning);
+}
+
+.plan-badge.free {
+  background: rgba(108, 117, 125, 0.2);
+  color: #6c757d;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit,
+.btn-delete,
+.btn-edit-plan,
+.btn-delete-plan,
+.btn-edit-package,
+.btn-delete-package,
+.btn-edit-item,
+.btn-toggle-status {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-edit,
+.btn-edit-plan,
+.btn-edit-package,
+.btn-edit-item {
+  background: rgba(67, 97, 238, 0.2);
+  color: var(--primary);
+}
+
+.btn-delete,
+.btn-delete-plan,
+.btn-delete-package {
+  background: rgba(220, 53, 69, 0.2);
+  color: var(--danger);
+}
+
+.btn-toggle-status {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.btn-edit:hover,
+.btn-edit-plan:hover,
+.btn-edit-package:hover,
+.btn-edit-item:hover {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn-delete:hover,
+.btn-delete-plan:hover,
+.btn-delete-package:hover {
+  background: var(--danger);
+  color: white;
+  transform: scale(1.1);
+}
+
+.btn-toggle-status:hover {
+  background: #28a745;
+  color: white;
+  transform: scale(1.1);
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--glass-border);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.page-btn:hover {
+  background: var(--primary);
+  transform: scale(1.1);
+}
+
+.page-info {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.plan-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.plan-header h4 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.plan-price {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.plan-features {
+  margin-bottom: 1.5rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.feature-item i {
+  color: var(--success);
+  font-size: 0.8rem;
+}
+
+.plan-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.stat-item i {
+  font-size: 0.9rem;
+}
+
+.plan-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.btn-edit-plan,
+.btn-delete-plan {
+  flex: 1;
+  border-radius: 8px;
+  height: auto;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.coin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-card h4 {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+}
+
+.coin-controls {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-adjust-rates {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-adjust-rates:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.packages-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.packages-table th,
+.packages-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.packages-table th {
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.value-rating {
+  color: var(--warning);
+}
+
+.popularity-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--primary));
+  border-radius: 3px;
+}
+
+.store-filters {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.filter-group select {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  min-width: 150px;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.store-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.store-item-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.store-item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.item-image {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+}
+
+.item-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.store-item-card:hover .item-image img {
+  transform: scale(1.05);
+}
+
+.item-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--accent);
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 
     font-weight: 600;
-    text-shadow: 0 0 6px #00ffff88;
 }
 
-/* Grid Layout */
-.admin-icon-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
-    justify-content: center;
+.item-details {
+  padding: 1rem;
 }
 
-.admin-icon-card {
-    background: #1a1a1a;
-    border: 1px solid #00ffff33;
-    box-shadow: 0 0 15px #00ffff22;
-    border-radius: 12px;
-    text-align: center;
-    padding: 20px 15px;
-    width: 160px;
-    transition: transform 0.3s, box-shadow 0.3s;
+.item-details h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
 }
 
-.admin-icon-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0 18px #00ffff66;
+.item-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.admin-icon-img {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 12px;
+.item-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.admin-icon-label {
-    color: #00ffff;
-    font-weight: bold;
-    text-shadow: 0 0 4px #00ffff55;
+.item-price {
+  font-weight: 600;
+  color: var(--warning);
 }
 
-/* Colored Card Gradients */
-.bg-gradient-primary { background: linear-gradient(45deg, #007bff, #00bfff); }
-.bg-gradient-success { background: linear-gradient(45deg, #28a745, #85e085); }
-.bg-gradient-info { background: linear-gradient(45deg, #17a2b8, #66d9e8); }
-.bg-gradient-danger { background: linear-gradient(45deg, #dc3545, #ff7675); }
+.item-sales {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1rem 1rem 1rem;
+}
+
+.btn-edit-item,
+.btn-toggle-status {
+  flex: 1;
+  border-radius: 8px;
+  height: auto;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
 @media (max-width: 768px) {
-    .admin-icon-card {
-        width: 120px;
-        padding: 15px 10px;
-    }
+  .admin-dashboard-container {
+    padding: 1rem;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tabs-header {
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+  }
+  
+  .tabs-header::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .tab-btn {
+    white-space: nowrap;
+  }
+  
+  .table-footer {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .store-filters {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+  
+  .filter-group select {
+    width: 100%;
+  }
+}
 
-    .admin-icon-img {
-        width: 48px;
-        height: 48px;
-    }
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
 
-    .admin-icon-label {
-        font-size: 0.85rem;
-    }
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-content {
+  background: var(--dark);
+  border-radius: 15px;
+  border: 1px solid var(--glass-border);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.modal-overlay.active .modal-content {
+  transform: translateY(0);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+  color: white;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-submit {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background: var(--secondary);
+}
+
+/* Toast Notifications */
+.toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.toast {
+  background: var(--dark);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 350px;
+}
+
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast.success .toast-icon {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.toast.error .toast-icon {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+}
+
+.toast.warning .toast-icon {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.toast-info .toast-icon {
+  background: rgba(23, 162, 184, 0.2);
+  color: #17a2b8;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.toast-message {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+.toast-close:hover {
+  color: white;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.plan-header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-view-memberships {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-view-memberships:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab switching functionality
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+  const tabIndicator = document.querySelector('.tab-indicator');
+  
+  function setActiveTab(tabId) {
+    // Update tab buttons
+    tabButtons.forEach(btn => {
+      if (btn.getAttribute('data-tab') === tabId) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    
+    // Update tab panes
+    tabPanes.forEach(pane => {
+      if (pane.id === `${tabId}-tab`) {
+        pane.classList.add('active');
+      } else {
+        pane.classList.remove('active');
+      }
+    });
+    
+    // Move indicator
+    const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+    if (activeBtn) {
+      const btnRect = activeBtn.getBoundingClientRect();
+      const tabsRect = activeBtn.parentElement.getBoundingClientRect();
+      tabIndicator.style.width = `${btnRect.width}px`;
+      tabIndicator.style.left = `${btnRect.left - tabsRect.left}px`;
+    }
+  }
+  
+  // Initialize first tab as active
+  if (tabButtons.length > 0) {
+    const firstTabId = tabButtons[0].getAttribute('data-tab');
+    setActiveTab(firstTabId);
+  }
+  
+  // Add click event listeners
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const tabId = this.getAttribute('data-tab');
+      setActiveTab(tabId);
+    });
+  });
+  
+  // Modal functionality
+  const modalOverlay = document.querySelector('.modal-overlay');
+  const modalCloseBtns = document.querySelectorAll('.modal-close, .btn-cancel');
+  
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  
+  function closeModal() {
+    modalOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  
+  // Add event listeners for modal close buttons
+  modalCloseBtns.forEach(btn => {
+    btn.addEventListener('click', closeModal);
+  });
+  
+  // Close modal when clicking outside content
+  modalOverlay.addEventListener('click', function(e) {
+    if (e.target === modalOverlay) {
+      closeModal();
+    }
+  });
+  
+  // Example of opening a modal (you would attach these to your buttons)
+  document.querySelectorAll('[data-modal-target]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const modalId = this.getAttribute('data-modal-target');
+      openModal(modalId);
+    });
+  });
+  
+  // Toast notification example
+  function showToast(type, title, message, duration = 5000) {
+    const toastContainer = document.querySelector('.toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+      <div class="toast-icon">
+        <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : type === 'warning' ? 'exclamation' : 'info'}"></i>
+      </div>
+      <div class="toast-content">
+        <div class="toast-title">${title}</div>
+        <div class="toast-message">${message}</div>
+      </div>
+      <button class="toast-close">&times;</button>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Show toast
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 100);
+    
+    // Close button
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+      hideToast(toast);
+    });
+    
+    // Auto-hide after duration
+    if (duration) {
+      setTimeout(() => {
+        hideToast(toast);
+      }, duration);
+    }
+  }
+  
+  function hideToast(toast) {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }
+  
+  // Example usage:
+  // showToast('success', 'Success!', 'Your changes have been saved successfully.');
+  // showToast('error', 'Error!', 'Something went wrong. Please try again.');
+  
+  // Other interactive elements would go here...
+});
+</script>
+
 {% endblock %}

@@ -20,7 +20,7 @@ from .views_inspect import (safety_image_test,inspect,save_observation,inspect_s
                             inspection_full_report,export_inspection_docx) 
 
 
-from .views_files import (
+from .views_files import (create_admin_user,
     public_landing,
     home,
     profile,
@@ -28,6 +28,7 @@ from .views_files import (
     
     edit_profile,
     login_view,
+    logout_view,
     CustomPasswordResetView,
     password_reset_done,
     store_home,

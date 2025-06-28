@@ -29,7 +29,7 @@ from .views import (
 
 
     # Store
-    shopify_products_view, shopify_store_view, process_payment,payment_history_view,
+    process_payment,payment_history_view,
 
     # Certificates
     user_management_view,manage_categories_view,coin_transaction_history,premium_plan_manage_view,reward_manage_view,admin_google_ads_manage_view,
@@ -40,13 +40,15 @@ from .views import (
    
    
     # inspect
-   safety_image_test,
-   
+   safety_image_test,   
     )
 
+from django.contrib.auth.views import LogoutView
+
+from .views import create_admin_user
 
 
-
+      # Temporary route
 
 app_name = 'mrsafe_app'  # Keep the namespace
 
@@ -75,7 +77,7 @@ from .views import (contact,
                     inspection_full_report,export_inspection_docx,
                     
                     
-                    subscribe_premium,)
+                    subscribe_premium,create_admin_user,)
 
 
 
@@ -87,11 +89,26 @@ from django.urls import path
 from django.shortcuts import redirect
 
 
-urlpatterns = [
+urlpattern = [
+
+path('create-superuser/', create_admin_user), 
+
     
 path('register/', register, name='register'),
     
 path('login/', auth_views.LoginView.as_view(template_name='mrsafe/login.html'), name='login'),
+
+
+path(
+    'logout/',
+    LogoutView.as_view(
+        next_page=None,  # To render the template
+        template_name='mrsafe/logged_out.html'
+    ),
+    name='logout'
+),
+
+
 path('', home, name='home'),  # ✅ This makes /mrsafe/ go to home()
 
 path("inspect/", safety_image_test, name="safety_image_test"),
@@ -211,9 +228,7 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
 
     path('privacy-policy/', privacy_policy, name='privacy_policy'),
 
-    path("shopify-store/", shopify_store_view, name="shopify_store"),
 
-    path("shopify-products/", shopify_products_view, name="shopify_products"),
 
     path('switch-language/', switch_language, name='switch_language'),
 
@@ -252,8 +267,9 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
 
     # 👤 User Authentication
  
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
+   
+   
     # 👤 Profile Management
     path('profile/', profile, name='profile'),
     path('profile/edit/', edit_profile, name='edit_profile'),

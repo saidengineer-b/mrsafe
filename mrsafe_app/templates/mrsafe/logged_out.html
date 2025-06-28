@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="container mt-5 text-center">
+    <h3>You have been logged out.</h3>
+    <a href="{% url 'mrsafe_app:login' %}" class="btn btn-primary mt-3">Login Again</a>
+  </div>
+{% endblock %}

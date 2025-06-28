@@ -215,6 +215,17 @@ def login_view(request):
 
     return render(request, 'mrsafe_app/login.html', {'form': form})
 
+
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+from django.contrib import messages
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, "👋 You have been successfully logged out.")
+    return redirect('mrsafe_app:login')  # 🔁 change to your login view name
+
+
 # reset passward  code details---------------------------------------------------------------#
 
 @login_required(login_url='mrsafe_app:login')  # ✅ no app namespace
@@ -298,61 +309,52 @@ def delete_item(request, item_id):
 
 #___________________________________________________________________________________________
 
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render
+from ..models import (
+    CustomUser, StoreItem, CoinActivity, CoinTransaction,
+    AdActivity, PremiumPlan
+)
+
+
 @login_required
 @user_passes_test(is_admin)
 def admin_dashboard(request):
     """
-    ✅ Admin Dashboard: View statistics, manage users, courses, store, and quizzes.
+    ✅ Mr. Safe Admin Dashboard: View statistics, manage users, courses, store, and premium plans.
     """
     total_users = CustomUser.objects.count()
-    total_courses = Course.objects.count()
+    
     total_items = StoreItem.objects.count()
-    total_quizzes = Quiz.objects.count()
-    total_completed = QuizResult.objects.filter(passed=True).count()
-    total_failed = QuizResult.objects.filter(passed=False).count()
-    premium_plans = PremiumPlan.objects.all()  # 🟢 include all plans or filter by is_active=True if needed
-    users = CustomUser.objects.all().order_by('-date_joined')[:10]  # Recent users
-    courses = Course.objects.all().order_by('-id')[:10]  # Recent courses
-    store_items = StoreItem.objects.all().order_by('-id')[:10]  # Recent store items
-    quizzes = Quiz.objects.all().order_by('-created_at')[:10]  # Recent quizzes
-    results = QuizResult.objects.all().order_by('-date_taken')[:10]  # Recent quiz results
-    coin_activities = CoinActivity.objects.all()  # ✅ Fetch all coin activities
-    transactions = CoinTransaction.objects.all().order_by('-timestamp')  # Latest transactions
-    ad_activities = AdActivity.objects.all() 
-    # ✅ Normalize `activity_type` values (remove spaces and force lowercase)
-    categories = Category.objects.all().order_by('-id')  # ✅ Get all categories
+
+    premium_plans = PremiumPlan.objects.all()
+    users = CustomUser.objects.all().order_by('-date_joined')[:10]
+    
+    store_items = StoreItem.objects.all().order_by('-id')[:10]
+
+    coin_activities = CoinActivity.objects.all()
+    transactions = CoinTransaction.objects.all().order_by('-timestamp')
+    ad_activities = AdActivity.objects.all()
+    
+
+    # Normalize activity types
     for activity in coin_activities:
         activity.activity_type = activity.activity_type.strip().lower()
 
-    # ✅ Debugging Output: Print cleaned data
-    print("\n🟢 Debugging Coin Activities (After Cleanup):")
-    for activity in coin_activities:
-        print(f"ID: {activity.id}, Name: {activity.name}, Type: '{activity.activity_type}', Coins: {activity.coin_amount}, Active: {activity.is_active}")
-
-
-# Add to your context:
-    all_sessions = MasterItSession.objects.all().order_by('-created_at')
-    
     context = {
         "total_users": total_users,
-        "total_courses": total_courses,
+        
         "total_items": total_items,
-        "total_quizzes": total_quizzes,
-        "total_completed": total_completed,
-        "total_failed": total_failed,
         "users": users,
-        "courses": courses,
+        
         "store_items": store_items,
-        "quizzes": quizzes,
-        "results": results,
-        "coin_activities": coin_activities,  # ✅ Ensure cleaned data is passed
+        "coin_activities": coin_activities,
         "transactions": transactions,
-        'ad_activities': ad_activities,# ✅ Transactions included
-        "masterit_sessions":all_sessions,
-        "premium_plans": premium_plans,
-        "categories": categories,  # ✅ Add categories to context
-    }
-    return render(request, "mrsafe_app/admin/admin_dashboard.html", context)
+        "ad_activities": ad_activities,
+        "premium_plans": premium_plans,  }     
+    
+    return render(request, "mrsafe/admin/admin_dashboard.html", context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -1986,3 +1988,13 @@ from django.shortcuts import render
 def public_landing(request):
     return render(request, "index.html")
 
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+
+def create_admin_user(request):
+    User = get_user_model()
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@example.com', 'YourSecurePassword123')
+        return HttpResponse("✅ Superuser created successfully.")
+    else:
+        return HttpResponse("⚠️ Superuser already exists.")
