@@ -347,6 +347,7 @@ def observation_detail(request, pk):
     })
 
 
+from django.core.files import File
 
 @csrf_exempt
 def site_inspection_image_test(request, inspection_id):
@@ -457,13 +458,15 @@ def site_inspection_image_test(request, inspection_id):
                 return render(request, "mrsafe/inspect/site_inspect.html", context)
 
             # Save the SafetyObservation (with SiteInspection linked)
-            SafetyObservation.objects.create(
-                photo=image_file,
-                hazard_description=clean_analysis,  # Using the extracted hazard description
-                recommendations="\n".join(reco_lines),  # Using the extracted recommendations
-                created_by=user,
-                site_inspection=inspection  # Link the observation to the site inspection
-            )
+
+            with fs.open(filename, "rb") as f:
+                SafetyObservation.objects.create(
+                    photo=File(f),  # ✅ This wraps the saved file in Django File
+                    hazard_description=clean_analysis,
+                    recommendations="\n".join(reco_lines),
+                    created_by=user,
+                    site_inspection=inspection
+                )
 
             # Instead of showing a success message, just redirect directly to the inspection detail page
             return redirect('mrsafe_app:inspection_detail', inspection_id=inspection.id)
