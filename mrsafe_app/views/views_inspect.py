@@ -467,7 +467,7 @@ def site_inspection_image_test(request, inspection_id):
 
             context["message"] = "✅ Site inspection observation successfully saved."
 
-            # Redirect back to the site inspection detail page
+            # Redirect back to the site inspection detail page after saving the observation
             return redirect('mrsafe_app:inspection_detail', inspection_id=inspection.id)
 
         except ValueError as ve:
@@ -478,7 +478,6 @@ def site_inspection_image_test(request, inspection_id):
                 context["error_details"] = traceback.format_exc()
 
     return render(request, "mrsafe/inspect/site_inspect.html", context)
-
 
 
 # views.py
@@ -516,4 +515,4 @@ from django.shortcuts import render
 
 def dashboard(request):
     # Your dashboard logic here
-    return render(request, "mrsafe/dashboard.html")
+    return render(request, "mrsafe/inspect/dashboard.html")

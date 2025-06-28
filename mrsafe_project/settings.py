@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "ckeditor_uploader",
     "django.contrib.sites",
+    'django.contrib.humanize',
 ]
 
 # ✅ Middleware (WhiteNoise Added)
