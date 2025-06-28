@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    {% if created %}
+        <h3 class="text-success">✅ Superuser created successfully!</h3>
+        <p>Username: <strong>admin</strong></p>
+        <p>Password: <strong>YourSecurePassword123</strong></p>
+    {% else %}
+        <h3 class="text-warning">⚠️ Superuser already exists.</h3>
+        <p>No action needed.</p>
+    {% endif %}
+</div>
+{% endblock %}

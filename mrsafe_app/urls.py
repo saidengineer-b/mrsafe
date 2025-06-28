@@ -45,7 +45,7 @@ from .views import (
 
 from django.contrib.auth.views import LogoutView
 
-from .views import create_admin_user
+
 
 
       # Temporary route
@@ -77,7 +77,7 @@ from .views import (contact,
                     inspection_full_report,export_inspection_docx,
                     
                     
-                    subscribe_premium,create_admin_user,)
+                    subscribe_premium,create_superuser_view,)
 
 
 
@@ -91,7 +91,13 @@ from django.shortcuts import redirect
 
 urlpattern = [
 
-path('create-superuser/', create_admin_user), 
+
+ 
+
+    path('create-superuser/', create_superuser_view, name='create_superuser'),
+    
+
+
 
     
 path('register/', register, name='register'),

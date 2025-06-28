@@ -1989,12 +1989,18 @@ def public_landing(request):
     return render(request, "index.html")
 
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse
+from django.shortcuts import render
 
-def create_admin_user(request):
+def create_superuser_view(request):
     User = get_user_model()
+    created = False
+
     if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@example.com', 'YourSecurePassword123')
-        return HttpResponse("✅ Superuser created successfully.")
-    else:
-        return HttpResponse("⚠️ Superuser already exists.")
+        User.objects.create_superuser(
+            username='admin',
+            email='admin@example.com',
+            password='YourSecurePassword123'  # Change before launch
+        )
+        created = True
+
+    return render(request, "mrsafe/create_superuser.html", {"created": created})
