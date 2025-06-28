@@ -4,7 +4,10 @@ from django.conf.urls.static import static
 from django.conf.urls.i18n import set_language, i18n_patterns
 from django.contrib.auth import views as auth_views
 from .views import home
-
+from django.urls import path
+from . import views  # your view imports
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import views_files
 from .views import (
     # Auth & User
@@ -89,13 +92,13 @@ from django.urls import path
 from django.shortcuts import redirect
 
 
-urlpattern = [
+urlpatterns = [
+ 
 
 
  
 
     path('create-superuser/', create_superuser_view, name='create_superuser'),
-    
 
 
 
@@ -305,11 +308,11 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
    
     path('premium-dashboard/', premium_dashboard, name='premium_dashboard'),
 
-    path("upgrade-membership/", upgrade_membership, name="upgrade_membership"),]
-
-
+    path("upgrade-membership/", upgrade_membership, name="upgrade_membership"),
+    
+    ]
 
 
 # ✅ Serve Media Files During Development
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
