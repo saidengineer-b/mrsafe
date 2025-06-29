@@ -368,7 +368,7 @@ from ..models import CustomUser, UserCoinBalance, PremiumProfile
 from ..forms import EditUserForm, EditPremiumProfileForm
 
 @login_required
-@user_passes_test(is_admin)
+
 def edit_user(request, user_id):
     selected_user = get_object_or_404(CustomUser, id=user_id)
     user_balance, _ = UserCoinBalance.objects.get_or_create(user=selected_user)
