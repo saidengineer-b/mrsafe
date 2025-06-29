@@ -101,6 +101,13 @@ class PremiumPlan(models.Model):
         unique=True,
         verbose_name=_("Plan Type")
     )
+    slug = models.SlugField(
+        unique=True,
+        blank=True,
+        null=True,
+        verbose_name=_("Slug")
+    )
+    
     duration_days = models.PositiveIntegerField(
         verbose_name=_("Duration in Days"),
         validators=[MinValueValidator(1)]
