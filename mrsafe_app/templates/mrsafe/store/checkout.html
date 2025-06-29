@@ -258,7 +258,7 @@
       gpayLoader.style.display = "block";
       paypalLoader.style.display = "block";
     
-      fetch("{% url 'quiz_app:braintree_token' %}")
+      fetch("{% url 'mrsafe_app:braintree_token' %}")
         .then(res => res.json())
         .then(data => {
           braintree.client.create({
@@ -372,7 +372,7 @@
         function processPayment(payload) {
           showMessage("Processing payment...", "warning");
           
-          fetch("{% url 'quiz_app:process_payment' %}", {
+          fetch("{% url 'mrsafe_app:process_payment' %}", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -380,9 +380,14 @@
             },
             body: JSON.stringify({
               nonce: payload.nonce,
-              amount: totalPrice,
+              {% if plan %}
+              plan_id: "{{ plan.id }}",
+              {% else %}
+              cart_total: "{{ total_price|floatformat:2 }}",
+              {% endif %}
               payment_type: payload.type
             })
+
           })
           .then(res => res.json())
           .then(data => {
@@ -390,7 +395,7 @@
             if (data.success) {
               showMessage("Payment successful! Redirecting...", "success");
               setTimeout(() => {
-                window.location.href = "{% url 'quiz_app:profile' %}";
+                window.location.href = "{% url 'mrsafe_app:profile' %}";
               }, 2000);
             } else {
               showMessage(`Payment failed: ${data.error || ''}`, "error");

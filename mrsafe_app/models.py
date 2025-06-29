@@ -87,6 +87,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.utils.text import slugify
 
 class PremiumPlan(models.Model):
     class PlanType(models.TextChoices):
@@ -94,20 +95,19 @@ class PremiumPlan(models.Model):
         WEEKLY = 'weekly', _('Weekly')
         MONTHLY = 'monthly', _('Monthly')
         ANNUAL = 'annual', _('Annual')
-    
+    slug = models.SlugField(
+    unique=True,
+    blank=True,
+    null=True,
+    verbose_name=_("Slug")
+)
+
     name = models.CharField(
         max_length=50,
         choices=PlanType.choices,
         unique=True,
         verbose_name=_("Plan Type")
     )
-    slug = models.SlugField(
-        unique=True,
-        blank=True,
-        null=True,
-        verbose_name=_("Slug")
-    )
-    
     duration_days = models.PositiveIntegerField(
         verbose_name=_("Duration in Days"),
         validators=[MinValueValidator(1)]
@@ -160,6 +160,18 @@ class PremiumPlan(models.Model):
     def get_duration_months(self):
         """Convert duration in days to approximate months"""
         return round(self.duration_days / 30, 1)
+
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.name)
+            slug = base_slug
+            counter = 1
+            while PremiumPlan.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
 
 from django.db import models

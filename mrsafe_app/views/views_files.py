@@ -12,6 +12,19 @@ from django.urls import reverse_lazy
 from django.utils.translation import activate, get_language
 from django.views.decorators.csrf import csrf_exempt
 from ..models import PremiumPlan , Category
+import json
+from datetime import timedelta
+from django.utils.timezone import now
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render
+from ..models import PremiumPlan
+# Make sure this decorator exists
+from ..models import PremiumPlan, PremiumProfile, StoreItem, CartItem
+from ..braintree_config import gateway
 
 from django.urls import reverse
 
@@ -25,6 +38,12 @@ from ..models import (
     CoinActivity, CoinTransaction, AdActivity, TermsAndConditions,
     
 )
+
+# views.py
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
+from django.contrib import messages
+from ..models import UserProfile, CoinActivity
 
 
 from openai import OpenAI
@@ -1299,36 +1318,7 @@ def view_cart(request):
     })
 
 
-@login_required
-def checkout(request):
-    cart_items = CartItem.objects.filter(user=request.user)
-    total_price = sum(item.item.price * item.quantity for item in cart_items)
-    
-    if request.method == "POST":
-        nonce = request.POST.get('payment_method_nonce')
-        result = braintree.Transaction.sale({
-            "amount": str(round(total_price, 2)),
-            "payment_method_nonce": nonce,
-            "options": {
-                "submit_for_settlement": True
-            }
-        })
-        
-        if result.is_success:
-            # Clear cart and process order
-            cart_items.delete()
-            return redirect('order_success')
-        else:
-            messages.error(request, f"Payment failed: {result.message}")
-    
-    client_token = braintree.ClientToken.generate()
-    
-    return render(request, 'mrsafe/store/checkout.html', {
-        'cart_items': cart_items,
-        'total_price': round(total_price, 2),
-        'client_token': client_token,
-    })
-    
+
     # views.py
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -1345,26 +1335,47 @@ def cart_checkout(request):
     }
     return render(request, 'mrsafe/store/checkout.html', context)
 
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from ..models import PremiumPlan
+import braintree
+
 @login_required
 def plan_checkout(request, slug):
     plan = get_object_or_404(PremiumPlan, slug=slug, is_active=True)
-    
+    total_price = plan.price
+
+    if request.method == "POST":
+        nonce = request.POST.get('payment_method_nonce')
+        result = braintree.Transaction.sale({
+            "amount": str(round(total_price, 2)),
+            "payment_method_nonce": nonce,
+            "options": {
+                "submit_for_settlement": True
+            }
+        })
+
+        if result.is_success:
+            # Process premium upgrade logic here (e.g., activate PremiumProfile)
+            messages.success(request, "Payment successful! Your premium membership has been activated.")
+            return redirect("mrsafe_app:profile")
+        else:
+            messages.error(request, f"Payment failed: {result.message}")
+
+    client_token = braintree.ClientToken.generate()
+
+    # Use the same template and variable names as cart flow
     context = {
+        'cart_items': [{'item': plan, 'quantity': 1, 'subtotal': plan.price}],
+        'total_price': round(total_price, 2),
+        'client_token': client_token,
         'plan': plan,
     }
     return render(request, 'mrsafe/store/checkout.html', context)
-    
-# views.py
-# views.py
-import json
-from datetime import timedelta
-from django.utils.timezone import now
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 
-from ..models import PremiumPlan, PremiumProfile, StoreItem, CartItem
-from ..braintree_config import gateway
+
+
 
 
 @csrf_exempt
@@ -1440,8 +1451,7 @@ def process_payment(request):
                     description=f"Bonus coins from Premium Plan: {plan.name}"
                 )
 
-            user.is_premium = True
-            user.save(update_fields=["is_premium"])
+            
 
             return JsonResponse({
                 "success": True,
@@ -1601,12 +1611,6 @@ def contact(request):
     return render(request, 'mrsafe/base/contact.html')
 
 
-# views.py
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-from django.contrib import messages
-from ..models import UserProfile, CoinActivity
-
 @login_required
 def premium_subscription_success(request):
     profile, _ = UserProfile.objects.get_or_create(user=request.user)
@@ -1711,10 +1715,6 @@ def coin_manage_view(request):
         "transactions": transactions         # ✅ Include this so template doesn’t break
     })
 
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render
-from ..models import PremiumPlan
-# Make sure this decorator exists
 
 @login_required
 @user_passes_test(is_admin)

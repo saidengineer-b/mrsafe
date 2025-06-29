@@ -53,7 +53,7 @@ from .views.views_files import HelpView,view_cart  # Ensure this imports the cla
 from django.urls import path
 from .views.views_files import FAQView
 from .views import (contact,
-                    remove_from_cart,checkout,generate_client_token,delete_google_ad_activity,add_google_ad_activity,
+                    remove_from_cart,generate_client_token,delete_google_ad_activity,add_google_ad_activity,
                     google_ad_activity_list,
                     
                     change_theme,test_css,delete_item,
@@ -168,7 +168,7 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
     path('cart/', view_cart, name='view_cart'),
     path('cart/add/<int:item_id>/', add_to_cart, name='add_to_cart'),
     path('cart/remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
-    path('cart/checkout/', checkout, name='checkout'),
+    
 
     path('process-payment/', process_payment, name='process_payment'),
     

@@ -182,3 +182,12 @@ BRAINTREE_ENVIRONMENT = os.getenv("BRAINTREE_ENVIRONMENT", "sandbox")
 # ✅ Site ID & URL
 SITE_ID = 1
 SITE_URL = os.getenv("SITE_URL", "http://127.0.0.1:8000")
+
+import braintree
+
+braintree.Configuration.configure(
+    braintree.Environment.Sandbox if BRAINTREE_ENVIRONMENT == "sandbox" else braintree.Environment.Production,
+    merchant_id=BRAINTREE_MERCHANT_ID,
+    public_key=BRAINTREE_PUBLIC_KEY,
+    private_key=BRAINTREE_PRIVATE_KEY
+)
