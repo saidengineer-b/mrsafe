@@ -355,36 +355,47 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from ..models import CustomUser, UserCoinBalance, PremiumProfile
 from ..forms import EditUserForm, EditPremiumProfileForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from ..models import CustomUser, UserCoinBalance, PremiumProfile
+from ..forms import EditUserForm, EditPremiumProfileForm
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from ..models import CustomUser, UserCoinBalance, PremiumProfile
+from ..forms import EditUserForm, EditPremiumProfileForm
 
 @login_required
 @user_passes_test(is_admin)
 def edit_user(request, user_id):
     selected_user = get_object_or_404(CustomUser, id=user_id)
-    user_balance = UserCoinBalance.objects.get_or_create(user=selected_user)[0]
-    premium_profile = PremiumProfile.objects.get_or_create(user=selected_user)[0]
-
+    user_balance, _ = UserCoinBalance.objects.get_or_create(user=selected_user)
+    premium_profile, _ = PremiumProfile.objects.get_or_create(user=selected_user)
+    
     if request.method == "POST":
         user_form = EditUserForm(request.POST, request.FILES, instance=selected_user)
         premium_form = EditPremiumProfileForm(request.POST, instance=premium_profile)
 
-        if all([user_form.is_valid(), premium_form.is_valid()]):
+        if user_form.is_valid() and premium_form.is_valid():
             # Save user data
             user = user_form.save(commit=False)
             if 'profile_photo' in request.FILES:
                 user.profile_photo = request.FILES['profile_photo']
             user.save()
 
-            # Save coin balance
-            if (balance := user_form.cleaned_data.get('coin_balance')) is not None:
-                user_balance.balance = balance
+            # Save coin balance separately
+            coin_balance = user_form.cleaned_data.get('coin_balance')
+            if coin_balance is not None:
+                user_balance.balance = coin_balance
                 user_balance.save()
 
-            # Save premium status
+            # Save premium profile data
             premium_form.save()
 
             messages.success(request, "User updated successfully!")
-            return redirect('admin_dashboard')
-
+            return redirect('mrsafe_app:admin_dashboard')
     else:
         user_form = EditUserForm(
             instance=selected_user,
@@ -392,11 +403,12 @@ def edit_user(request, user_id):
         )
         premium_form = EditPremiumProfileForm(instance=premium_profile)
 
-    return render(request, 'admin/edit_user.html', {
+    return render(request, 'mrsafe/admin/edit_user.html', {
         'user_form': user_form,
         'premium_form': premium_form,
         'selected_user': selected_user
     })
+
 
 ####################################################################################
 
@@ -1518,11 +1530,57 @@ def view_cart(request):
 def checkout(request):
     cart_items = CartItem.objects.filter(user=request.user)
     total_price = sum(item.item.price * item.quantity for item in cart_items)
-
-    return render(request, 'store/checkout.html', {
+    
+    if request.method == "POST":
+        nonce = request.POST.get('payment_method_nonce')
+        result = braintree.Transaction.sale({
+            "amount": str(round(total_price, 2)),
+            "payment_method_nonce": nonce,
+            "options": {
+                "submit_for_settlement": True
+            }
+        })
+        
+        if result.is_success:
+            # Clear cart and process order
+            cart_items.delete()
+            return redirect('order_success')
+        else:
+            messages.error(request, f"Payment failed: {result.message}")
+    
+    client_token = braintree.ClientToken.generate()
+    
+    return render(request, 'mrsafe/store/checkout.html', {
         'cart_items': cart_items,
         'total_price': round(total_price, 2),
+        'client_token': client_token,
     })
+    
+    # views.py
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from ..models import CartItem, PremiumPlan
+
+@login_required
+def cart_checkout(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    total_price = sum(item.item.price * item.quantity for item in cart_items)
+    
+    context = {
+        'cart_items': cart_items,
+        'total_price': round(total_price, 2),
+    }
+    return render(request, 'mrsafe/store/checkout.html', context)
+
+@login_required
+def plan_checkout(request, slug):
+    plan = get_object_or_404(PremiumPlan, slug=slug, is_active=True)
+    
+    context = {
+        'plan': plan,
+    }
+    return render(request, 'mrsafe/store/checkout.html', context)
+    
 # views.py
 # views.py
 import json

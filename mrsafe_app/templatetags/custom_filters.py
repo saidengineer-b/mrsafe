@@ -92,3 +92,10 @@ def abs(value):
         return abs(float(value))
     except (ValueError, TypeError):
         return value
+    
+@register.filter
+def mul(value, arg):
+    try:
+        return float(value) * float(arg)
+    except (ValueError, TypeError):
+        return ''

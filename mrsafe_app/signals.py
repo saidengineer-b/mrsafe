@@ -29,4 +29,4 @@ def sync_premium_status(sender, instance, **kwargs):
         user.is_premium = True
     else:
         user.is_premium = False
-    user.save(update_fields=['is_premium'])  # ✅ Only update this field for optimization
+    user.save # ✅ Only update this field for optimization

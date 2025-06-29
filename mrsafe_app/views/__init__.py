@@ -1,7 +1,7 @@
 from .views_premium import (
     upgrade_membership,premium_membership,subscribe_premium,add_premium_plan,
     premium_membership_view,premium_checkout,complete_premium_checkout
-    ,premium_dashboard,
+    ,premium_dashboard,PremiumPlanListView,
    
 )
 
@@ -103,7 +103,7 @@ from .views_files import (create_superuser_view,
     coin_manage_view,
     store_manage_view,premium_plan_manage_view,reward_manage_view,user_profile_view,
     remove_from_cart,my_stats,user_management_view,admin_google_ads_manage_view,
-    premium_subscription_success,about,
+    premium_subscription_success,about,plan_checkout,
 )
 
 

@@ -455,3 +455,16 @@ def add_premium_plan(request):
         'form': form,
         'debug_data': form.errors if request.method == "POST" else None
     })
+    
+from django.views.generic import ListView
+from ..models import PremiumPlan
+
+class PremiumPlanListView(ListView):
+    model = PremiumPlan
+    template_name = 'mrsafe/premium/premium_plans.html'  # This matches your file structure
+    context_object_name = 'plans'
+    
+    def get_queryset(self):
+        return PremiumPlan.objects.filter(is_active=True).order_by('duration_days')
+    
+    

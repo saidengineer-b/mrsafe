@@ -80,14 +80,11 @@ from .views import (contact,
                     inspection_full_report,export_inspection_docx,
                     
                     
-                    subscribe_premium,create_superuser_view,)
-
+                    subscribe_premium,PremiumPlanListView,create_superuser_view,plan_checkout,)
 
 
 
 from django.urls import path
-
-
 
 from django.shortcuts import redirect
 
@@ -165,6 +162,11 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
 
  
     path("premium/", premium_membership_view, name="premium_membership"),
+    path('plans/', PremiumPlanListView.as_view(), name='premium_plans'),
+    path('plans/checkout/<slug:slug>/', plan_checkout, name='plan_checkout'),
+   
+    
+    
     path('premium/complete/', complete_premium_checkout, name='complete_premium_checkout'),
     
     path('premium/checkout/', premium_checkout, name='premium_checkout'),
