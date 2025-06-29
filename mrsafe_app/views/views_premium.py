@@ -219,36 +219,57 @@ def activate_trial(request):
     messages.success(request, "✅ Trial activated for 7 days!")
     return redirect('mrsafe_app:premium_membership')
 
-    
-from django.shortcuts import render
+
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from mrsafe_app.models import PremiumPlan, PremiumProfile
+from django.utils import timezone
 
 @login_required
 def premium_membership_view(request):
     user = request.user
-    is_premium = False
-    premium_expires = None
-
-    try:
-        profile = user.premiumprofile
-    except PremiumProfile.DoesNotExist:
-        profile = PremiumProfile.objects.create(user=user)
-
-    is_premium = profile.is_active
-    premium_expires = profile.end_date
-
-    # ✅ Activate trial only if not active and no start date yet
-    if not is_premium and not profile.start_date:
-        profile.activate_premium(plan_name="trial", duration_days=3, coin_bonus=50)
-
+    
+    # Get or create premium profile using the correct related_name
+    profile = user.premium_profile  # Using the defined related_name
+    
+    # Check trial eligibility (no start date and trial not used)
+    trial_eligible = (not profile.start_date and 
+                     not profile.trial_used and 
+                     not profile.is_active)
+    
+    # Activate trial if eligible
+    if trial_eligible:
+        try:
+            profile.activate_premium(
+                plan_name="trial", 
+                duration_days=3, 
+                coin_bonus=50
+            )
+            messages.success(request, "🎉 Your 3-day free trial has been activated!")
+        except Exception as e:
+            messages.error(request, f"Could not activate trial: {str(e)}")
+    
+    # Get active premium plans (excluding trial if user already used it)
     plans = PremiumPlan.objects.filter(is_active=True)
-
-    return render(request, "mrsafe_app/premium/premium_membership.html", {
-        "is_premium": is_premium,
-        "premium_expires": premium_expires,
+    if profile.trial_used:
+        plans = plans.exclude(name="trial")
+    
+    # Calculate days remaining if premium is active
+    days_remaining = 0
+    if profile.is_active and profile.end_date:
+        days_remaining = (profile.end_date - timezone.now()).days
+    
+    return render(request, "mrsafe/premium/premium_membership.html", {
+        "is_premium": profile.is_premium_active(),  # Use the method for accurate status
+        "premium_expires": profile.end_date,
+        "days_remaining": max(0, days_remaining),  # Ensure no negative values
         "plans": plans,
+        "current_plan": profile.plan,
+        "trial_used": profile.trial_used,
     })
+    
+    
 from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -403,27 +424,34 @@ def check_auto_renewals():
                 profile.save()
                 send_notification(profile.user, "⚠️ Premium renewal failed. Your membership expired.")
 
+
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from ..models import PremiumPlan
 from ..forms import PremiumPlanForm
-
+@staff_member_required
 def add_premium_plan(request):
     if request.method == "POST":
         form = PremiumPlanForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, "✅ Premium plan created successfully!")
-            return redirect("mrsafe_app:admin_dashboard")
+            try:
+                plan = form.save(commit=False)
+                print(f"Saving plan with data: {form.cleaned_data}")  # Debug print
+                plan.save()
+                messages.success(request, "Plan created successfully!")
+                return redirect('mrsafe_app:premium_membership')
+            except Exception as e:
+                print(f"Error saving plan: {str(e)}")  # Debug print
+                messages.error(request, f"Error saving plan: {str(e)}")
+        else:
+            print(f"Form errors: {form.errors}")  # Debug print
+            messages.error(request, "Please correct the errors below")
     else:
         form = PremiumPlanForm()
-
-    return render(request, "mrsafe_app/admin/add_premium_plan.html", {"form": form})
-
-# views.py
-
-from django.shortcuts import render, get_object_or_404, redirect
-from ..models import PremiumPlan
-from ..forms import PremiumPlanForm
-from django.contrib.auth.decorators import login_required, user_passes_test
-
+    
+    return render(request, 'mrsafe/admin/add_premium_plan.html', {
+        'form': form,
+        'debug_data': form.errors if request.method == "POST" else None
+    })

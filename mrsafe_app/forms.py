@@ -47,43 +47,53 @@ class EditProfileForm(UserChangeForm):
             "password": forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter new password (optional)"}),
         }
 from django import forms
-from .models import CustomUser
+from .models import CustomUser, UserCoinBalance, PremiumProfile  # Added PremiumProfile import
+
 class EditUserForm(forms.ModelForm):
     """
-    ✅ Form for editing user details including username, email, profile photo, coin balance, and admin privileges.
+    Form for editing basic user details
     """
     coin_balance = forms.IntegerField(
         min_value=0,
         required=False,
         label="Coin Balance",
-        widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "Enter Coin Balance"}),
+        widget=forms.NumberInput(attrs={"class": "form-control"})
     )
 
     class Meta:
         model = CustomUser
-        fields = ["username", "email", "profile_photo", "is_premium", "is_active", "is_staff"]
-
+        fields = ["username", "email", "profile_photo", "is_active", "is_staff"]
+        
     def __init__(self, *args, **kwargs):
-        """ ✅ Initialize form with user balance data """
-        user = kwargs.pop("user", None)  # Get user object
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-
         if user:
             user_balance = UserCoinBalance.objects.filter(user=user).first()
             if user_balance:
-                self.fields["coin_balance"].initial = user_balance.balance  # ✅ FIX: Ensure correct balance
+                self.fields["coin_balance"].initial = user_balance.balance
 
-        self.fields["username"].widget.attrs.update({"class": "form-control", "placeholder": "Enter Username"})
-        self.fields["email"].widget.attrs.update({"class": "form-control", "placeholder": "Enter Email"})
-        self.fields["profile_photo"].widget.attrs.update({"class": "form-control"})
-        self.fields["is_premium"].widget.attrs.update({"class": "form-check-input"})
-        self.fields["is_active"].widget.attrs.update({"class": "form-check-input"})
-        self.fields["is_staff"].widget.attrs.update({"class": "form-check-input"})
-
-        
-
-# ✅ Quiz Form__________________________________________________________________________
-
+class EditPremiumProfileForm(forms.ModelForm):
+    """
+    Form for editing premium membership details
+    """
+    class Meta:
+        model = PremiumProfile  # Now properly defined
+        fields = ['is_active', 'auto_renewal', 'plan', 'end_date']
+        widgets = {
+            'end_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+            'is_active': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'auto_renewal': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            }),
+            'plan': forms.Select(attrs={
+                'class': 'form-select'
+            })
+        }
 
 
 
@@ -144,20 +154,39 @@ class CustomPasswordResetForm(PasswordResetForm):
 #############################################################################################
 
 #############################################################################################
-
 from django import forms
 from .models import PremiumPlan
-
+import json
 class PremiumPlanForm(forms.ModelForm):
+    features = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 5, 'class': 'form-control font-monospace'}),
+        help_text='Enter features as JSON array'
+    )
+
     class Meta:
         model = PremiumPlan
-        fields = ['name', 'duration_days', 'coin_bonus', 'price', 'is_active']
+        fields = '__all__'
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['name'].choices = PremiumPlan.PLAN_CHOICES
+        if self.instance and self.instance.features:
+            self.initial['features'] = json.dumps(self.instance.features, indent=2)
+
+    def clean_features(self):
+        features = self.cleaned_data.get('features', '[]')
+        try:
+            features_data = json.loads(features)
+            if not isinstance(features_data, list):
+                raise forms.ValidationError("Features must be a JSON array")
+            return features_data
+        except json.JSONDecodeError as e:
+            raise forms.ValidationError(f"Invalid JSON: {str(e)}")
+        
+        
     
-  # mrsafe_app/forms.py
 from django import forms
 
 class HazardForm(forms.Form):

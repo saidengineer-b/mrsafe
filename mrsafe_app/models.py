@@ -7,15 +7,40 @@ from datetime import timedelta
 # ==============================
 # ✅ Custom User Model
 # ==============================
+from django.contrib.auth.models import AbstractUser, PermissionsMixin
+from django.db import models
+from django.utils.functional import cached_property
+
 class CustomUser(AbstractUser, PermissionsMixin):
-    is_premium = models.BooleanField(default=False)
     profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
     coins = models.PositiveIntegerField(default=0)
     trainees = models.ManyToManyField("self", symmetrical=False, blank=True, related_name="trainers")
 
+    @cached_property
     def has_premium_access(self):
-        return self.is_premium or self.coins >= 100
+        """Check premium access through PremiumProfile or coin balance"""
+        return (hasattr(self, 'premium_profile') and 
+               (self.premium_profile.is_premium_active() or self.coins >= 100))
 
+    @cached_property
+    def is_premium(self):
+        """Legacy-compatible property (if absolutely needed)"""
+        return self.has_premium_access
+
+    @cached_property
+    def premium_expiry_date(self):
+        """Get premium expiry date if available"""
+        if hasattr(self, 'premium_profile'):
+            return self.premium_profile.end_date
+        return None
+
+    def get_premium_status(self):
+        """Explicit method for when properties aren't suitable"""
+        return {
+            'has_access': self.has_premium_access,
+            'expiry_date': self.premium_expiry_date,
+            'is_trial': getattr(self.premium_profile, 'trial_used', False)
+        }
 
 # ==============================
 # ✅ Store Models
@@ -57,44 +82,299 @@ class CartItem(models.Model):
 # ==============================
 # ✅ Premium Membership
 # ==============================
-class PremiumPlan(models.Model):
-    PLAN_CHOICES = [
-        ('trial', 'Trial'),
-        ('weekly', 'Weekly'),
-        ('monthly', 'Monthly'),
-        ('annual', 'Annual'),
-    ]
 
-    name = models.CharField(max_length=50, choices=PLAN_CHOICES, unique=True)
-    duration_days = models.PositiveIntegerField()
-    coin_bonus = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-    is_active = models.BooleanField(default=True)
+from django.db import models
+from django.core.validators import MinValueValidator
+from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+
+class PremiumPlan(models.Model):
+    class PlanType(models.TextChoices):
+        TRIAL = 'trial', _('Trial')
+        WEEKLY = 'weekly', _('Weekly')
+        MONTHLY = 'monthly', _('Monthly')
+        ANNUAL = 'annual', _('Annual')
+    
+    name = models.CharField(
+        max_length=50,
+        choices=PlanType.choices,
+        unique=True,
+        verbose_name=_("Plan Type")
+    )
+    duration_days = models.PositiveIntegerField(
+        verbose_name=_("Duration in Days"),
+        validators=[MinValueValidator(1)]
+    )
+    coin_bonus = models.PositiveIntegerField(
+        verbose_name=_("Coin Bonus"),
+        default=0
+    )
+    price = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        verbose_name=_("Price"),
+        validators=[MinValueValidator(0)]
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name=_("Active Status")
+    )
+    description = models.TextField(
+        blank=True,
+        verbose_name=_("Plan Description")
+    )
+    features = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name=_("Plan Features"),
+        help_text=_("List of features for this plan")
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,  # This will auto-set on creation
+        verbose_name=_("Created At")
+    )
+    
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_("Updated At")
+    )
+
+    class Meta:
+        verbose_name = _("Premium Plan")
+        verbose_name_plural = _("Premium Plans")
+        ordering = ['duration_days']
 
     def __str__(self):
         return f"{self.get_name_display()} Plan - {self.duration_days} days"
 
+    def is_trial(self):
+        return self.name == self.PlanType.TRIAL
+
+    def get_duration_months(self):
+        """Convert duration in days to approximate months"""
+        return round(self.duration_days / 30, 1)
+
+
+from django.db import models
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.core.exceptions import ValidationError
+from django.db import transaction
 
 class PremiumProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    start_date = models.DateTimeField(null=True, blank=True)
-    end_date = models.DateTimeField(null=True, blank=True)
-    is_active = models.BooleanField(default=False)
-    auto_renewal = models.BooleanField(default=True)
-    plan = models.ForeignKey(PremiumPlan, null=True, blank=True, on_delete=models.SET_NULL)
-    trial_used = models.BooleanField(default=False)
-    premium_code = models.CharField(max_length=100, null=True, blank=True)
+    """
+    Enhanced premium membership profile with robust features
+    """
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='premium_profile',
+        verbose_name="User Account"
+    )
+    start_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Membership Start"
+    )
+    end_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Membership End"
+    )
+    is_active = models.BooleanField(
+        default=False,
+        verbose_name="Active Status"
+    )
+    auto_renewal = models.BooleanField(
+        default=True,
+        verbose_name="Auto-Renewal"
+    )
+    plan = models.ForeignKey(
+        'PremiumPlan',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name="Subscription Plan"
+    )
+    trial_used = models.BooleanField(
+        default=False,
+        verbose_name="Trial Period Used"
+    )
+    premium_code = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name="Activation Code"
+    )
+    last_payment_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Last Payment"
+    )
+    payment_method = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        verbose_name="Payment Method"
+    )
+
+    class Meta:
+        verbose_name = "Premium Membership"
+        verbose_name_plural = "Premium Memberships"
+        ordering = ['-start_date']
+        indexes = [
+            models.Index(fields=['is_active', 'end_date']),
+            models.Index(fields=['user', 'trial_used']),
+        ]
 
     def __str__(self):
-        return f"{self.user.username} - {self.plan}"
+        status = "Active" if self.is_active else "Inactive"
+        return f"{self.user.username}'s Premium ({status})"
 
+    def clean(self):
+        """Validation rules"""
+        if self.end_date and self.start_date and self.end_date < self.start_date:
+            raise ValidationError("End date cannot be before start date")
+        if self.trial_used and self.plan and self.plan.name == 'trial':
+            raise ValidationError("Trial plan cannot be reused")
+
+    def save(self, *args, **kwargs):
+        """Auto-update active status based on dates"""
+        self.full_clean()  # Enforce validation
+        if self.end_date and self.end_date > timezone.now():
+            self.is_active = True
+        super().save(*args, **kwargs)
+
+    @transaction.atomic
+    def activate_premium(self, plan_name="trial", duration_days=3, coin_bonus=50):
+        """
+        Safely activates premium membership with transaction support
+        """
+        from .models import PremiumPlan  # Avoid circular imports
+        
+        try:
+            plan = PremiumPlan.objects.get(name=plan_name)
+        except PremiumPlan.DoesNotExist:
+            plan = None
+
+        now = timezone.now()
+        self.start_date = now
+        self.end_date = now + timedelta(days=duration_days)
+        self.is_active = True
+        self.plan = plan
+        
+        if plan_name == 'trial':
+            self.trial_used = True
+            
+        self.save()
+        
+        # Update user's coins atomically
+        if coin_bonus > 0:
+            self.user.coins = models.F('coins') + coin_bonus
+            self.user.save(update_fields=['coins'])
+
+    def deactivate_premium(self):
+        """Immediately cancels premium membership"""
+        self.is_active = False
+        self.auto_renewal = False
+        self.save()
+
+    def is_premium_active(self):
+        """Check current premium status with auto-expiration"""
+        if not self.is_active:
+            return False
+        if self.end_date and timezone.now() > self.end_date:
+            self.is_active = False
+            self.save()
+            return False
+        return True
+
+    def days_remaining(self):
+        """Calculates remaining premium days"""
+        if not self.is_active or not self.end_date:
+            return 0
+        delta = self.end_date - timezone.now()
+        return max(0, delta.days)  # Never return negative
+
+    def renew(self, duration_days):
+        """Extends premium membership"""
+        if not self.end_date or timezone.now() > self.end_date:
+            self.end_date = timezone.now()
+        self.end_date += timedelta(days=duration_days)
+        self.is_active = True
+        self.save()
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_or_update_premium_profile(sender, instance, created, **kwargs):
+    """
+    Ensures every user has a premium profile
+    Handles case where profile might exist without signal
+    """
+    if created or not hasattr(instance, 'premium_profile'):
+        PremiumProfile.objects.get_or_create(user=instance)
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='profile',
+        verbose_name="User"
+    )
+    coin_balance = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Coin Balance"
+    )
+    
+    class Meta:
+        verbose_name = "User Profile"
+        verbose_name_plural = "User Profiles"
+
+    @property
+    def is_premium(self):
+        """Check premium status through PremiumProfile"""
+        return hasattr(self.user, 'premium_profile') and \
+               self.user.premium_profile.is_premium_active()
+
+    @property
+    def premium_expiry_date(self):
+        """Get premium expiry date if available"""
+        if hasattr(self.user, 'premium_profile'):
+            return self.user.premium_profile.end_date
+        return None
+
+    def add_coins(self, amount):
+        """Safely add coins to balance"""
+        self.coin_balance = models.F('coin_balance') + amount
+        self.save(update_fields=['coin_balance'])
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    is_premium = models.BooleanField(default=False)
-    premium_start_date = models.DateTimeField(null=True, blank=True)
-    premium_end_date = models.DateTimeField(null=True, blank=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                              on_delete=models.CASCADE,
+                              related_name='profile')
     coin_balance = models.PositiveIntegerField(default=0)
+    
+    # Removed premium-related fields since they're now in PremiumProfile
+    
+    class Meta:
+        verbose_name = "User Profile"
+        verbose_name_plural = "User Profiles"
+
+    @property
+    def is_premium(self):
+        """Check premium status through PremiumProfile"""
+        if hasattr(self.user, 'premium_profile'):
+            return self.user.premium_profile.is_premium_active()
+        return False
+
+    @property
+    def premium_expiry_date(self):
+        """Get premium expiry date if available"""
+        if hasattr(self.user, 'premium_profile'):
+            return self.user.premium_profile.end_date
+        return None
 
 
 # ==============================

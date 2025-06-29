@@ -180,9 +180,13 @@
                 <a href="{% url 'mrsafe_app:premium_membership' %}" class="btn-view-memberships">
                     <i class="fas fa-eye"></i> View Memberships
                 </a>
-                <button class="btn-add-plan">
-                    <i class="fas fa-plus"></i> Create New Plan
-                </button>
+                {% if request.user.is_superuser %}
+                    <div class="text-center mb-4">
+                        <a href="{% url 'mrsafe_app:add_premium_plan' %}" class="btn btn-darkorange">
+                            <i class="fas fa-plus me-2"></i> Create New Plan
+                        </a>
+                    </div>
+                {% endif %}
                 </div>
             </div>
   

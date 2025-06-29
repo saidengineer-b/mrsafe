@@ -1,0 +1,613 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Hero Section -->
+    <section class="text-center mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-3 fw-bold mb-4 gradient-text">Elevate Your Experience</h1>
+                <p class="lead text-muted mb-4">Unlock premium content, exclusive features, and priority support with our flexible membership plans</p>
+                
+                {% if not is_logged_in %}
+                <a href="{% url 'mrsafe_app:register' %}?next={{ request.path }}" 
+                   class="btn btn-lg btn-darkorange rounded-pill px-5 mt-3 hover-lift shadow-sm">
+                   <i class="fas fa-rocket me-2"></i> Get Started for Free
+                </a>
+                {% endif %}
+                
+                {% if is_premium %}
+                <div class="alert alert-premium alert-dismissible fade show col-md-8 mx-auto mt-4" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-crown me-3 fs-4"></i>
+                        <div>
+                            <strong>Premium Status:</strong> Active until <strong>{{ premium_expires|date:"F d, Y" }}</strong>
+                            <div class="small">Enjoy all premium benefits!</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="mt-5">
+            <div class="d-flex justify-content-center flex-wrap gap-3">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <span>Full Content Access</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <span>Ad-Free Experience</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <span>Exclusive Resources</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <span>Priority Support</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Plans -->
+    <section class="mb-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">Choose Your Plan</h2>
+            <p class="text-muted">Flexible options to suit your needs</p>
+            
+            {% if trial_used %}
+            <div class="alert alert-info col-md-6 mx-auto">
+                <i class="fas fa-info-circle me-2"></i> You've already used your free trial
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            {% for plan in plans %}
+                {% if plan.name %}
+                    {% if plan.name != 'trial' or not trial_used %}
+                    <div class="col">
+                        <div class="card pricing-card h-100 border-0 shadow-sm rounded-4 overflow-hidden 
+                            {% if plan.name == 'annual' %}popular-plan{% endif %}
+                            {% if is_premium and plan.name == current_plan %}current-plan{% endif %}">
+                            
+                            <!-- Popular Badge -->
+                            {% if plan.name == 'annual' %}
+                                <div class="popular-badge">SAVE {{ annual_savings }}%</div>
+                            {% endif %}
+                            
+                            <!-- Plan Header -->
+                            <div class="card-header p-4 text-center 
+                                {% if plan.name == 'weekly' %}bg-primary-gradient
+                                {% elif plan.name == 'monthly' %}bg-success-gradient
+                                {% elif plan.name == 'annual' %}bg-premium-gradient
+                                {% elif plan.name == 'trial' %}bg-darkorange-gradient
+                                {% endif %}">
+                                <h3 class="h4 text-white fw-bold mb-0">{{ plan.get_name_display|upper }}</h3>
+                                {% if plan.name == 'annual' %}
+                                <div class="mt-2">
+                                    <span class="badge bg-white text-darkorange">MOST POPULAR</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Plan Body -->
+                            <div class="card-body p-4">
+                                <div class="text-center mb-4">
+                                    <h2 class="display-5 fw-bold 
+                                        {% if plan.name == 'weekly' %}text-primary
+                                        {% elif plan.name == 'monthly' %}text-success
+                                        {% elif plan.name == 'annual' %}text-darkorange
+                                        {% elif plan.name == 'trial' %}text-darkorange
+                                        {% endif %}">
+                                        ${{ plan.price }}
+                                    </h2>
+                                    <div class="text-muted">
+                                        {% if plan.name == 'annual' %}
+                                        <span class="text-success">${{ monthly_equivalent }}/mo</span>
+                                        {% else %}
+                                        for {{ plan.duration_days }} days
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <ul class="list-unstyled mb-4">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Full content access
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        {{ plan.coin_bonus }} bonus coins
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Ad-free experience
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Priority support
+                                    </li>
+                                    {% if plan.name == 'annual' %}
+                                    <li class="mb-2">
+                                        <i class="fas fa-gift text-darkorange me-2"></i>
+                                        Exclusive annual bonus
+                                    </li>
+                                    {% endif %}
+                                    {% if plan.name == 'trial' %}
+                                    <li class="mb-2">
+                                        <i class="fas fa-clock text-darkorange me-2"></i>
+                                        {{ plan.duration_days }}-day trial
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            
+                            <!-- Plan Footer -->
+                            <div class="card-footer bg-transparent p-4 text-center border-0">
+                                {% if is_logged_in %}
+                                    {% if is_premium and plan.name == current_plan %}
+                                        <button class="btn btn-outline-dark w-100" disabled>
+                                            <i class="fas fa-check-circle me-2"></i> Current Plan
+                                        </button>
+                                    {% elif is_premium %}
+                                        <a href="{% url 'checkout_plan' plan.slug %}" 
+                                           class="btn btn-outline-dark w-100">
+                                           Switch Plan
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'checkout_plan' plan.slug %}" 
+                                           class="btn btn-darkorange w-100 shadow-sm">
+                                           Get Started
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{% url 'mrsafe_app:register' %}?next={% url 'checkout_plan' plan.slug %}" 
+                                       class="btn btn-darkorange w-100 shadow-sm">
+                                       Sign Up Now
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+        
+        <div class="text-center">
+            <p class="text-muted small">
+                {% if is_premium %}
+                Need help? <a href="{% url 'mrsafe_app:contact' %}">Contact support</a>
+                {% else %}
+                All plans include our 7-day satisfaction guarantee
+                {% endif %}
+            </p>
+        </div>
+    </section>
+    
+    <!-- Features Comparison -->
+    <section class="bg-light p-5 rounded-4 mb-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">Why Go Premium?</h2>
+            <p class="text-muted">See how we compare to the free version</p>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width: 40%">Feature</th>
+                        <th scope="col" class="text-center" style="width: 30%">Free</th>
+                        <th scope="col" class="text-center" style="width: 30%">Premium</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-book-open me-3 text-darkorange"></i>
+                                <span>Content Access</span>
+                            </div>
+                        </td>
+                        <td class="text-center text-muted">Limited</td>
+                        <td class="text-center text-success fw-bold">Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-ad me-3 text-darkorange"></i>
+                                <span>Ad Experience</span>
+                            </div>
+                        </td>
+                        <td class="text-center text-muted">With Ads</td>
+                        <td class="text-center text-success fw-bold">Ad-Free</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-coins me-3 text-darkorange"></i>
+                                <span>Bonus Coins</span>
+                            </div>
+                        </td>
+                        <td class="text-center text-muted">0</td>
+                        <td class="text-center text-success fw-bold">Up to 500</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-headset me-3 text-darkorange"></i>
+                                <span>Customer Support</span>
+                            </div>
+                        </td>
+                        <td class="text-center text-muted">Standard</td>
+                        <td class="text-center text-success fw-bold">Priority</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-lock-open me-3 text-darkorange"></i>
+                                <span>Exclusive Content</span>
+                            </div>
+                        </td>
+                        <td class="text-center text-muted"><i class="fas fa-times text-danger"></i></td>
+                        <td class="text-center text-success fw-bold"><i class="fas fa-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-cloud-download-alt me-3 text-darkorange"></i>
+                                <span>Resource Downloads</span>
+                            </div>
+                        </td>
+                        <td class="text-center text-muted">Limited</td>
+                        <td class="text-center text-success fw-bold">Unlimited</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    
+    <!-- Testimonials -->
+    <section class="mb-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">Trusted by Our Community</h2>
+            <p class="text-muted">Hear what our premium members say</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/43.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
+                            <div>
+                                <h5 class="mb-0">Sarah K.</h5>
+                                <div class="small text-muted">Premium Member</div>
+                                <div class="mt-1">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"The annual plan saved me money and the exclusive content is worth every penny. Highly recommend!"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
+                            <div>
+                                <h5 class="mb-0">Michael T.</h5>
+                                <div class="small text-muted">Premium Member</div>
+                                <div class="mt-1">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"The quality difference between free and premium is night and day. The bonus coins are a great perk too."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/65.jpg" class="rounded-circle me-3" width="60" height="60" alt="User">
+                            <div>
+                                <h5 class="mb-0">Jessica L.</h5>
+                                <div class="small text-muted">Premium Member</div>
+                                <div class="mt-1">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="card-text">"Tried the trial and was immediately convinced. The ad-free experience alone is worth the upgrade."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section class="mb-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">Frequently Asked Questions</h2>
+            <p class="text-muted">Get answers to common questions</p>
+        </div>
+        
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                <h3 class="accordion-header" id="headingOne">
+                    <button class="accordion-button fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="fas fa-credit-card me-3 text-darkorange"></i> How does billing work?
+                    </button>
+                </h3>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>Your subscription will automatically renew at the end of each billing period unless you cancel. We'll send you a reminder email before each renewal. You can manage your subscription anytime in your account settings.</p>
+                        <p class="mb-0">All major credit cards and PayPal are accepted.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                <h3 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <i class="fas fa-exchange-alt me-3 text-darkorange"></i> Can I change plans?
+                    </button>
+                </h3>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>Yes! You can upgrade or downgrade your plan at any time. When you change plans:</p>
+                        <ul class="mb-0">
+                            <li>Upgrades take effect immediately with a prorated charge</li>
+                            <li>Downgrades take effect at your next billing cycle</li>
+                            <li>Your bonus coins are adjusted accordingly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                <h3 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <i class="fas fa-hand-holding-usd me-3 text-darkorange"></i> Is there a money-back guarantee?
+                    </button>
+                </h3>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>We offer a 7-day money-back guarantee for all new subscriptions. If you're not completely satisfied with your premium membership, simply contact our support team within 7 days of purchase for a full refund.</p>
+                        <p class="mb-0">Note: This guarantee applies only to your first subscription and not to renewals.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                <h3 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        <i class="fas fa-coins me-3 text-darkorange"></i> What are bonus coins?
+                    </button>
+                </h3>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>Bonus coins are our way of rewarding premium members. You receive them when you:</p>
+                        <ul>
+                            <li>Sign up for a new premium plan</li>
+                            <li>Renew your subscription</li>
+                            <li>Refer friends to our service</li>
+                        </ul>
+                        <p class="mb-0">Coins can be used to access special content, enter contests, or get discounts on future renewals.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item border-0 mb-3 shadow-sm rounded-3 overflow-hidden">
+                <h3 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        <i class="fas fa-user-clock me-3 text-darkorange"></i> Can I pause my subscription?
+                    </button>
+                </h3>
+                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        <p>We currently don't offer subscription pauses, but you can cancel anytime and resubscribe when you're ready to continue. When you resubscribe:</p>
+                        <ul class="mb-0">
+                            <li>Your previous preferences are saved</li>
+                            <li>You may qualify for returning member promotions</li>
+                            <li>Your coin balance remains intact</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Final CTA -->
+    <section class="text-center py-5 bg-darkorange rounded-4 text-white">
+        <h2 class="fw-bold mb-4">Ready to Upgrade?</h2>
+        <p class="lead mb-4">Join thousands of happy premium members today</p>
+        {% if is_logged_in and not is_premium %}
+        <a href="{% url 'checkout_plan' 'monthly' %}" class="btn btn-light btn-lg rounded-pill px-5 shadow-sm">
+            <i class="fas fa-crown me-2"></i> Choose Your Plan
+        </a>
+        {% elif not is_logged_in %}
+        <a href="{% url 'mrsafe_app:register' %}?next={% url 'mrsafe_app:premium_membership' %}" class="btn btn-light btn-lg rounded-pill px-5 shadow-sm">
+            <i class="fas fa-user-plus me-2"></i> Sign Up Now
+        </a>
+        {% else %}
+        <a href="{% url 'account' %}" class="btn btn-light btn-lg rounded-pill px-5 shadow-sm">
+            <i class="fas fa-user-cog me-2"></i> Manage Account
+        </a>
+        {% endif %}
+    </section>
+</div>
+
+<style>
+    /* Custom Styles */
+    :root {
+        --darkorange: #ff8c00;
+        --darkorange-light: #ffa040;
+        --darkorange-dark: #e67d00;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(90deg, #4e54c8, #8f94fb, #ff8c00);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+    
+    .bg-primary-gradient {
+        background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%) !important;
+    }
+    
+    .bg-success-gradient {
+        background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%) !important;
+    }
+    
+    .bg-premium-gradient {
+        background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%) !important;
+    }
+    
+    .bg-darkorange-gradient {
+        background: linear-gradient(135deg, #ff8c00 0%, #ffaf4d 100%) !important;
+    }
+    
+    .pricing-card {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,.1) !important;
+    }
+    
+    .popular-plan {
+        border: 3px solid var(--darkorange) !important;
+        transform: scale(1.02);
+    }
+    
+    .current-plan {
+        border: 3px solid #28a745 !important;
+    }
+    
+    .popular-badge {
+        position: absolute;
+        top: 15px;
+        right: -35px;
+        background: var(--darkorange);
+        color: white;
+        padding: 5px 40px;
+        font-size: 13px;
+        font-weight: bold;
+        transform: rotate(45deg);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .btn-darkorange {
+        background-color: var(--darkorange);
+        border-color: var(--darkorange);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-darkorange:hover {
+        background-color: var(--darkorange-dark);
+        border-color: var(--darkorange-dark);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
+    }
+    
+    .text-darkorange {
+        color: var(--darkorange) !important;
+    }
+    
+    .accordion-button:not(.collapsed) {
+        background-color: rgba(255, 140, 0, 0.1);
+        color: var(--darkorange);
+    }
+    
+    .alert-premium {
+        background-color: rgba(255, 140, 0, 0.1);
+        border-left: 4px solid var(--darkorange);
+    }
+    
+    .hover-lift {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 767.98px) {
+        .display-3 {
+            font-size: 2.5rem;
+        }
+        
+        .pricing-card {
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    // Add animation to cards when they come into view
+    document.addEventListener('DOMContentLoaded', function() {
+        const animateOnScroll = function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                    observer.unobserve(entry.target);
+                }
+            });
+        };
+        
+        const observer = new IntersectionObserver(animateOnScroll, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+        
+        // Observe all elements with the 'scroll-animate' class
+        document.querySelectorAll('.pricing-card, .accordion-item, .card').forEach(el => {
+            el.style.opacity = '0';
+            observer.observe(el);
+        });
+        
+        // Add hover effect to buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}

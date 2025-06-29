@@ -231,22 +231,17 @@ def logout_view(request):
 @login_required(login_url='mrsafe_app:login')  # ✅ no app namespace
 
 
-
-
-
 @login_required
 def home(request):
-    # ✅ Check premium access (if using is_premium directly)
-    if not request.user.is_premium:
+    # ✅ Correct way to check premium status
+    if not request.user.has_premium_access:  # Using the property we defined earlier
         messages.warning(request, "This feature is for premium users only.")
         return redirect('mrsafe_app:store')
 
-    # ✅ Placeholder: Load any premium dashboard data you want
-    return render(request, 'mrsafe_app/home.html', {
+    return render(request, 'mrsafe/home.html', {
         "user": request.user,
-        # Add dashboard stats if needed
+        "is_premium": request.user.has_premium_access  # Pass to template
     })
-
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'registration/password_reset_form.html'
@@ -355,40 +350,53 @@ def admin_dashboard(request):
     
     return render(request, "mrsafe/admin/admin_dashboard.html", context)
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from ..models import CustomUser, UserCoinBalance, PremiumProfile
+from ..forms import EditUserForm, EditPremiumProfileForm
 
 @login_required
 @user_passes_test(is_admin)
 def edit_user(request, user_id):
-    """
-    ✅ Admin can edit user details, upgrade membership, update profile photo, and modify user coin balance.
-    """
     selected_user = get_object_or_404(CustomUser, id=user_id)
-    user_balance, created = UserCoinBalance.objects.get_or_create(user=selected_user)  # ✅ Ensure balance record exists
+    user_balance = UserCoinBalance.objects.get_or_create(user=selected_user)[0]
+    premium_profile = PremiumProfile.objects.get_or_create(user=selected_user)[0]
 
     if request.method == "POST":
-        form = EditUserForm(request.POST, request.FILES, instance=selected_user, user=selected_user)
+        user_form = EditUserForm(request.POST, request.FILES, instance=selected_user)
+        premium_form = EditPremiumProfileForm(request.POST, instance=premium_profile)
 
-        if form.is_valid():
-            selected_user = form.save(commit=False)
+        if all([user_form.is_valid(), premium_form.is_valid()]):
+            # Save user data
+            user = user_form.save(commit=False)
+            if 'profile_photo' in request.FILES:
+                user.profile_photo = request.FILES['profile_photo']
+            user.save()
 
-            # ✅ Handle Profile Photo Manually
-            if "profile_photo" in request.FILES:
-                selected_user.profile_photo = request.FILES["profile_photo"]
-
-            # ✅ Fetch coin balance correctly
-            coin_balance = form.cleaned_data.get("coin_balance")
-            if coin_balance is not None:
-                user_balance.balance = coin_balance
+            # Save coin balance
+            if (balance := user_form.cleaned_data.get('coin_balance')) is not None:
+                user_balance.balance = balance
                 user_balance.save()
 
-            selected_user.save()
-            messages.success(request, "✅ User updated successfully!")
-            return redirect("mrsafe_app:admin_dashboard")
+            # Save premium status
+            premium_form.save()
+
+            messages.success(request, "User updated successfully!")
+            return redirect('admin_dashboard')
+
     else:
-        form = EditUserForm(instance=selected_user, user=selected_user)
+        user_form = EditUserForm(
+            instance=selected_user,
+            initial={'coin_balance': user_balance.balance}
+        )
+        premium_form = EditPremiumProfileForm(instance=premium_profile)
 
-    return render(request, "mrsafe_app/admin/edit_user.html", {"form": form, "selected_user": selected_user, "user_balance": user_balance})
-
+    return render(request, 'admin/edit_user.html', {
+        'user_form': user_form,
+        'premium_form': premium_form,
+        'selected_user': selected_user
+    })
 
 ####################################################################################
 
@@ -1222,11 +1230,11 @@ def terms_and_conditions(request):
 
 def terms_view(request):
     terms = TermsAndConditions.objects.first()  # Get the first terms entry
-    return render(request, "mrsafe_app/base/terms.html", {"terms": terms})
+    return render(request, "mrsafe/base/terms.html", {"terms": terms})
 
 def privacy_policy(request):
     # Assuming you have a model for storing privacy content, or using static content
-    return render(request, 'mrsafe_app/base/privacy_policy.html', {
+    return render(request, 'mrsafe/base/privacy_policy.html', {
         'title': 'Privacy Policy',
         'content': 'Your privacy policy content goes here.'
     })
@@ -1712,13 +1720,13 @@ def braintree_token(request):
 from django.views.generic import TemplateView
 
 class HelpView(TemplateView):
-    template_name = 'mrsafe_app/base/help.html'
+    template_name = 'mrsafe/base/help.html'
 
 from django.views import View
 
 class FAQView(View):
     def get(self, request):
-        return render(request, 'mrsafe_app/base/faq.html')
+        return render(request, 'mrsafe/base/faq.html')
     
 from django.conf import settings
 from django.core.mail import send_mail
@@ -1759,7 +1767,7 @@ def contact(request):
                 'message': f"❌ Failed to send message: {str(e)}"
             })
 
-    return render(request, 'mrsafe_app/base/contact.html')
+    return render(request, 'mrsafe/base/contact.html')
 
 
 # views.py
@@ -1786,7 +1794,7 @@ def premium_subscription_success(request):
 def about(request):
     User = get_user_model()
     users = User.objects.all()
-    return render(request, 'mrsafe_app/base/about.html', {'users': users})
+    return render(request, 'mrsafe/base/about.html', {'users': users})
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render

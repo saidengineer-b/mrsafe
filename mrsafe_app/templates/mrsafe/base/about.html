@@ -1,56 +1,55 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}About Us - QuizAI{% endblock %}
+{% block title %}About Us - Mr. Safe{% endblock %}
 
 {% block content %}
 <div class="container my-5 text-white">
 
   <!-- 🔹 Glowing Logo -->
   <div class="text-center mb-4">
-    <img src="{% static 'images/quizai-logo.png' %}" alt="QuizAI Logo" style="width: 120px; height: 120px;"
+    <img src="{% static 'images/mrsafe-logo.png' %}" alt="Mr. Safe Logo" style="width: 120px; height: 120px;"
          class="rounded-circle shadow" />
   </div>
 
   <!-- 🔹 Title -->
   <div class="text-center mb-4">
-    <h1 class="display-5 fw-bold text-tiffany">About QuizAI</h1>
-    <p class="text-tiffany fs-5">Empowering Learning with AI-Powered Quizzes</p>
+    <h1 class="display-5 fw-bold text-tiffany">About Mr. Safe</h1>
+    <p class="text-tiffany fs-5">AI-Driven Safety, Inspections, and Emergency Innovation</p>
   </div>
 
   <!-- 🔹 Mission -->
   <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-    <h3 class="text-tiffany fw-bold mb-2">🌟 Our Mission</h3>
+    <h3 class="text-tiffany fw-bold mb-2">🛡️ Our Mission</h3>
     <p class="text-light">
-      At <strong>QuizAI</strong>, our mission is to revolutionize how learners and educators engage with knowledge.
-      We provide <strong>AI-generated quizzes</strong> that enhance retention, gamify learning, and promote excellence.
+      At <strong>Mr. Safe</strong>, we’re redefining the future of safety. Our mission is to make safety smarter, faster, and more proactive using powerful AI tools to detect risks, analyze hazards, and guide teams in real time.
     </p>
   </div>
 
   <!-- 🔹 Why Choose -->
   <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-    <h3 class="text-tiffany fw-bold mb-3">🚀 Why Choose QuizAI?</h3>
+    <h3 class="text-tiffany fw-bold mb-3">🚀 Why Choose Mr. Safe?</h3>
     <ul class="list-group list-group-flush">
-      <li class="list-group-item bg-transparent text-light border-tiffany">✅ AI-Generated Quizzes for Multiple Subjects</li>
-      <li class="list-group-item bg-transparent text-light border-tiffany">📱 Easy Sharing via QR Codes</li>
-      <li class="list-group-item bg-transparent text-light border-tiffany">🎮 Gamified Learning Experience</li>
-      <li class="list-group-item bg-transparent text-light border-tiffany">🏆 Leaderboards & Competitive Challenges</li>
-      <li class="list-group-item bg-transparent text-light border-tiffany">🤖 Ultimate AI Challenge Mode</li>
+      <li class="list-group-item bg-transparent text-light border-tiffany">📸 AI-Powered Image Inspection Reports</li>
+      <li class="list-group-item bg-transparent text-light border-tiffany">🚨 Instant Emergency Alert Headcounts</li>
+      <li class="list-group-item bg-transparent text-light border-tiffany">📊 Safety Dashboards & Trend Analysis</li>
+      <li class="list-group-item bg-transparent text-light border-tiffany">📄 Auto-Generated Safety Reports (PDF, PPT, DOCX)</li>
+      <li class="list-group-item bg-transparent text-light border-tiffany">🎯 Designed for Safety Engineers, Officers, and Managers</li>
     </ul>
   </div>
 
   <!-- 🔹 Who We Serve -->
   <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-    <h3 class="text-tiffany fw-bold mb-2">🎯 Who We Serve</h3>
+    <h3 class="text-tiffany fw-bold mb-2">🏗️ Who We Serve</h3>
     <p class="text-light">
-      Whether you're a <strong>student</strong> preparing for exams, a <strong>teacher</strong> seeking interactive tools,
-      or a <strong>professional</strong> improving skills — QuizAI makes learning fun, effective, and future-ready.
+      Whether you're a <strong>HSE engineer</strong>, a <strong>construction supervisor</strong>, or a <strong>corporate safety officer</strong>,
+      Mr. Safe empowers your team with the tools to act fast, stay compliant, and prevent incidents.
     </p>
   </div>
 
   <!-- 🔹 Meet the Team -->
   <div class="text-center mt-5">
     <h3 class="text-tiffany fw-bold">🤝 Meet Our Team</h3>
-    <p class="text-tiffany">A passionate team dedicated to transforming education.</p>
+    <p class="text-tiffany">A dedicated crew focused on AI, safety, and operational excellence.</p>
 
     <div class="row mt-4 g-4">
       <div class="col-md-4">
@@ -64,9 +63,9 @@
       </div>
       <div class="col-md-4">
         <div class="card bg-dark text-white border border-tiffany shadow-lg h-100">
-          <img src="{% static 'images/team_member2.jpg' %}" class="card-img-top" alt="Developer">
+          <img src="{% static 'images/team_member2.jpg' %}" class="card-img-top" alt="CEO">
           <div class="card-body">
-            <h5 class="card-title">Mr. Osama </h5>
+            <h5 class="card-title">Mr. Osama</h5>
             <p class="card-text text-tiffany">Founder & CEO</p>
           </div>
         </div>
@@ -76,7 +75,7 @@
           <img src="{% static 'images/team_member3.jpg' %}" class="card-img-top" alt="Engineer">
           <div class="card-body">
             <h5 class="card-title">Eng. Razan</h5>
-            <p class="card-text text-tiffany">AI Engineer</p>
+            <p class="card-text text-tiffany">AI & Risk Engineer</p>
           </div>
         </div>
       </div>
@@ -85,19 +84,19 @@
 
   <!-- 🔹 Call to Action -->
   <div class="text-center mt-5">
-    <h3 class="text-tiffany fw-bold mb-2">🌐 Join the Revolution</h3>
-    <p class="text-tiffany fs-5">Start your journey with <strong>QuizAI</strong> and explore the future of smart education.</p>
-    <a href="{% url 'quiz_app:register' %}" class="btn btn-tiffany fw-bold px-4 py-2 rounded-pill shadow">🚀 Get Started</a>
+    <h3 class="text-tiffany fw-bold mb-2">🌐 Be Proactive, Be Safe</h3>
+    <p class="text-tiffany fs-5">Start using <strong>Mr. Safe</strong> to revolutionize how your team handles safety.</p>
+    <a href="{% url 'mrsafe_app:register' %}" class="btn btn-tiffany fw-bold px-4 py-2 rounded-pill shadow">🚀 Get Started</a>
   </div>
 </div>
+
 <!-- 🔹 QR Code -->
 <div class="text-center mt-5">
-  <h4 class="text-tiffany mb-2">📱 Scan to Visit QuizAI</h4>
-  <img src="{% static 'images/qr_quizai.png' %}" 
-     alt="QR Code for QuizAI" 
-     class="img-fluid rounded shadow" 
-     style="max-width: 240px;" />
-
+  <h4 class="text-tiffany mb-2">📱 Scan to Explore Mr. Safe</h4>
+  <img src="{% static 'images/qr_mrsafe.png' %}" 
+       alt="QR Code for Mr. Safe" 
+       class="img-fluid rounded shadow" 
+       style="max-width: 240px;" />
 </div>
 
 <!-- 🔹 Custom Styling -->
@@ -136,7 +135,5 @@
     box-shadow: 0 0 25px #40E0D0;
     border-radius: 16px;
   }
-
-
 </style>
 {% endblock %}

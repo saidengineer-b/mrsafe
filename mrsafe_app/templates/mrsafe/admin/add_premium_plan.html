@@ -1,67 +1,211 @@
 {% extends "base.html" %}
-{% load custom_filters %}
-{% load widget_tweaks %}
-
-{% block title %}➕ Add Premium Plan{% endblock %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-lg border-0">
-        <div class="card-header bg-primary text-white text-center">
-            <h4 class="mb-0">➕ Add New Premium Plan</h4>
+<!-- Add this at the top of your template -->
+{% if messages %}
+<div class="container">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<!-- Debug Information (remove in production) -->
+<div class="container mt-3 d-none">
+    <div class="card bg-light">
+        <div class="card-body">
+            <h5 class="card-title">Debug Info</h5>
+            <pre>{{ debug_data }}</pre>
         </div>
-        <div class="card-body px-5 py-4">
-            <form method="post">
-                {% csrf_token %}
-
-                <!-- Plan Name -->
-                <!-- Plan Name -->
-                <div class="mb-4">
-                    <label for="id_name" class="form-label">💎 Plan Name</label>
-                    {{ form.name|add_class:"form-select" }}
+    </div>
+</div>
+<!-- Add this JavaScript for better debugging -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Debug form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+        console.log("Form submitted");
+        const features = document.getElementById('id_features');
+        try {
+            JSON.parse(features.value);
+        } catch (e) {
+            console.error("Invalid JSON:", e);
+            alert("Invalid JSON in features field");
+            e.preventDefault();
+        }
+    });
+    
+    // Add CSRF token verification
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    console.log("CSRF Token:", csrftoken ? "Present" : "Missing");
+});
+</script>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-darkorange text-white py-3">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-plus-circle me-2"></i> Create New Premium Plan
+                    </h2>
                 </div>
-
-
-                <!-- Duration -->
-                <div class="mb-4">
-                    <label for="id_duration_days" class="form-label">📆 Duration (in days)</label>
-                    {{ form.duration_days|add_class:"form-control" }}
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row g-3">
+                            <!-- Plan Name -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_name" class="form-label">
+                                        Plan Type <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.name }}
+                                    {% for error in form.name.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Duration -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_duration_days" class="form-label">
+                                        Duration (Days) <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.duration_days }}
+                                    {% for error in form.duration_days.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Price -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_price" class="form-label">
+                                        Price <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        {{ form.price }}
+                                    </div>
+                                    {% for error in form.price.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Coin Bonus -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_coin_bonus" class="form-label">
+                                        Coin Bonus
+                                    </label>
+                                    {{ form.coin_bonus }}
+                                    {% for error in form.coin_bonus.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Active Status -->
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check form-switch">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label" for="id_is_active">
+                                        Active Plan
+                                    </label>
+                                    {% for error in form.is_active.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="id_description" class="form-label">
+                                        Description
+                                    </label>
+                                    {{ form.description }}
+                                    {% for error in form.description.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Features -->
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="id_features" class="form-label">
+                                        Features <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea name="features" cols="40" rows="3" class="form-control" 
+                                        placeholder='Enter features as JSON array, e.g. ["Feature 1", "Feature 2"]' 
+                                        id="id_features">{% if form.features.value %}{{ form.features.value }}{% endif %}</textarea>
+                                    <small class="text-muted">Enter features as a valid JSON array</small>
+                                    {% for error in form.features.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'mrsafe_app:premium_membership' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-darkorange">
+                                <i class="fas fa-save me-2"></i> Save Plan
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <!-- Coin Bonus -->
-                <div class="mb-4">
-                    <label for="id_coin_bonus" class="form-label">🪙 Coin Bonus</label>
-                    {{ form.coin_bonus|add_class:"form-control" }}
-                </div>
-
-                <!-- Price -->
-                <div class="mb-4">
-                    <label for="id_price" class="form-label">💵 Price (USD)</label>
-                    {{ form.price|add_class:"form-control" }}
-                </div>
-
-                <!-- Is Active Checkbox -->
-                <div class="mb-4 d-flex align-items-center">
-                    {{ form.is_active|add_class:"form-check-input" }}
-                    <label class="form-check-label ms-2" for="id_is_active">✅ Active</label>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
-                    💾 Save Premium Plan
-                </button>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 
-<style>
-    .form-label {
-        font-weight: 600;
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-format JSON on blur
+    const featuresField = document.getElementById('id_features');
+    if (featuresField) {
+        featuresField.addEventListener('blur', function() {
+            try {
+                if (this.value.trim()) {
+                    const parsed = JSON.parse(this.value);
+                    this.value = JSON.stringify(parsed, null, 2);
+                    this.classList.remove('is-invalid');
+                }
+            } catch (e) {
+                this.classList.add('is-invalid');
+                console.error('Invalid JSON:', e.message);
+            }
+        });
     }
-    .form-check-input {
-        transform: scale(1.4);
-        margin-right: 8px;
+    
+    // Price validation
+    const priceField = document.getElementById('id_price');
+    if (priceField) {
+        priceField.addEventListener('change', function() {
+            if (parseFloat(this.value) < 0) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
     }
-</style>
+});
+</script>
 {% endblock %}

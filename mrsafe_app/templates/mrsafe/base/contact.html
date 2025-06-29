@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Contact Us - QuizAI{% endblock %}
+{% block title %}Contact Us - Mr. Safe{% endblock %}
 
 {% block content %}
 <div class="container my-5">
     <div class="contact-card bg-dark text-white border-tiffany shadow-lg rounded-4 p-4 mx-auto" style="max-width: 600px;">
 
         <!-- 🔹 Header -->
-        <h2 class="text-center text-tiffany fw-bold mb-2">📬 Contact Us</h2>
-        <p class="text-center text-muted mb-4">If you have any questions or suggestions, feel free to reach out!</p>
+        <h2 class="text-center text-tiffany fw-bold mb-2">📬 Contact Mr. Safe Team</h2>
+        <p class="text-center text-muted mb-4">
+            Have a question about inspections, AI analysis, or safety features? Let us know!
+        </p>
 
         <!-- 🔹 Success Message -->
         {% if message %}
@@ -36,6 +38,7 @@
     </div>
 </div>
 
+<!-- 🔹 Custom Styling -->
 <style>
     .text-tiffany {
         color: #40E0D0 !important;

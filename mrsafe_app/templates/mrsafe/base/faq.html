@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}FAQ - QuizAI{% endblock %}
+{% block title %}FAQ - Mr. Safe{% endblock %}
 
 {% block content %}
 <div class="container my-5 text-white">
   
   <!-- 🔹 Header -->
   <div class="text-center mb-4">
-    <h1 class="text-tiffany fw-bold display-5 neon-text">❓ FAQ - QuizAI</h1>
+    <h1 class="text-tiffany fw-bold display-5 neon-text">❓ FAQ - Mr. Safe</h1>
     <p class="text-tiffany fs-5">
-      Find answers to common questions. Still need help?
-      <a href="{% url 'quiz_app:contact' %}" class="link-tiffany">Contact us</a>.
+      Find answers to common safety and inspection questions. Still need help?
+      <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany">Contact us</a>.
     </p>
   </div>
 
@@ -19,23 +19,38 @@
   <div class="faq-section">
 
     <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-      <h3 class="text-tiffany fw-bold mb-2">💡 What is QuizAI?</h3>
-      <p class="text-light">QuizAI is a fun and interactive platform that lets you test your knowledge across various topics through quizzes. You can earn coins, improve your score, and challenge your friends!</p>
+      <h3 class="text-tiffany fw-bold mb-2">🛠️ What is Mr. Safe?</h3>
+      <p class="text-light">
+        Mr. Safe is an AI-powered safety inspection platform that lets you analyze photos, identify hazards, generate instant reports, and manage site safety efficiently.
+      </p>
     </div>
 
     <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-      <h3 class="text-tiffany fw-bold mb-2">💰 How do I earn coins?</h3>
-      <p class="text-light">You can earn coins by completing quizzes and challenges. Coins can be used to purchase additional features or unlock new content.</p>
+      <h3 class="text-tiffany fw-bold mb-2">📸 How does AI image analysis work?</h3>
+      <p class="text-light">
+        You simply upload a photo of your worksite or observation. Mr. Safe’s AI scans the image to detect potential hazards, and provides a structured report with recommendations.
+      </p>
     </div>
 
     <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-      <h3 class="text-tiffany fw-bold mb-2">🔑 How do I reset my password?</h3>
-      <p class="text-light">If you've forgotten your password, click on <strong>"Forgot Password"</strong> on the login page. We'll send you a link to reset it.</p>
+      <h3 class="text-tiffany fw-bold mb-2">📄 Can I export the safety reports?</h3>
+      <p class="text-light">
+        Yes! You can export reports in PDF, PowerPoint, or Word formats, including images, hazards, recommendations, and inspection details.
+      </p>
+    </div>
+
+    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
+      <h3 class="text-tiffany fw-bold mb-2">🔐 How do I reset my password?</h3>
+      <p class="text-light">
+        On the login page, click <strong>"Forgot Password"</strong>. We'll email you a secure link to reset your password.
+      </p>
     </div>
 
     <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
       <h3 class="text-tiffany fw-bold mb-2">📞 How do I contact support?</h3>
-      <p class="text-light">If you're facing any issues or have questions, contact us through our <a href="{% url 'quiz_app:contact' %}" class="link-tiffany">support page</a>.</p>
+      <p class="text-light">
+        For technical help or questions, please reach out via our <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany">contact page</a>. Our team is ready to assist you.
+      </p>
     </div>
 
   </div>
@@ -43,7 +58,7 @@
   <!-- 🔹 Footer Note -->
   <footer class="text-center mt-5">
     <p class="text-tiffany fs-6">
-      <em class="text-tiffany">We continuously update our FAQ based on user feedback. Thank you for being part of QuizAI!</em>
+      <em class="text-tiffany">We regularly update our FAQ to ensure your safety journey with Mr. Safe is smooth and informed.</em>
     </p>
   </footer>
 
