@@ -125,7 +125,7 @@
         <div class="safety-divider"></div>
         
         {% if request.user.is_staff %}
-        <a href="{% url 'mrsafe_app:admin_dashboard' %}" class="safety-sidebar-item">
+        <a href="{% url 'mrsafe_app:dashboard' %}" class="safety-sidebar-item">
             <i class="fas fa-helmet-safety me-2"></i>Safety Dashboard
         </a>
         {% endif %}

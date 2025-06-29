@@ -83,3 +83,12 @@ def strip(value):
         return value.strip()
     except AttributeError:
         return value
+
+
+
+@register.filter
+def abs(value):
+    try:
+        return abs(float(value))
+    except (ValueError, TypeError):
+        return value
