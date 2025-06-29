@@ -59,14 +59,26 @@
             <label class="form-check-label fw-bold text-danger">🔑 Grant Admin Access</label>
         </div>
 
+        <!-- Super User Access -->
+        <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" name="is_superuser" {% if selected_user.is_superuser %}checked{% endif %}>
+            <label class="form-check-label fw-bold text-primary">🚀 Activate Super User</label>
+            <small class="form-text text-muted d-block">Super users have all permissions by default</small>
+        </div>
+
         <!-- Action Buttons -->
         <div class="d-flex justify-content-between mt-4">
             <button type="submit" class="btn btn-success">
-                ✅ Save Changes
+                <i class="fas fa-save"></i> Save Changes
             </button>
-            <a href="{% url 'mrsafe_app:admin_dashboard' %}" class="btn btn-secondary">
-                🔙 Cancel
-            </a>
+            <div>
+                <a href="{% url 'mrsafe_app:admin_dashboard' %}" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <button type="reset" class="btn btn-outline-light">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+            </div>
         </div>
     </form>
 </div>
@@ -82,13 +94,17 @@
     }
 </script>
 
-
 <style>
     /* Profile Picture Styling */
     .profile-preview img {
         border-radius: 50%;
         border: 3px solid #ffc107;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+    }
+
+    .profile-preview img:hover {
+        transform: scale(1.05);
     }
 
     /* Form Container */
@@ -101,6 +117,22 @@
         border-radius: 8px;
         padding: 10px;
         font-size: 16px;
+        background-color: #343a40;
+        color: white;
+        border: 1px solid #495057;
+    }
+
+    .form-control:focus {
+        background-color: #495057;
+        color: white;
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+    }
+
+    /* Checkbox Styling */
+    .form-check-input:checked {
+        background-color: #ffc107;
+        border-color: #ffc107;
     }
 
     /* Buttons */
@@ -109,12 +141,59 @@
         border-radius: 8px;
         padding: 10px 15px;
         font-size: 18px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        transform: translateY(-2px);
     }
 
     .btn-secondary {
         border-radius: 8px;
         padding: 10px 15px;
         font-size: 18px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-light {
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-light:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Form Labels */
+    .form-label {
+        color: #adb5bd;
+    }
+
+    /* Section Headers */
+    .form-check-label {
+        margin-left: 5px;
+    }
+
+    /* Super User Specific Styling */
+    .text-primary {
+        color: #0d6efd !important;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 576px) {
+        .d-flex {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
     }
 </style>
 

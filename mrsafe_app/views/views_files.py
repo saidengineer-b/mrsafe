@@ -366,9 +366,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from ..models import CustomUser, UserCoinBalance, PremiumProfile
 from ..forms import EditUserForm, EditPremiumProfileForm
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import get_object_or_404, redirect, render
+from ..models import CustomUser, UserCoinBalance, PremiumProfile
+from ..forms import EditUserForm, EditPremiumProfileForm
 
 @login_required
-
+@user_passes_test(lambda u: u.is_staff)  # Optional: ensure only admins can edit users
 def edit_user(request, user_id):
     selected_user = get_object_or_404(CustomUser, id=user_id)
     user_balance, _ = UserCoinBalance.objects.get_or_create(user=selected_user)
@@ -379,19 +384,24 @@ def edit_user(request, user_id):
         premium_form = EditPremiumProfileForm(request.POST, instance=premium_profile)
 
         if user_form.is_valid() and premium_form.is_valid():
-            # Save user data
             user = user_form.save(commit=False)
+
+            # ✅ Update profile photo if uploaded
             if 'profile_photo' in request.FILES:
                 user.profile_photo = request.FILES['profile_photo']
+
+            # ✅ Handle superuser checkbox
+            user.is_superuser = 'is_superuser' in request.POST
+
             user.save()
 
-            # Save coin balance separately
+            # ✅ Update coin balance
             coin_balance = user_form.cleaned_data.get('coin_balance')
             if coin_balance is not None:
                 user_balance.balance = coin_balance
                 user_balance.save()
 
-            # Save premium profile data
+            # ✅ Save premium form changes
             premium_form.save()
 
             messages.success(request, "User updated successfully!")
@@ -408,6 +418,7 @@ def edit_user(request, user_id):
         'premium_form': premium_form,
         'selected_user': selected_user
     })
+
 
 
 ####################################################################################
