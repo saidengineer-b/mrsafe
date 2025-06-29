@@ -167,7 +167,7 @@
                                         </a>
                                     {% endif %}
                                 {% else %}
-                                    <a href="{% url 'mrsafe_app:register' %}?next={% url 'checkout_plan' plan.slug %}" 
+                                    <a href="{% url 'mrsafe_app:register' %}?next={% url 'mrsafe_app:checkout_plan' plan.slug %}" 
                                        class="btn btn-darkorange w-100 shadow-sm">
                                        Sign Up Now
                                     </a>
