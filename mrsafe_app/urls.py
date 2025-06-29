@@ -21,17 +21,7 @@ from .views import (
     # Dashboard
     premium_dashboard, admin_dashboard, 
 
-    
-
-
-    # Competitions
-    create_competition, competitions_list, start_competition,
-    competition_live, competition_results, calculate_winner,
-
-
-
-
-    # Store
+   # Store
     process_payment,payment_history_view,
 
     # Certificates
@@ -153,26 +143,19 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
     # urls.py
     path('admin/categories/', manage_categories_view, name='manage_categories'),
    
-   
     path("admin/premium-plans/", premium_plan_manage_view, name="premium_plan_manage"),
     path("admin/rewards/", reward_manage_view, name="admin_reward_manage"),
 
     path("admin/google-ads/", admin_google_ads_manage_view, name="google_ads_manage"),
 
-
- 
     path("premium/", premium_membership_view, name="premium_membership"),
     path('plans/', PremiumPlanListView.as_view(), name='premium_plans'),
     path('plans/checkout/<slug:slug>/', plan_checkout, name='plan_checkout'),
    
-    
-    
     path('premium/complete/', complete_premium_checkout, name='complete_premium_checkout'),
     
     path('premium/checkout/', premium_checkout, name='premium_checkout'),
     
-
-
     path("admin/add-premium-plan/", add_premium_plan, name="add_premium_plan"),
   
     path('ckeditor/', include('ckeditor_uploader.urls')),
@@ -199,65 +182,31 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
     path('create-google-ad-activity/', add_google_ad_activity, name='create_google_ad_activity'),
     path('google-ad-activities/', google_ad_activity_list, name='google_ad_activity_list'),
 
-
-
-
     path('process-payment/', process_payment, name='process_payment'),
    
-
     path('change-theme/', change_theme, name='change_theme'),
     # Other URLs...
-
 
     path('change-theme/', change_theme, name='change_theme'),
     path('test-css/', test_css, name='test_css'),  # ✅ Add this line
 
-
     path("edit-coin-activity/<int:activity_id>/", edit_coin_activity, name="edit_coin_activity"),  # ✅ Ensure this exists
 
-    
     path("add-coin-activity/", add_coin_activity, name="add_coin_activity"),  # ✅ URL added
     path("update-user-coins/", update_user_coins, name="update_user_coins"),
 
     path('admin/manage-rewards/', manage_rewards, name='manage_rewards'),
     
-
-
- 
-#################################################################################################
-
-
-
-
-
 #####################################################################################
-
-
     path("terms-and-conditions/", terms_and_conditions, name="terms_and_conditions"),
 
     path("terms/", terms_view, name="terms"),
 
     path('privacy-policy/', privacy_policy, name='privacy_policy'),
 
-
-
     path('switch-language/', switch_language, name='switch_language'),
 
     path('i18n/', include('django.conf.urls.i18n')),
-
-
-    # ✅ Competition Management
-    path("competitions/", competitions_list, name="competitions_list"),  # List of competitions
-    path("quizzes/competition/create/", create_competition, name="create_competition"),
-
-    # ✅ Competition Flow
-    path("competitions/<int:competition_id>/start/", start_competition, name="start_competition"),
-
-    path("competitions/<int:competition_id>/live/", competition_live, name="competition_live"),  # Live competition page
-    path("competitions/<int:competition_id>/results/", competition_results, name="competition_results"),  # Show results
-
-    # ✅ Calculate Winner
-    path("competitions/calculate-winner/<int:competition_id>/", calculate_winner, name="calculate_winner"),  # Determine winner
 
     path('premium/', premium_membership, name='premium_membership'),
     path("premium-dashboard/", premium_dashboard, name="premium_dashboard"),  # ✅ Correct path
@@ -274,23 +223,14 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
     path("edit-user/<int:user_id>/", edit_user, name="edit_user"),  # ✅ Fix URL pattern
     path("delete-user/<int:user_id>/", delete_user, name="delete_user"),
 
-
-
-    # 👤 User Authentication
- 
-
-   
-   
     # 👤 Profile Management
     path('profile/', profile, name='profile'),
     path('profile/edit/', edit_profile, name='edit_profile'),
     path('my_stats/', my_stats, name='my_stats'),
 
-
     # ℹ️ Static Pages
     path('about/', about, name='about'),
     
-
     # 🛍️ Store URLs
     path('store/', store_home, name='store'),
     path('store/add/', add_item, name='add_item'),
