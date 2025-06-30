@@ -814,7 +814,7 @@ def switch_language(request):
 
 def terms_and_conditions(request):
     terms = TermsAndConditions.objects.first()  # ✅ Get the first terms entry
-    return render(request, "mrsafe_app/base/terms_and_conditions.html", {"terms": terms})
+    return render(request, "mrsafe/base/terms_and_conditions.html", {"terms": terms})
 
 # views.py
 

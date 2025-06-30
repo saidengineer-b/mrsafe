@@ -1,115 +1,582 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <!-- Header Card -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="h5 mb-0">
-                        <i class="fas fa-camera me-2"></i>Upload Inspection Photo
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <!-- Simple Mobile-Friendly Form -->
-                    <form method="POST" enctype="multipart/form-data" 
-                          action="{% url 'mrsafe_app:site_inspection_image_test' inspection.id %}">
-                        {% csrf_token %}
-                        
-                        <!-- Mobile-optimized file input -->
-                        <div class="mb-4">
-                            <!-- Upload Button Group -->
-                            <div class="d-flex flex-column flex-md-row gap-3 mb-3">
-                                <!-- Camera Button -->
-                                <button type="button" class="btn btn-outline-primary flex-grow-1" 
-                                        onclick="document.getElementById('photo-camera').click()">
-                                    <i class="fas fa-camera me-2"></i> Take Photo
-                                </button>
-                                <input type="file" name="photo" id="photo-camera" 
-                                       class="form-control d-none" 
-                                       accept="image/*" 
-                                       capture="environment">
-                                
-                                <!-- Gallery Button -->
-                                <button type="button" class="btn btn-outline-secondary flex-grow-1" 
-                                        onclick="document.getElementById('photo-gallery').click()">
-                                    <i class="fas fa-images me-2"></i> Choose from Gallery
-                                </button>
-                                <input type="file" name="photo" id="photo-gallery" 
-                                       class="form-control d-none" 
-                                       accept="image/*">
-                            </div>
-                            
-                            <!-- Upload Progress (hidden by default) -->
-                            <div id="uploadProgress" class="progress d-none mt-2">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                                     role="progressbar" style="width: 0%"></div>
-                            </div>
-                            
-                            <!-- Selected file preview (mobile friendly) -->
-                            <div id="filePreviewMobile" class="mt-3 text-center d-none">
-                                <div class="alert alert-success d-flex align-items-center">
-                                    <i class="fas fa-check-circle me-2"></i>
-                                    <span id="fileNameMobile"></span>
-                                    <button type="button" class="btn-close ms-auto" 
-                                            onclick="clearFileSelection()"></button>
-                                </div>
-                                <img id="imagePreviewMobile" src="#" 
-                                     class="img-thumbnail mt-2 d-none" 
-                                     alt="Preview" style="max-height: 200px;">
-                            </div>
-                        </div>
+<!-- 🚧 SAFETY PHOTO UPLOAD FORM - INDUSTRIAL THEME 🚧 -->
+<div class="safety-upload-container">
+    <!-- 🚨 SAFETY HEADER WITH WARNING STRIPES 🚨 -->
+    <div class="safety-upload-header" style="background: repeating-linear-gradient(
+        45deg,
+        var(--safety-yellow),
+        var(--safety-yellow) 20px,
+        var(--safety-orange) 20px,
+        var(--safety-orange) 40px
+    );">
+        <div class="safety-camera-container">
+            <i class="fas fa-camera-retro safety-camera-icon"></i>
+            <div class="safety-camera-flash"></div>
+        </div>
+        <h1 class="safety-upload-title">
+            <span class="safety-title-underline">INSPECTION PHOTO</span>
+            <span class="safety-title-badge">UPLOAD</span>
+        </h1>
+        <p class="safety-upload-subtitle">HAZARD DOCUMENTATION SYSTEM</p>
+    </div>
 
-                        <input type="hidden" name="inspection_id" value="{{ inspection.id }}">
-
-                        <!-- Action Buttons -->
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
-                            <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" 
-                               class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-1"></i> Back
-                            </a>
-                            <button type="submit" class="btn btn-primary flex-grow-1" 
-                                    id="submitBtnMobile" disabled>
-                                <i class="fas fa-paper-plane me-1"></i> Upload & Analyze
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Mobile Help Tips -->
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h3 class="h5 mb-0">
-                        <i class="fas fa-mobile-alt me-2"></i> Photo Guidelines
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="text-success"><i class="fas fa-check-circle me-2"></i>Do:</h5>
-                            <ul class="list-unstyled mb-3">
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Capture the entire work area</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Take multiple angles</li>
-                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Ensure good lighting</li>
-                                <li><i class="fas fa-check text-success me-2"></i> Focus on potential hazards</li>
-                            </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <h5 class="text-danger"><i class="fas fa-times-circle me-2"></i>Don't:</h5>
-                            <ul class="list-unstyled">
-                                <li class="mb-2"><i class="fas fa-times text-danger me-2"></i> Blurry or dark photos</li>
-                                <li class="mb-2"><i class="fas fa-times text-danger me-2"></i> Close-ups only</li>
-                                <li class="mb-2"><i class="fas fa-times text-danger me-2"></i> Obstructed views</li>
-                                <li><i class="fas fa-times text-danger me-2"></i> Personal identifiable information</li>
-                            </ul>
-                        </div>
+    <!-- ⚠️ MAIN UPLOAD CARD ⚠️ -->
+    <div class="safety-upload-card">
+        <form method="POST" enctype="multipart/form-data" 
+              action="{% url 'mrsafe_app:site_inspection_image_test' inspection.id %}" 
+              class="safety-upload-form">
+            {% csrf_token %}
+            
+            <!-- 📸 UPLOAD OPTIONS 📸 -->
+            <div class="safety-upload-options">
+                <!-- CAMERA BUTTON -->
+                <div class="safety-upload-btn safety-btn-camera" 
+                     onclick="document.getElementById('photo-camera').click()">
+                    <div class="safety-btn-icon">
+                        <i class="fas fa-camera"></i>
                     </div>
+                    <span>TAKE PHOTO</span>
+                    <div class="safety-btn-glow"></div>
                 </div>
+                <input type="file" name="photo" id="photo-camera" 
+                       class="d-none" accept="image/*" capture="environment">
+                
+                <!-- GALLERY BUTTON -->
+                <div class="safety-upload-btn safety-btn-gallery" 
+                     onclick="document.getElementById('photo-gallery').click()">
+                    <div class="safety-btn-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <span>CHOOSE FILE</span>
+                </div>
+                <input type="file" name="photo" id="photo-gallery" 
+                       class="d-none" accept="image/*">
+            </div>
+            
+            <!-- 📌 UPLOAD PROGRESS 📌 -->
+            <div id="uploadProgress" class="safety-progress-container d-none">
+                <div class="safety-progress-bar">
+                    <div class="safety-progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="safety-progress-text">Uploading: <span>0%</span></div>
+            </div>
+            
+            <!-- 🖼️ IMAGE PREVIEW 🖼️ -->
+            <div id="filePreview" class="safety-preview-container d-none">
+                <div class="safety-preview-alert">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="fileName">Ready for upload</span>
+                    <button type="button" class="safety-preview-close" 
+                            onclick="clearFileSelection()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <img id="imagePreview" src="#" class="safety-preview-image d-none" alt="Preview">
+            </div>
+            
+            <input type="hidden" name="inspection_id" value="{{ inspection.id }}">
+
+            <!-- 🛠️ ACTION BUTTONS 🛠️ -->
+            <div class="safety-form-actions">
+                <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" 
+                   class="safety-btn safety-btn-back">
+                    <i class="fas fa-arrow-left"></i> BACK
+                </a>
+                <button type="submit" class="safety-btn safety-btn-submit" 
+                        id="submitBtn" disabled>
+                    <i class="fas fa-cloud-upload-alt"></i> UPLOAD & ANALYZE
+                    <div class="safety-btn-pulse"></div>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 🚦 SAFETY GUIDELINES 🚦 -->
+    <div class="safety-guidelines-card">
+        <div class="safety-guidelines-header">
+            <i class="fas fa-clipboard-check"></i>
+            <h3>PHOTO GUIDELINES</h3>
+        </div>
+        
+        <div class="safety-guidelines-content">
+            <!-- ✅ DO's SECTION ✅ -->
+            <div class="safety-dos">
+                <div class="safety-section-title safety-section-title-good">
+                    <i class="fas fa-check-circle"></i> DO's
+                </div>
+                <ul class="safety-checklist">
+                    <li><i class="fas fa-check"></i> Capture entire work area</li>
+                    <li><i class="fas fa-check"></i> Take multiple angles</li>
+                    <li><i class="fas fa-check"></i> Ensure good lighting</li>
+                    <li><i class="fas fa-check"></i> Focus on hazards</li>
+                </ul>
+            </div>
+            
+            <!-- ❌ DON'Ts SECTION ❌ -->
+            <div class="safety-donts">
+                <div class="safety-section-title safety-section-title-bad">
+                    <i class="fas fa-times-circle"></i> DON'Ts
+                </div>
+                <ul class="safety-checklist">
+                    <li><i class="fas fa-times"></i> Blurry/dark photos</li>
+                    <li><i class="fas fa-times"></i> Close-ups only</li>
+                    <li><i class="fas fa-times"></i> Obstructed views</li>
+                    <li><i class="fas fa-times"></i> Personal information</li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
+
+<!-- 🎨 PREMIUM SAFETY STYLES -->
+<style>
+    /* 🎨 COLOR PALETTE */
+    :root {
+        --safety-red: #e63946;
+        --safety-orange: #f77f00;
+        --safety-yellow: #fcbf49;
+        --safety-green: #2a9d8f;
+        --safety-blue: #1d3557;
+        --safety-dark: #14213d;
+        --safety-light: #f8f9fa;
+        
+        --primary-grad: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+        --danger-grad: linear-gradient(135deg, #e63946 0%, #f77f00 100%);
+        --warning-grad: linear-gradient(135deg, #f77f00 0%, #fcbf49 100%);
+        --success-grad: linear-gradient(135deg, #2a9d8f 0%, #8ac926 100%);
+    }
+
+    /* 🚧 SAFETY FORM STRUCTURE 🚧 */
+    .safety-upload-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* 🚨 SAFETY HEADER 🚨 */
+    .safety-upload-header {
+        padding: 2rem 1rem;
+        text-align: center;
+        position: relative;
+        color: var(--safety-dark);
+        margin-bottom: 2rem;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .safety-camera-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
+    .safety-camera-icon {
+        font-size: 4rem;
+        color: white;
+        text-shadow: 2px 2px 0 var(--safety-dark);
+        position: relative;
+        z-index: 2;
+    }
+
+    .safety-camera-flash {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background: white;
+        border-radius: 50%;
+        top: -5px;
+        right: -5px;
+        opacity: 0.8;
+        animation: flash-pulse 3s infinite;
+    }
+
+    .safety-upload-title {
+        font-size: 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin: 0.5rem 0;
+        position: relative;
+        display: inline-block;
+    }
+
+    .safety-title-underline {
+        position: relative;
+        padding-bottom: 5px;
+    }
+
+    .safety-title-underline::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 4px;
+        background: var(--danger-grad);
+        bottom: 0;
+        left: 0;
+        border-radius: 2px;
+    }
+
+    .safety-title-badge {
+        background: var(--safety-red);
+        color: white;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.8rem;
+        border-radius: 20px;
+        margin-left: 1rem;
+        vertical-align: middle;
+        position: relative;
+        top: -5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .safety-upload-subtitle {
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin: 0;
+        color: var(--safety-dark);
+    }
+
+    /* ⚠️ UPLOAD CARD ⚠️ */
+    .safety-upload-card {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border: 2px solid var(--safety-blue);
+    }
+
+    /* 📸 UPLOAD OPTIONS 📸 */
+    .safety-upload-options {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .safety-upload-btn {
+        flex: 1;
+        min-width: 200px;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        border: 2px dashed transparent;
+    }
+
+    .safety-btn-camera {
+        background: var(--primary-grad);
+        color: white;
+    }
+
+    .safety-btn-camera:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(29, 53, 87, 0.3);
+    }
+
+    .safety-btn-gallery {
+        background: white;
+        color: var(--safety-blue);
+        border-color: var(--safety-blue);
+    }
+
+    .safety-btn-gallery:hover {
+        background: rgba(29, 53, 87, 0.05);
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .safety-btn-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .safety-btn-glow {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.5) 50%,
+            rgba(255,255,255,0) 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .safety-btn-camera:hover .safety-btn-glow {
+        opacity: 1;
+        animation: glow-animation 2s infinite;
+    }
+
+    /* 📌 UPLOAD PROGRESS 📌 */
+    .safety-progress-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .safety-progress-bar {
+        height: 10px;
+        background: #e9ecef;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .safety-progress-fill {
+        height: 100%;
+        background: var(--success-grad);
+        border-radius: 5px;
+        transition: width 0.3s;
+    }
+
+    .safety-progress-text {
+        font-size: 0.9rem;
+        color: var(--safety-blue);
+        font-weight: 600;
+    }
+
+    /* 🖼️ IMAGE PREVIEW 🖼️ */
+    .safety-preview-container {
+        margin-bottom: 2rem;
+    }
+
+    .safety-preview-alert {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: rgba(42, 157, 143, 0.1);
+        border-left: 4px solid var(--safety-green);
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    .safety-preview-alert i {
+        color: var(--safety-green);
+        margin-right: 0.8rem;
+        font-size: 1.2rem;
+    }
+
+    .safety-preview-alert span {
+        flex: 1;
+        font-weight: 600;
+    }
+
+    .safety-preview-close {
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 1.1rem;
+    }
+
+    .safety-preview-image {
+        max-width: 100%;
+        max-height: 300px;
+        display: block;
+        margin: 0 auto;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    /* 🛠️ ACTION BUTTONS 🛠️ */
+    .safety-form-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .safety-btn {
+        flex: 1;
+        padding: 1rem;
+        border-radius: 6px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        border: none;
+    }
+
+    .safety-btn i {
+        font-size: 1.1rem;
+    }
+
+    .safety-btn-back {
+        background: white;
+        color: var(--safety-blue);
+        border: 2px solid var(--safety-blue);
+    }
+
+    .safety-btn-back:hover {
+        background: var(--safety-blue);
+        color: white;
+    }
+
+    .safety-btn-submit {
+        background: var(--primary-grad);
+        color: white;
+    }
+
+    .safety-btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(29, 53, 87, 0.3);
+    }
+
+    .safety-btn-pulse {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 6px;
+        top: 0;
+        left: 0;
+        background: rgba(255,255,255,0.3);
+        opacity: 0;
+        animation: pulse-animation 2s infinite;
+    }
+
+    .safety-btn-submit:hover .safety-btn-pulse {
+        opacity: 1;
+    }
+
+    /* 🚦 SAFETY GUIDELINES 🚦 */
+    .safety-guidelines-card {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border: 2px solid var(--safety-yellow);
+    }
+
+    .safety-guidelines-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        color: var(--safety-blue);
+    }
+
+    .safety-guidelines-header i {
+        font-size: 1.8rem;
+        margin-right: 1rem;
+        color: var(--safety-yellow);
+    }
+
+    .safety-guidelines-header h3 {
+        font-size: 1.3rem;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .safety-guidelines-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .safety-section-title {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .safety-section-title-good {
+        color: var(--safety-green);
+    }
+
+    .safety-section-title-bad {
+        color: var(--safety-red);
+    }
+
+    .safety-checklist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .safety-checklist li {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .safety-checklist i {
+        font-size: 1.1rem;
+    }
+
+    .safety-checklist .fa-check {
+        color: var(--safety-green);
+    }
+
+    .safety-checklist .fa-times {
+        color: var(--safety-red);
+    }
+
+    /* 🎬 ANIMATIONS 🎬 */
+    @keyframes glow-animation {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    @keyframes pulse-animation {
+        0% { transform: scale(1); opacity: 0.3; }
+        50% { transform: scale(1.05); opacity: 0.1; }
+        100% { transform: scale(1); opacity: 0.3; }
+    }
+
+    @keyframes flash-pulse {
+        0% { opacity: 0.3; }
+        50% { opacity: 0.8; }
+        100% { opacity: 0.3; }
+    }
+
+    /* 📱 RESPONSIVE DESIGN 📱 */
+    @media (max-width: 768px) {
+        .safety-upload-options {
+            flex-direction: column;
+        }
+        
+        .safety-form-actions {
+            flex-direction: column;
+        }
+        
+        .safety-guidelines-content {
+            grid-template-columns: 1fr;
+        }
+        
+        .safety-upload-title {
+            font-size: 1.8rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .safety-upload-header {
+            padding: 1.5rem 1rem;
+        }
+        
+        .safety-upload-card,
+        .safety-guidelines-card {
+            padding: 1.5rem;
+        }
+        
+        .safety-upload-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
 
 <script>
     // Mobile-friendly file handling
@@ -120,11 +587,12 @@
             document.getElementById('photo-gallery')
         ];
         
-        const filePreview = document.getElementById('filePreviewMobile');
-        const fileName = document.getElementById('fileNameMobile');
-        const imagePreview = document.getElementById('imagePreviewMobile');
-        const submitBtn = document.getElementById('submitBtnMobile');
-        const progressBar = document.querySelector('.progress-bar');
+        const filePreview = document.getElementById('filePreview');
+        const fileName = document.getElementById('fileName');
+        const imagePreview = document.getElementById('imagePreview');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressFill = document.querySelector('.safety-progress-fill');
+        const progressText = document.querySelector('.safety-progress-text span');
         const progressContainer = document.getElementById('uploadProgress');
         
         fileInputs.forEach(input => {
@@ -171,76 +639,42 @@
         document.getElementById('photo-camera').value = '';
         document.getElementById('photo-gallery').value = '';
         
-        document.getElementById('filePreviewMobile').classList.add('d-none');
-        document.getElementById('imagePreviewMobile').classList.add('d-none');
-        document.getElementById('submitBtnMobile').disabled = true;
+        document.getElementById('filePreview').classList.add('d-none');
+        document.getElementById('imagePreview').classList.add('d-none');
+        document.getElementById('submitBtn').disabled = true;
         document.getElementById('uploadProgress').classList.add('d-none');
     }
     
     function showAlert(message, type) {
         // Simple alert function
         const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type} alert-dismissible fade show mt-3`;
+        alertDiv.className = `safety-alert safety-alert-${type}`;
         alertDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
             ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="safety-alert-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
         `;
-        document.querySelector('.card-body').prepend(alertDiv);
+        document.querySelector('.safety-upload-form').prepend(alertDiv);
     }
     
     function simulateUploadProgress() {
         // For demo purposes only - remove in production
-        const progressBar = document.querySelector('.progress-bar');
+        const progressFill = document.querySelector('.safety-progress-fill');
+        const progressText = document.querySelector('.safety-progress-text span');
         const progressContainer = document.getElementById('uploadProgress');
         
         progressContainer.classList.remove('d-none');
         let width = 0;
         const interval = setInterval(() => {
             width += 10;
-            progressBar.style.width = width + '%';
+            progressFill.style.width = width + '%';
+            progressText.textContent = width + '%';
             if (width >= 100) {
                 clearInterval(interval);
-                progressBar.classList.remove('progress-bar-animated');
-                progressBar.classList.remove('progress-bar-striped');
             }
         }, 200);
     }
 </script>
-
-<style>
-    /* Mobile-first responsive styles */
-    .btn {
-        white-space: nowrap;
-        padding: 12px;
-    }
-    
-    /* Responsive image preview */
-    .img-thumbnail {
-        max-width: 100%;
-        height: auto;
-    }
-    
-    /* Button group spacing */
-    @media (max-width: 768px) {
-        .btn-group-vertical > .btn {
-            margin-bottom: 10px;
-        }
-    }
-    
-    /* Progress bar animation */
-    .progress {
-        height: 8px;
-    }
-    
-    /* Card styling */
-    .card {
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .card-header {
-        padding: 15px 20px;
-    }
-</style>
 {% endblock %}
