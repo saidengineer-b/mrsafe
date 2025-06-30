@@ -16,6 +16,7 @@
     <!-- Profile Header -->
     <div class="profile-header">
       <div class="profile-avatar-wrapper">
+        
         <img src="{% if user.profile_photo %}{{ user.profile_photo.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" 
              class="profile-avatar" 
              alt="{{ user.username }}'s profile photo">
@@ -80,65 +81,69 @@
         </div>
       </div>
 
-      <!-- Membership Tab -->
-      <div class="tab-pane" id="membership-tab">
-        <div class="membership-section">
-          {% if user.is_premium %}
-          <div class="premium-status">
-            <div class="premium-icon">
-              <i class="fas fa-crown"></i>
-            </div>
-            <h3>Premium Membership Active</h3>
-            <p>Expires on {{ user.premiumprofile.end_date|date:"F j, Y" }}</p>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: {{ membership_progress }}%"></div>
-            </div>
-            <div class="premium-features">
-              <div class="feature">
-                <i class="fas fa-check"></i>
-                <span>Unlimited Inspections</span>
-              </div>
-              <div class="feature">
-                <i class="fas fa-check"></i>
-                <span>Advanced Analytics</span>
-              </div>
-              <div class="feature">
-                <i class="fas fa-check"></i>
-                <span>Priority Support</span>
-              </div>
-            </div>
-          </div>
-          {% else %}
-          <div class="upgrade-section">
-            <h3>Upgrade to Premium</h3>
-            <p>Unlock all features and capabilities</p>
-            
-            <div class="pricing-cards">
-              <div class="pricing-card">
+
+<!-- Membership Tab -->
+<div class="tab-pane" id="membership-tab">
+  <div class="membership-section">
+
+{% if premium_profile %}
+    <div class="premium-status">
+        <div class="premium-icon">
+            <i class="fas fa-crown"></i>
+        </div>
+        <h3>Premium Membership Active</h3>
+
+ {% if premium_profile.end_date %}
+  <p>Expires on: {{ premium_profile.end_date|date:"F j, Y" }}</p>
+{% else %}
+  <p>Expires on: Not set</p>
+{% endif %}
+
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ membership_progress }}%"></div>
+        </div>
+
+        <div class="premium-features">
+            <div class="feature"><i class="fas fa-check"></i> <span>Unlimited Inspections</span></div>
+            <div class="feature"><i class="fas fa-check"></i> <span>Advanced Analytics</span></div>
+            <div class="feature"><i class="fas fa-check"></i> <span>Priority Support</span></div>
+        </div>
+    </div>
+{% else %}
+    <div class="upgrade-section">
+        <h3>Upgrade to Premium</h3>
+        <p>Unlock all features and capabilities</p>
+
+        <div class="pricing-cards">
+            <div class="pricing-card">
                 <h4>Monthly</h4>
                 <div class="price">$9.99<span>/month</span></div>
                 <a href="{% url 'mrsafe_app:subscribe_premium' 'monthly' %}" class="btn-upgrade">Upgrade</a>
-              </div>
-              <div class="pricing-card recommended">
+            </div>
+            <div class="pricing-card recommended">
                 <div class="recommended-badge">Best Value</div>
                 <h4>Yearly</h4>
                 <div class="price">$99.99<span>/year</span></div>
                 <a href="{% url 'mrsafe_app:subscribe_premium' 'yearly' %}" class="btn-upgrade">Upgrade</a>
-              </div>
             </div>
-          </div>
-          {% endif %}
-          
-          <div class="coin-balance">
-            <h4><i class="fas fa-coins"></i> Coin Balance</h4>
-            <div class="coin-display">
-              <span class="coin-amount">{{ coin_balance }}</span>
-              <span class="coin-label">Coins</span>
-            </div>
-            <a href="#" class="btn-buy-coins">Buy More Coins</a>
-          </div>
         </div>
+    </div>
+{% endif %}
+
+
+    <!-- Coin Balance Section -->
+    <div class="coin-balance mt-4">
+      <h4><i class="fas fa-coins"></i> Coin Balance</h4>
+      <div class="coin-display">
+        <span class="coin-amount">{{ coin_balance }}</span>
+        <span class="coin-label">Coins</span>
       </div>
+      <a href="#" class="btn-buy-coins">Buy More Coins</a>
+    </div>
+
+  </div>
+</div>
+
 
       <!-- Activity Tab -->
       <div class="tab-pane" id="activity-tab">

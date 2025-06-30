@@ -485,8 +485,17 @@ class CoinTransaction(models.Model):
 # ==============================
 # ✅ UserCoinBalance: One-to-One balance per user
 # ==============================
+from django.db import models, transaction
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 class UserCoinBalance(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="coin_balance_obj"
+    )
     balance = models.PositiveIntegerField(default=0)
 
     @transaction.atomic
@@ -507,7 +516,7 @@ class UserCoinBalance(models.Model):
 
         self.save()
 
-        # Record transaction
+        # Record transaction if activity given
         if activity:
             CoinTransaction.objects.create(
                 user=self.user,
@@ -526,6 +535,13 @@ class UserCoinBalance(models.Model):
 
     def __str__(self):
         return f"{self.user.username} – {self.balance} coins"
+
+# ✅ Automatically create coin balance for new users
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_coin_balance(sender, instance, created, **kwargs):
+    if created:
+        UserCoinBalance.objects.get_or_create(user=instance)
+
 
 # ==============================
 # ✅ Ads / Monetization

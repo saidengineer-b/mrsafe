@@ -95,6 +95,56 @@ def profile(request):
     return render(request, "mrsafe/profile.html", context)
 
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.utils.timezone import now
+from ..models import SiteInspection, UserProfile, PremiumProfile, UserCoinBalance
+
+
+@login_required
+def profile(request):
+    user = request.user
+    user_profile, _ = UserProfile.objects.get_or_create(user=user)
+
+    # ✅ Site inspections
+    inspections = SiteInspection.objects.filter(inspector=user).order_by('-date')
+    total_inspections = inspections.count()
+    completed_inspections = inspections.filter(completed=True).count()
+
+    # ✅ Coin balance
+    coin_balance = 0
+    try:
+        coin_balance = user.coin_balance_obj.balance
+    except UserCoinBalance.DoesNotExist:
+        pass
+
+    # ✅ Premium profile and progress
+    premium_profile = None
+    membership_progress = 0
+    try:
+        premium_profile = user.premium_profile  # safer: via OneToOneField
+        if premium_profile.start_date and premium_profile.end_date:
+            total_days = (premium_profile.end_date - premium_profile.start_date).days
+            days_left = (premium_profile.end_date - now()).days
+            if total_days > 0:
+                membership_progress = max(0, min(100, int(100 * days_left / total_days)))
+    except PremiumProfile.DoesNotExist:
+        pass
+
+    context = {
+        "user_profile": user_profile,
+        "inspections": inspections,
+        "total_inspections": total_inspections,
+        "completed_inspections": completed_inspections,
+        "coin_balance": coin_balance,
+        "premium_profile": premium_profile,
+        "membership_progress": membership_progress,
+    }
+
+    return render(request, "mrsafe/profile.html", context)
+
+
+
 # ✅ User Registration View
 # views.py (User Registration)
 
