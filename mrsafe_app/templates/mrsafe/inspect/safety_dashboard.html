@@ -1508,4 +1508,377 @@
     70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
     100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
 }
+</style>
+
+
+<!-- 📜 INTERACTIVITY - Enhanced -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Make inspection/hazard items clickable
+    document.querySelectorAll('.inspection-item, .hazard-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't trigger if clicking on a button or link
+            if (!e.target.closest('button') && !e.target.closest('a')) {
+                const id = this.getAttribute('data-inspection-id') || 
+                          this.getAttribute('data-observation-id');
+                const type = this.classList.contains('inspection-item') ? 'inspection' : 'hazard';
+                
+                if (type === 'inspection') {
+                    loadInspectionDetails(id);
+                } else {
+                    loadHazardDetails(id);
+                }
+            }
+        });
+    });
+    
+    // View Details buttons
+    document.querySelectorAll('.view-details').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const item = this.closest('.inspection-item, .hazard-item');
+            const id = item.getAttribute('data-inspection-id') || 
+                      item.getAttribute('data-observation-id');
+            const type = item.classList.contains('inspection-item') ? 'inspection' : 'hazard';
+            
+            if (type === 'inspection') {
+                loadInspectionDetails(id);
+            } else {
+                loadHazardDetails(id);
+            }
+        });
+    });
+    
+    // Initialize hazard radar chart
+    const hazardCtx = document.getElementById('hazardRadarChart');
+    if (hazardCtx) {
+        const hazardData = {
+            labels: [
+                {% for hazard in observation_metrics.hazard_types|slice:":5" %}
+                '{{ hazard.structured_json__hazard_type|default:"Unknown" }}'{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            datasets: [{
+                label: 'Hazard Frequency',
+                data: [
+                    {% for hazard in observation_metrics.hazard_types|slice:":5" %}
+                    {{ hazard.count }}{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
+            }]
+        };
+        
+        new Chart(hazardCtx, {
+            type: 'radar',
+            data: hazardData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: Math.max(...hazardData.datasets[0].data) + 2
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+    
+    // Set compliance gauge rotation
+    const complianceGauges = document.querySelectorAll('.gauge-container');
+    complianceGauges.forEach(gauge => {
+        const value = parseFloat(gauge.getAttribute('data-value'));
+        const fill = gauge.querySelector('.gauge-fill');
+        const rotation = value / 100 * 0.5;
+        fill.style.transform = `rotate(${rotation}turn)`;
+        
+        // Change color based on value
+        if (value > 90) {
+            fill.style.background = 'linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%)';
+        } else if (value > 70) {
+            fill.style.background = 'linear-gradient(90deg, #FFC107 0%, #FF9800 100%)';
+        } else {
+            fill.style.background = 'linear-gradient(90deg, #F44336 0%, #E53935 100%)';
+        }
+    });
+    
+    // Inspection item click handler
+    document.querySelectorAll('.inspection-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't trigger if clicking on a button
+            if (!e.target.closest('.view-details') && !e.target.closest('.continue-btn')) {
+                const inspectionId = this.dataset.inspectionId;
+                loadInspectionDetails(inspectionId);
+            }
+        });
+        
+        // View details button
+        const viewBtn = item.querySelector('.view-details');
+        if (viewBtn) {
+            viewBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const inspectionId = item.dataset.inspectionId;
+                loadInspectionDetails(inspectionId);
+            });
+        }
+        
+        // Continue button
+        const continueBtn = item.querySelector('.continue-btn');
+        if (continueBtn) {
+            continueBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const inspectionId = item.dataset.inspectionId;
+                // Redirect to continue inspection
+                window.location.href = `/inspections/${inspectionId}/continue/`;
+            });
+        }
+    });
+    
+    // Hazard item click handler
+    document.querySelectorAll('.hazard-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't trigger if clicking on a button
+            if (!e.target.closest('.view-details') && !e.target.closest('.resolve-btn')) {
+                const observationId = this.dataset.observationId;
+                loadHazardDetails(observationId);
+            }
+        });
+        
+        // View details button
+        const viewBtn = item.querySelector('.view-details');
+        if (viewBtn) {
+            viewBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const observationId = item.dataset.observationId;
+                loadHazardDetails(observationId);
+            });
+        }
+        
+        // Resolve button
+        const resolveBtn = item.querySelector('.resolve-btn');
+        if (resolveBtn) {
+            resolveBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const observationId = item.dataset.observationId;
+                // Show resolve modal
+                loadHazardDetails(observationId, true);
+            });
+        }
+    });
+    
+    // Load inspection details
+    function loadInspectionDetails(inspectionId) {
+        const modal = new bootstrap.Modal(document.getElementById('inspectionModal'));
+        const modalContent = document.querySelector('.inspection-modal-content');
+        
+        // Show loading spinner
+        modalContent.innerHTML = `
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `;
+        
+        modal.show();
+        
+        // Simulate AJAX loading (replace with actual API call)
+        setTimeout(() => {
+            // This would be replaced with actual data from your backend
+            modalContent.innerHTML = `
+                <div class="inspection-details">
+                    <div class="detail-header">
+                        <h4>Inspection #${inspectionId}</h4>
+                        <span class="badge bg-success">Completed</span>
+                    </div>
+                    <div class="detail-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Main Construction Site</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${new Date().toLocaleDateString()}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-user-hard-hat"></i>
+                            <span>${user.get_full_name}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h5>Summary</h5>
+                        <p>This inspection covered all safety protocols at the main construction site, including PPE compliance, equipment safety, and hazard communication.</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h5>Findings</h5>
+                        <div class="findings-list">
+                            <div class="finding-item positive">
+                                <i class="fas fa-check-circle"></i>
+                                <span>All workers wearing proper PPE</span>
+                            </div>
+                            <div class="finding-item positive">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Emergency exits clear and marked</span>
+                            </div>
+                            <div class="finding-item negative">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Unguarded machinery in sector B</span>
+                            </div>
+                            <div class="finding-item negative">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Tripping hazards in walkway</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h5>Photos</h5>
+                        <div class="photos-grid">
+                            <div class="photo-item" style="background-image: url('https://via.placeholder.com/300x200')"></div>
+                            <div class="photo-item" style="background-image: url('https://via.placeholder.com/300x200')"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }, 800);
+    }
+    
+    // Load hazard details
+    function loadHazardDetails(observationId, showResolve = false) {
+        const modal = new bootstrap.Modal(document.getElementById('hazardModal'));
+        const modalContent = document.querySelector('.hazard-modal-content');
+        
+        // Show loading spinner
+        modalContent.innerHTML = `
+            <div class="loading-spinner">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `;
+        
+        modal.show();
+        
+        // Hide resolve button if not needed
+        const resolveBtn = document.querySelector('.resolve-modal-btn');
+        resolveBtn.style.display = showResolve ? 'block' : 'none';
+        
+        // Simulate AJAX loading (replace with actual API call)
+        setTimeout(() => {
+            // This would be replaced with actual data from your backend
+            modalContent.innerHTML = `
+                <div class="hazard-details">
+                    <div class="detail-header">
+                        <h4>Hazard #${observationId}</h4>
+                        <span class="badge bg-danger">HIGH PRIORITY</span>
+                    </div>
+                    <div class="hazard-type-badge bg-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>TRIP HAZARD</span>
+                    </div>
+                    
+                    <div class="detail-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Main Construction Site - North Corridor</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${new Date().toLocaleDateString()}</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-user-hard-hat"></i>
+                            <span>Reported by Sarah Johnson</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h5>Hazard Description</h5>
+                        <p>Extension cords running across high-traffic walkway without proper covering or securing, creating significant trip hazard for workers moving materials.</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h5>Photos</h5>
+                        <div class="photos-grid">
+                            <div class="photo-item" style="background-image: url('https://via.placeholder.com/300x200')"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h5>Risk Assessment</h5>
+                        <div class="risk-matrix">
+                            <div class="risk-item severity high">
+                                <span>Severity</span>
+                                <strong>High</strong>
+                            </div>
+                            <div class="risk-item likelihood medium">
+                                <span>Likelihood</span>
+                                <strong>Medium</strong>
+                            </div>
+                            <div class="risk-item overall high">
+                                <span>Overall Risk</span>
+                                <strong>High</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h5>Action Plan</h5>
+                        <ol>
+                            <li>Immediately stop use of unguarded machinery</li>
+                            <li>Install proper guards before resuming operations</li>
+                        </div>
+                </div>
+            `;
+        }, 800);
+    }
+    
+    // Print button handler
+    document.querySelector('.print-btn')?.addEventListener('click', function() {
+        window.print();
+    });
+    
+    // Resolve button handler
+    document.querySelector('.resolve-modal-btn')?.addEventListener('click', function() {
+        alert('Hazard marked as resolved! This would trigger an API call in production.');
+        bootstrap.Modal.getInstance(document.getElementById('hazardModal')).hide();
+    });
+    
+    // Continue inspection button handler
+    document.querySelectorAll('.continue-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const inspectionId = this.closest('.inspection-item').getAttribute('data-inspection-id');
+            alert(`Continuing inspection ${inspectionId}. This would open the inspection form in production.`);
+        });
+    });
+    
+    // Resolve hazard button handler
+    document.querySelectorAll('.resolve-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const hazardId = this.closest('.hazard-item').getAttribute('data-observation-id');
+            alert(`Resolving hazard ${hazardId}. This would open the resolution form in production.`);
+        });
+    });
+});
+</script>
 {% endblock %}
