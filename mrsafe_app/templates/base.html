@@ -83,9 +83,8 @@
                     </ul>
                     <button onclick="clearAllNotifications()" class="safety-clear-btn">Acknowledge All</button>
                 </div>
-            </div>
-
-             <div class="d-flex align-items-center safety-action-buttons">
+                </div>
+                    <div class="d-flex align-items-center safety-action-buttons">
                 <a href="{% url 'mrsafe_app:store' %}" class="safety-nav-item mx-3">
                     <i class="fas fa-toolbox safety-nav-icon"></i>
                     <span class="safety-nav-label">Store</span>
@@ -95,6 +94,9 @@
                     <span class="safety-nav-label">Share</span>
                 </a>
             </div>
+            </div>
+
+         
         </div>
     </header>
 
@@ -138,8 +140,8 @@
         <div class="safety-divider"></div>
         
         {% if user.is_authenticated %}
-        <a href="{% url 'mrsafe_app:edit_profile' %}" class="safety-sidebar-item">
-            <i class="fas fa-id-card me-2"></i> Safety Credentials
+        <a href="{% url 'mrsafe_app:help' %}" class="safety-sidebar-item">
+            <i class="fas fa-id-card me-2"></i> Help
         </a>
         <a href="{% url 'mrsafe_app:profile' %}" class="safety-sidebar-item">
             <i class="fas fa-user-shield me-2"></i> Safety Profile
@@ -156,10 +158,10 @@
         <div class="safety-divider"></div>
         
         <a href="{% url 'mrsafe_app:terms_and_conditions' %}" class="safety-sidebar-item">
-            <i class="fas fa-file-contract me-2"></i> Safety Regulations
+            <i class="fas fa-file-contract me-2"></i> Terms_and_conditions
         </a>
         <a href="{% url 'mrsafe_app:privacy_policy' %}" class="safety-sidebar-item">
-            <i class="fas fa-lock me-2"></i> Data Protection
+            <i class="fas fa-lock me-2"></i> Privacy_policy
         </a>
         
         <div class="safety-divider"></div>
@@ -242,6 +244,7 @@
     <!-- Custom JavaScript -->
     <script>
  // Updated Sidebar functionality
+// Updated Sidebar functionality
 function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
     const isActive = !sidebar.classList.contains("active");
@@ -252,26 +255,61 @@ function toggleSidebar() {
     // Animate the toggle
     anime({
         targets: '#sidebar',
-        translateX: isActive ? 0 : -300, // Simplified animation targets
+        translateX: isActive ? 0 : -300,
         easing: 'easeInOutQuad',
         duration: 300
     });
+}
+
+// Function to close sidebar
+function closeSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    if (sidebar.classList.contains("active")) {
+        sidebar.classList.remove("active");
+        localStorage.setItem("sidebarState", "closed");
+        anime({
+            targets: '#sidebar',
+            translateX: -300,
+            easing: 'easeInOutQuad',
+            duration: 300
+        });
+    }
 }
 
 function checkSidebarState() {
     const sidebar = document.getElementById("sidebar");
     if (localStorage.getItem("sidebarState") === "open") {
         sidebar.classList.add("active");
-        // Set initial position if needed
         sidebar.style.transform = 'translateX(0)';
     } else {
         sidebar.style.transform = 'translateX(-300px)';
     }
 }
 
-// Call this on page load
+// Add event listeners to all sidebar items to close sidebar when clicked
 document.addEventListener('DOMContentLoaded', function() {
     checkSidebarState();
+    
+    // Get all sidebar links
+    const sidebarItems = document.querySelectorAll('.safety-sidebar-item');
+    
+    // Add click event to each sidebar item
+    sidebarItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Don't close if it's the theme selector
+            if (!this.closest('.safety-theme-selector')) {
+                closeSidebar();
+            }
+        });
+    });
+    
+    // For the logout button (since it's a form)
+    const logoutBtn = document.querySelector('.safety-logout-item');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            closeSidebar();
+        });
+    }
 });
 
         // Emergency functionality
