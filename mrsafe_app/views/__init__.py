@@ -90,9 +90,11 @@ from .views_files import (create_superuser_view,
     manage_categories_view,
     coin_manage_view,
     store_manage_view,premium_plan_manage_view,reward_manage_view,user_profile_view,
-    remove_from_cart,my_stats,user_management_view,admin_google_ads_manage_view,
-    premium_subscription_success,about,plan_checkout,
+    remove_from_cart,user_management_view,admin_google_ads_manage_view,
+    premium_subscription_success,about,plan_checkout,CartCheckoutView,
 )
+
+
 
 
 

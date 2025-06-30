@@ -193,68 +193,6 @@ def register(request):
 
 #################################
 
-from django.db.models import Sum
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from django.db.models import Sum
-
-
-@login_required
-def my_stats(request):
-    user = request.user
-
-    # ✅ Quiz performance
-    quiz_results = QuizResult.objects.filter(user=user)
-    completed_quizzes = quiz_results.count()
-    passed_tests = quiz_results.filter(passed=True).count()
-    average_score = quiz_results.aggregate(total=Sum('score'))['total'] / completed_quizzes if completed_quizzes else 0
-
-    # ✅ Coins and Points
-    user_coins = UserCoinBalance.objects.filter(user=user).first()
-    coin_balance = user_coins.balance if user_coins else 0
-    total_points = UserPointBalance.objects.get_or_create(user=user)[0].total_points
-
-    # ✅ Leaderboard rank
-    leaderboard = (
-        QuizResult.objects.values('user__username')
-        .annotate(total_score=Sum('score'))
-        .order_by('-total_score')
-    )
-    user_ranking = next((i for i, entry in enumerate(leaderboard, 1) if entry['user__username'] == user.username), "N/A")
-
-    # ✅ Completed sessions (all lessons must have progress with non-empty completed_steps)
-    completed_sessions = 0
-    all_sessions = MasterItSession.objects.all()
-
-    for session in all_sessions:
-        lessons = session.lessons.all()
-        all_completed = True
-        for lesson in lessons:
-            try:
-                progress = LessonProgress.objects.get(user=user, lesson=lesson)
-                if not progress.completed_steps:  # empty list = not completed
-                    all_completed = False
-                    break
-            except LessonProgress.DoesNotExist:
-                all_completed = False
-                break
-        if all_completed:
-            completed_sessions += 1
-
-    return render(request, 'mrsafe_app/my_stats.html', {
-        'completed_quizzes': completed_quizzes,
-        'passed_tests': passed_tests,
-        'average_score': round(average_score, 1),
-        'coin_balance': coin_balance,
-        'total_points': total_points,
-        'user_ranking': user_ranking,
-        'completed_sessions': completed_sessions,
-    })
-
-
 # ✅ Edit Profile View
 @login_required
 def edit_profile(request):
@@ -330,7 +268,7 @@ from ..models import StoreItem
 
 def store_home(request):
     items = StoreItem.objects.all()  # Fetch all store items
-    return render(request, 'store/store_home.html', {'items': items})
+    return render(request, 'mrsafe/store/store_home.html', {'items': items})
 
 
 # ✅ Add Item View
@@ -345,7 +283,7 @@ def add_item(request):
             messages.error(request, "⚠️ Error adding item. Please check the form.")
     else:
         form = StoreItemForm()
-    return render(request, 'store/add_item.html', {'form': form})
+    return render(request, 'mrsafe/store/add_item.html', {'form': form})
 
 # ✅ Edit Item View
 def edit_item(request, item_id):
@@ -360,7 +298,7 @@ def edit_item(request, item_id):
             messages.error(request, "⚠️ Error updating item. Please check the form.")
     else:
         form = StoreItemForm(instance=item)
-    return render(request, 'store/edit_item.html', {'form': form, 'item': item})
+    return render(request, 'mrsafe/store/edit_item.html', {'form': form, 'item': item})
 
 # ✅ Delete Item View (Optional)
 def delete_item(request, item_id):
@@ -369,7 +307,7 @@ def delete_item(request, item_id):
         item.delete()
         messages.success(request, "🗑️ Item deleted successfully!")
         return redirect('mrsafe_app:store')
-    return render(request, 'store/delete_item_confirm.html', {'item': item})
+    return render(request, 'mrsafe/store/delete_item_confirm.html', {'item': item})
 
 #___________________________________________________________________________________________
 
@@ -1362,7 +1300,7 @@ def view_cart(request):
     cart_items = CartItem.objects.filter(user=request.user)
     total_price = sum(item.item.price * item.quantity for item in cart_items)
 
-    return render(request, "store/cart.html", {
+    return render(request, "mrsafe/store/cart.html", {
         "cart_items": cart_items,
         "total_price": total_price
     })
@@ -1375,7 +1313,7 @@ from django.contrib.auth.decorators import login_required
 from ..models import CartItem, PremiumPlan
 
 @login_required
-def cart_checkout(request):
+def CartCheckoutView(request):
     cart_items = CartItem.objects.filter(user=request.user)
     total_price = sum(item.item.price * item.quantity for item in cart_items)
     

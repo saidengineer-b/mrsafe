@@ -3,254 +3,737 @@
 
 {% block content %}
 <div class="container mt-5 store-container">
-    <h2 class="text-center store-title">🛍️ Explore mrsafeAI Store test</h2>
+    <!-- Animated Header Section -->
+    <div class="store-header text-center mb-5">
+        <h2 class="store-title">
+            <span class="title-gradient">✨ mrsafeAI Premium Store</span>
+        </h2>
+        <p class="store-subtitle">Discover exclusive AI tools and resources</p>
+        
+        <!-- Floating particles effect -->
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
 
-             <div class="text-center my-4">
-  <a href="{% url 'mrsafe_app:safety_image_test' %}" class="btn btn-warning rounded-pill px-4 py-2">
-    🧪 Try Safety AI Photo Test
-  </a>
-</div>
-
+    <!-- Admin Controls -->
     {% if request.user.is_staff or request.user.is_superuser %}
-    <div class="text-center">
-        <a href="{% url 'mrsafe_app:add_item' %}" class="btn add-item-btn">➕ Add New Item</a>
+    <div class="admin-controls text-center mb-4">
+        <a href="{% url 'mrsafe_app:add_item' %}" class="btn add-item-btn">
+            <span class="btn-icon">+</span>
+            <span class="btn-text">Add New Item</span>
+        </a>
     </div>
     {% endif %}
 
-    <p class="item-count text-center mt-3">🗂️ Total Items: {{ items|length }}</p>
-
-    <div class="text-center mt-4">
-        <a href="{% url 'mrsafe_app:premium_membership' %}" class="btn btn-premium">💎 View Premium Membership Options</a>
+    <!-- Store Stats -->
+    <div class="store-stats">
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">{{ items|length }}</div>
+            <div class="stat-label">Total Items</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value">24</div>
+            <div class="stat-label">Hot Deals</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-value">4.9</div>
+            <div class="stat-label">Avg Rating</div>
+        </div>
     </div>
 
+    <!-- Premium CTA -->
+    <div class="premium-cta">
+        <div class="cta-content">
+            <h3>Unlock Premium Features</h3>
+            <p>Get exclusive access to premium tools and resources</p>
+            <a href="{% url 'mrsafe_app:premium_plans' %}" class="btn-premium">
+                <span class="diamond-icon">💎</span>
+                View Membership Plans
+            </a>
+        </div>
+        <div class="cta-glow"></div>
+    </div>
+
+    <!-- Store Items Grid -->
     <div class="store-items">
         {% for item in items %}
-        <div class="store-card d-flex flex-column">
+        <div class="store-card">
+            <!-- Card Ribbon for Premium Items -->
+            {% if item.item_type == 'premium' %}
+            <div class="card-ribbon">PREMIUM</div>
+            {% endif %}
+            
+            <!-- Image with Hover Effect -->
             <div class="image-wrapper">
                 {% if item.image %}
-                <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+                <img src="{{ item.image.url }}" class="card-img" alt="{{ item.name }}">
                 {% else %}
-                <img src="{% static 'images/default.jpg' %}" class="card-img-top" alt="Default Image">
+                <img src="{% static 'images/default.jpg' %}" class="card-img" alt="Default Image">
                 {% endif %}
+                <div class="image-overlay"></div>
             </div>
 
-            <div class="card-body d-flex flex-column justify-content-between text-center flex-grow-1">
-                <div>
+            <!-- Card Content -->
+            <div class="card-content">
+                <div class="card-header">
                     <h5 class="item-name">{{ item.name }}</h5>
-                    <p class="item-description">{{ item.description|truncatewords:15 }}</p>
-                    <p class="item-price"><strong>💰 ${{ item.price }}</strong></p>
-                    <span class="badge item-badge">{{ item.item_type|title }}</span>
+                    <div class="item-meta">
+                        <span class="item-type">{{ item.item_type|title }}</span>
+                        <span class="item-rating">★★★★☆</span>
+                    </div>
                 </div>
+                
+                <p class="item-description">{{ item.description|truncatewords:15 }}</p>
+                
+                <div class="card-footer">
+                    <div class="price-section">
+                        <span class="price-currency">$</span>
+                        <span class="item-price">{{ item.price }}</span>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        {% if request.user.is_authenticated %}
+                        <form action="{% url 'mrsafe_app:add_to_cart' item.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-cart">
+                                <span class="btn-icon">🛒</span>
+                                <span class="btn-text">Add to Cart</span>
+                            </button>
+                        </form>
+                        {% else %}
+                        <a href="{% url 'mrsafe_app:login' %}" class="btn-cart">
+                            <span class="btn-icon">🔒</span>
+                            <span class="btn-text">Login to Buy</span>
+                        </a>
+                        {% endif %}
 
-                <div class="action-buttons mt-3">
-                    {% if request.user.is_authenticated %}
-                    <form action="{% url 'mrsafe_app:add_to_cart' item.id %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-cart">🛒 Add to Cart</button>
-                    </form>
-                    {% else %}
-                    <a href="{% url 'mrsafe_app:login' %}" class="btn btn-cart">🔒 Login to Buy</a>
-                    {% endif %}
-
-                    {% if request.user.is_staff or request.user.is_superuser %}
-                    <a href="{% url 'mrsafe_app:edit_item' item.id %}" class="btn btn-edit">✏️ Edit</a>
-                    <form action="{% url 'mrsafe_app:delete_item' item.id %}" method="post" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-delete">🗑️</button>
-                    </form>
-                    {% endif %}
+                        {% if request.user.is_staff or request.user.is_superuser %}
+                        <div class="admin-actions">
+                            <a href="{% url 'mrsafe_app:edit_item' item.id %}" class="btn-edit">
+                                <span class="btn-icon">✏️</span>
+                            </a>
+                            <form action="{% url 'mrsafe_app:delete_item' item.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-delete">
+                                    <span class="btn-icon">🗑️</span>
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
         {% empty %}
-        <p class="no-items-msg text-center">🚫 No items available in the store yet!</p>
+        <div class="no-items">
+            <div class="no-items-icon">😕</div>
+            <h3>No Items Available</h3>
+            <p>Check back later for new additions to our store</p>
+            {% if request.user.is_staff or request.user.is_superuser %}
+            <a href="{% url 'mrsafe_app:add_item' %}" class="btn add-item-btn">
+                <span class="btn-icon">+</span>
+                <span class="btn-text">Add Your First Item</span>
+            </a>
+            {% endif %}
+        </div>
         {% endfor %}
     </div>
 </div>
 
 <style>
+/* Base Styles */
+:root {
+    --primary: #40E0D0;
+    --primary-dark: #2bb8a8;
+    --secondary: #7b2cbf;
+    --dark: #0f172a;
+    --darker: #0a0f1c;
+    --light: #f8fafc;
+    --gray: #94a3b8;
+    --premium-gold: #ffd700;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+}
+
 body {
-    background-color: #121212;
-    color: #fff;
+    background-color: var(--darker);
+    color: var(--light);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/* Container */
 .store-container {
-    background: #121212;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 0 25px rgba(64, 224, 208, 0.15);
-}
-
-.store-title {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #40E0D0;
-    text-shadow: 0 0 12px #40E0D0;
-}
-
-.add-item-btn,
-.btn-premium {
-    background: linear-gradient(90deg, #40E0D0, #00ffff);
-    color: #0a0f1c;
-    border-radius: 30px;
-    padding: 12px 25px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    transition: 0.3s ease-in-out;
-}
-
-.add-item-btn:hover,
-.btn-premium:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 15px #40E0D0;
-}
-
-.item-count {
-    color: #cccccc;
-    font-size: 1.1rem;
-}
-
-.store-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
-    margin-top: 30px;
-}
-
-.store-card {
-    background-color: #1b2436;
-    border-radius: 18px;
+    max-width: 1400px;
+    padding: 2rem 1.5rem;
+    position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 10px #40e0d033;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
 }
 
-.store-card:hover {
-    box-shadow: 0 0 20px #40e0d0;
-    transform: translateY(-8px);
+/* Header Section */
+.store-header {
+    position: relative;
+    padding: 2rem 0;
+    margin-bottom: 3rem;
 }
 
-.image-wrapper {
-    height: 220px;
-    overflow: hidden;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.store-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(64, 224, 208, 0.15) 0%, rgba(64, 224, 208, 0) 70%);
+    z-index: -1;
 }
 
-.card-img-top {
+.title-gradient {
+    background: linear-gradient(90deg, #40E0D0, #00ffff, #40E0D0);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: gradient 3s linear infinite;
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: inline-block;
+}
+
+.store-subtitle {
+    color: var(--gray);
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+    font-weight: 300;
+}
+
+/* Particles Animation */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
+    pointer-events: none;
+    z-index: -1;
 }
 
-.store-card:hover .card-img-top {
-    transform: scale(1.08);
+.particle {
+    position: absolute;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: float 15s infinite linear;
 }
 
-.card-body {
-    padding: 20px;
-    flex-grow: 1;
+.particle:nth-child(1) {
+    width: 8px;
+    height: 8px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+    width: 12px;
+    height: 12px;
+    top: 60%;
+    left: 25%;
+    animation-delay: 2s;
+}
+
+.particle:nth-child(3) {
+    width: 6px;
+    height: 6px;
+    top: 30%;
+    left: 80%;
+    animation-delay: 4s;
+}
+
+.particle:nth-child(4) {
+    width: 10px;
+    height: 10px;
+    top: 80%;
+    left: 70%;
+    animation-delay: 6s;
+}
+
+.particle:nth-child(5) {
+    width: 5px;
+    height: 5px;
+    top: 50%;
+    left: 50%;
+    animation-delay: 8s;
+}
+
+/* Stats Section */
+.store-stats {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.item-name {
-    font-size: 1.4rem;
-    color: #40E0D0;
-    text-shadow: 0 0 6px #40E0D0;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.item-description {
-    color: #bbb;
-    font-size: 0.95rem;
-    margin-bottom: 12px;
-    min-height: 45px;
-}
-
-.item-price {
-    color: #00ffaa;
-    font-size: 1.2rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.item-badge {
-    background: #40E0D0;
-    color: #0a0f1c;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-weight: bold;
-    font-size: 0.85rem;
-}
-
-.action-buttons {
-    display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 2rem 0;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 12px;
 }
 
-.btn-cart,
-.btn-edit,
-.btn-delete {
-    background-color: transparent;
-    border: 2px solid;
-    border-radius: 22px;
-    padding: 8px 16px;
-    font-weight: bold;
+.stat-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    min-width: 120px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(64, 224, 208, 0.1);
+}
+
+.stat-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
     font-size: 0.9rem;
-    transition: 0.3s ease-in-out;
-    color: #40E0D0;
-    flex: 1 1 30%;
+    color: var(--gray);
+}
+
+/* Premium CTA */
+.premium-cta {
+    position: relative;
+    background: linear-gradient(135deg, rgba(123, 44, 191, 0.2), rgba(64, 224, 208, 0.2));
+    border-radius: 20px;
+    padding: 2rem;
+    margin: 3rem 0;
+    overflow: hidden;
+    border: 1px solid rgba(123, 44, 191, 0.3);
+}
+
+.premium-cta::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(123, 44, 191, 0.1) 0%, rgba(123, 44, 191, 0) 70%);
+    animation: rotate 20s linear infinite;
+    z-index: 0;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 1;
     text-align: center;
 }
 
-/* 🛒 Add to Cart */
+.cta-content h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: white;
+    font-weight: 700;
+}
+
+.cta-content p {
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.cta-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(123, 44, 191, 0.15) 0%, transparent 70%);
+    z-index: 0;
+}
+
+/* Store Items Grid */
+.store-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+/* Store Card */
+.store-card {
+    background: linear-gradient(145deg, #1b2436, #131a28);
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.store-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(64, 224, 208, 0.15);
+    border-color: rgba(64, 224, 208, 0.3);
+}
+
+/* Card Ribbon */
+.card-ribbon {
+    position: absolute;
+    top: 15px;
+    right: -30px;
+    background: linear-gradient(90deg, var(--premium-gold), #ffec80);
+    color: var(--darker);
+    padding: 0.25rem 2rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+    z-index: 2;
+}
+
+/* Image Wrapper */
+.image-wrapper {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+}
+
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.store-card:hover .card-img {
+    transform: scale(1.05);
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(13, 17, 28, 0.8) 0%, transparent 50%);
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.store-card:hover .image-overlay {
+    opacity: 0.5;
+}
+
+/* Card Content */
+.card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-header {
+    margin-bottom: 1rem;
+}
+
+.item-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.item-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.item-type {
+    background: rgba(64, 224, 208, 0.15);
+    color: var(--primary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.item-rating {
+    color: var(--warning);
+    font-size: 0.9rem;
+}
+
+.item-description {
+    color: var(--gray);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+/* Card Footer */
+.card-footer {
+    margin-top: auto;
+}
+
+.price-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.price-currency {
+    font-size: 1rem;
+    color: var(--primary);
+    margin-right: 0.25rem;
+}
+
+.item-price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .btn-cart {
-    border-color: #40E0D0;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+    color: var(--darker);
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-grow: 1;
+    justify-content: center;
 }
 
 .btn-cart:hover {
-    background-color: #40E0D0;
-    color: #0a0f1c;
-    box-shadow: 0 0 10px #40E0D0aa;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(64, 224, 208, 0.4);
 }
 
-/* ✏️ Edit */
+.btn-icon {
+    font-size: 1.1rem;
+}
+
+.btn-text {
+    white-space: nowrap;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+.btn-edit, .btn-delete {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
 .btn-edit {
-    border-color: #f0ad4e;
-    color: #f0ad4e;
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
 }
 
 .btn-edit:hover {
-    background-color: #f0ad4e;
-    color: #0a0f1c;
-    box-shadow: 0 0 10px #f0ad4e88;
+    background: var(--warning);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
 }
 
-/* 🗑️ Delete */
 .btn-delete {
-    border-color: #e74c3c;
-    color: #e74c3c;
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--danger);
 }
 
 .btn-delete:hover {
-    background-color: #e74c3c;
-    color: #fff;
-    box-shadow: 0 0 10px #e74c3c99;
+    background: var(--danger);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
 }
 
-.no-items-msg {
-    font-size: 1.3rem;
-    color: #aaa;
-    margin-top: 30px;
+/* No Items Message */
+.no-items {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(15, 23, 42, 0.3);
+    border-radius: 16px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.no-items-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+}
+
+.no-items h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.no-items p {
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+}
+
+/* Buttons */
+.add-item-btn, .btn-premium {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.add-item-btn::after, .btn-premium::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--secondary), var(--primary));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.add-item-btn:hover::after, .btn-premium:hover::after {
+    opacity: 1;
+}
+
+.add-item-btn:hover, .btn-premium:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(64, 224, 208, 0.3);
+}
+
+.diamond-icon {
+    font-size: 1.2rem;
+}
+
+/* Animations */
+@keyframes gradient {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+@keyframes float {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+    50% { transform: translateY(-20px) rotate(180deg); opacity: 0.6; }
+    100% { transform: translateY(0) rotate(360deg); opacity: 0.3; }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .store-items {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .title-gradient {
+        font-size: 2.2rem;
+    }
+    
+    .store-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-card {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .store-container {
+        padding: 1.5rem 1rem;
+    }
+    
+    .title-gradient {
+        font-size: 1.8rem;
+    }
+    
+    .premium-cta {
+        padding: 1.5rem;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .admin-actions {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .btn-edit, .btn-delete {
+        width: 100%;
+    }
 }
 </style>
 {% endblock %}

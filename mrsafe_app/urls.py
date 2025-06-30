@@ -28,7 +28,7 @@ from .views import (
     user_management_view,manage_categories_view,coin_transaction_history,premium_plan_manage_view,reward_manage_view,admin_google_ads_manage_view,
     
     terms_view,edit_google_ad_activity,
-    premium_subscription_success,my_stats,
+    premium_subscription_success,
     premium_membership_view,complete_premium_checkout,
    
    
@@ -70,8 +70,7 @@ from .views import (contact,
                     inspection_full_report,export_inspection_docx,
                     
                     
-                    subscribe_premium,PremiumPlanListView,create_superuser_view,plan_checkout,)
-
+                    subscribe_premium,PremiumPlanListView,create_superuser_view,plan_checkout,CartCheckoutView)
 
 
 from django.urls import path
@@ -82,18 +81,11 @@ from django.shortcuts import redirect
 urlpatterns = [
  
 
-
- 
-
 path('create-superuser/', create_superuser_view, name='create_superuser'),
 
-
-
-    
 path('register/', register, name='register'),
     
 path('login/', auth_views.LoginView.as_view(template_name='mrsafe/login.html'), name='login'),
-
 
 path(
     'logout/',
@@ -155,7 +147,7 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
     path('premium/complete/', complete_premium_checkout, name='complete_premium_checkout'),
     
     path('premium/checkout/', premium_checkout, name='premium_checkout'),
-    
+    path('cart/checkout/', CartCheckoutView, name='cart_checkout'),
     path("admin/add-premium-plan/", add_premium_plan, name="add_premium_plan"),
   
     path('ckeditor/', include('ckeditor_uploader.urls')),
@@ -226,8 +218,7 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
     # 👤 Profile Management
     path('profile/', profile, name='profile'),
     path('profile/edit/', edit_profile, name='edit_profile'),
-    path('my_stats/', my_stats, name='my_stats'),
-
+    
     # ℹ️ Static Pages
     path('about/', about, name='about'),
     
