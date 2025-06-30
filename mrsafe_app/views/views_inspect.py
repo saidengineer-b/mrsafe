@@ -13,7 +13,7 @@ from openai import OpenAI
 from django.contrib.auth import get_user_model
 
 from ..forms import HazardForm, RecommendationForm
-from ..models import SafetyObservation
+from ..models import SafetyObservation,CoinActivity,UserCoinBalance
 
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
@@ -137,6 +137,38 @@ Format your output in clean markdown as shown above.
             user = request.user if request.user.is_authenticated else get_user_model().objects.filter(is_active=True).first()
             if not user:
                 context["error"] = "No valid user found to assign observation."
+                return render(request, "mrsafe/inspect/inspect.html", context)
+            
+            # ✅ Get or create user (already in your code)
+            user = request.user if request.user.is_authenticated else get_user_model().objects.filter(is_active=True).first()
+            if not user:
+                context["error"] = "No valid user found to assign observation."
+                return render(request, "mrsafe/inspect/inspect.html", context)
+
+            # ✅ Try to fetch the "AI Safety Image Analysis" coin activity
+            try:
+                ai_analysis_activity = CoinActivity.objects.get(name="ai_image_analysis", is_active=True)
+            except CoinActivity.DoesNotExist:
+                context["error"] = "❌ AI Image Analysis coin activity is not defined. Please contact admin."
+                return render(request, "mrsafe/inspect/inspect.html", context)
+
+            # ✅ Get or create user coin balance
+            user_balance, _ = UserCoinBalance.objects.get_or_create(user=user)
+
+            # ✅ Check balance
+            if user_balance.balance < (ai_analysis_activity.coin_amount or 0):
+                context["error"] = "❌ You don't have enough coins to analyze this photo."
+                return render(request, "mrsafe/inspect/inspect.html", context)
+
+            # ✅ Deduct coins and log transaction
+            success = user_balance.update_balance(
+                ai_analysis_activity.coin_amount,
+                "spend",
+                ai_analysis_activity
+            )
+
+            if not success:
+                context["error"] = "❌ Failed to deduct coins. Please try again later."
                 return render(request, "mrsafe/inspect/inspect.html", context)
 
             SafetyObservation.objects.create(

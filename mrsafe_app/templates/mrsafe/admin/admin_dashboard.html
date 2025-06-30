@@ -235,82 +235,77 @@
         </div>
         
         <!-- Coins Tab -->
-        <div class="tab-pane" id="coins-tab">
-          <div class="tab-header">
-            <h3><i class="fas fa-coins"></i> Coin Economy</h3>
-            <div class="coin-controls">
-              <button class="btn-add-coin-package">
-                <i class="fas fa-plus"></i> Add Package
-              </button>
-              <button class="btn-adjust-rates">
-                <i class="fas fa-sliders-h"></i> Adjust Rates
-              </button>
-            </div>
-          </div>
-          
-          <div class="coin-stats">
-            <div class="stat-card">
-              <h4>Total Coins in Circulation</h4>
-              <div class="stat-value">{{ total_coins }}</div>
-            </div>
-            <div class="stat-card">
-              <h4>Coins Purchased (30d)</h4>
-              <div class="stat-value">{{ monthly_coin_purchases }}</div>
-            </div>
-            <div class="stat-card">
-              <h4>Average Purchase</h4>
-              <div class="stat-value">{{ avg_coin_purchase }}</div>
-            </div>
-          </div>
-          
-          <div class="coin-packages">
-            <h4>Coin Packages</h4>
-            <table class="packages-table">
-              <thead>
-                <tr>
-                  <th>Package</th>
-                  <th>Coins</th>
-                  <th>Price</th>
-                  <th>Value</th>
-                  <th>Popularity</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for package in coin_packages %}
-                <tr>
-                  <td>{{ package.name }}</td>
-                  <td>{{ package.coin_amount }}</td>
-                  <td>${{ package.price }}</td>
-                  <td>
-                    <div class="value-rating">
-                      {% with stars=package.value_rating %}
-                        {% for i in "12345" %}
-                          <i class="fas fa-star{% if forloop.counter > stars %}-o{% endif %}"></i>
-                        {% endfor %}
-                      {% endwith %}
-                    </div>
-                  </td>
-                  <td>
-                    <div class="popularity-bar">
-                      <div class="bar-fill" style="width: {{ package.popularity }}%"></div>
-                    </div>
-                  </td>
-                  <td>
-                    <button class="btn-edit-package" data-package-id="{{ package.id }}">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-delete-package" data-package-id="{{ package.id }}">
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        
+      <!-- Coins Tab -->
+<div class="tab-pane" id="coins-tab">
+  <div class="tab-header d-flex justify-content-between align-items-center">
+    <h3><i class="fas fa-coins"></i> Coin Economy</h3>
+    <div class="coin-controls">
+      <a href="{% url 'mrsafe_app:coin_manage' %}" class="btn btn-primary">
+        <i class="fas fa-cog"></i> Manage Coin System
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Coin Overview -->
+  <div class="coin-stats mt-4">
+    <div class="stat-card">
+      <h4>Total Coins in Circulation</h4>
+      <div class="stat-value">{{ total_coins|default:"0" }}</div>
+    </div>
+    <div class="stat-card">
+      <h4>Coins Earned (30d)</h4>
+      <div class="stat-value">{{ monthly_earned_coins|default:"0" }}</div>
+    </div>
+    <div class="stat-card">
+      <h4>Coins Spent (30d)</h4>
+      <div class="stat-value">{{ monthly_spent_coins|default:"0" }}</div>
+    </div>
+  </div>
+
+  <!-- Recent Transactions Table -->
+  <div class="recent-transactions mt-4">
+    <h4 class="mb-3">Recent Coin Transactions</h4>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Activity</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Description</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tx in recent_transactions %}
+        <tr>
+          <td>{{ tx.user.username }}</td>
+          <td>
+  {% if tx.activity %}
+    {{ tx.activity.name }}
+  {% else %}
+    —
+  {% endif %}
+</td>
+
+          <td><span class="badge bg-{% if tx.transaction_type == 'earned' %}success{% else %}danger{% endif %}">
+              {{ tx.get_transaction_type_display }}
+            </span>
+          </td>
+          <td>{{ tx.amount }}</td>
+          <td>{{ tx.description|default:"—" }}</td>
+          <td>{{ tx.timestamp|date:"Y-m-d H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center">No transactions found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
         <!-- Store Tab -->
         <div class="tab-pane" id="store-tab">
           <div class="tab-header">

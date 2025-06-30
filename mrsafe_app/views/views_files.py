@@ -801,199 +801,6 @@ def generate_quiz_ai(request):
 
 ##########################################################################################
 
-@login_required
-def start_ai_challenge(request):
-    topic = request.session.get("challenge_topic", "general knowledge")
-    # Reset or create a fresh challenge (score starts at 0)
-    challenge, created = AIChallenge.objects.get_or_create(
-        user=request.user,
-        is_active=True,
-    )
-    challenge.current_score = 0
-    challenge.streak = 0
-    challenge.difficulty = "easy"
-    challenge.is_active = True
-    challenge.save()
-
-    question_set = []
-    for i in range(5):
-        q_text, q_choices, q_correct = fetch_ai_question(challenge.difficulty, topic)
-        if q_text is None:
-            messages.error(request, "Error generating AI question. Please try again later.")
-            return redirect("ai_challenge_end", challenge_id=challenge.id)
-        question_set.append({
-            "question": q_text,
-            "choices": q_choices,
-            "correct_answer": q_correct,
-        })
-        print(f"[start_ai_challenge] Generated question {i+1}: {q_text}")
-    request.session["question_set"] = question_set
-    request.session["current_index"] = 0
-    return redirect("ai_challenge_play", challenge_id=challenge.id)
-
-
-@login_required
-def ai_challenge_set(request, challenge_id):
-    challenge = get_object_or_404(AIChallenge, id=challenge_id, user=request.user)
-    question_set = request.session.get("question_set", [])
-    current_index = request.session.get("current_index", 0)
-    total_questions = len(question_set)
-    print(f"[ai_challenge_set] current_index: {current_index}, total_questions: {total_questions}")
-
-    if total_questions == 0:
-        messages.error(request, "No questions available. Please try again.")
-        return redirect("ai_challenge_end", challenge_id=challenge.id)
-
-    feedback = None
-    if request.method == "POST":
-        user_answer = request.POST.get("user_answer", "").strip()
-        current_question = question_set[current_index]
-        correct_answer = current_question.get("correct_answer")
-        if user_answer.upper() == correct_answer.upper():
-            challenge.double_score()
-            challenge.streak += 1
-            challenge.save()
-            if challenge.streak % 3 == 0:
-                challenge.increase_difficulty()
-            feedback = "Correct!"
-            messages.success(request, feedback)
-            current_index += 1
-            request.session["current_index"] = current_index
-            print(f"[ai_challenge_set] Answer correct. New current_index: {current_index}")
-        else:
-            feedback = f"Wrong answer! The correct answer was: {correct_answer}."
-            messages.error(request, feedback)
-            challenge.end_challenge()
-            return redirect("ai_challenge_end", challenge_id=challenge.id)
-
-    if current_index >= total_questions:
-        print("[ai_challenge_set] Question set complete.")
-        return render(request, "mrsafe_app/ai_challenge/ai_challenge_set_complete.html", {
-            "challenge": challenge,
-            "feedback": feedback,
-            "progress": f"{total_questions}/{total_questions}",
-        })
-    else:
-        current_question = question_set[current_index]
-        progress = f"{current_index+1}/{total_questions}"
-        return render(request, "mrsafe_app/ai_challenge/ai_challenge_set.html", {
-            "challenge": challenge,
-            "question": current_question["question"],
-            "choices": current_question["choices"],
-            "progress": progress,
-            "feedback": feedback,
-        })
-
-@login_required
-def continue_ai_challenge(request, challenge_id):
-    challenge = get_object_or_404(AIChallenge, id=challenge_id, user=request.user)
-    topic = request.session.get("challenge_topic", "general knowledge")
-    question_set = []
-    for i in range(5):
-        q_text, q_choices, q_correct = fetch_ai_question(challenge.difficulty, topic)
-        if q_text is None:
-            messages.error(request, "Error generating AI question. Please try again later.")
-            return redirect("ai_challenge_end", challenge_id=challenge.id)
-        question_set.append({
-            "question": q_text,
-            "choices": q_choices,
-            "correct_answer": q_correct,
-        })
-        print(f"[continue_ai_challenge] Generated question {i+1}: {q_text}")
-    request.session["question_set"] = question_set
-    request.session["current_index"] = 0
-    return redirect("ai_challenge_set", challenge_id=challenge.id)
-
-@login_required
-def ai_challenge_end(request, challenge_id):
-    challenge = get_object_or_404(AIChallenge, id=challenge_id, user=request.user)
-    return render(request, "mrsafe_app/ai_challenge/ai_challenge_end.html", {"challenge": challenge})
-
-logger = logging.getLogger(__name__)
-
-@login_required
-def ai_challenge(request):
-    try:
-        # Debugging Logs
-        logger.info(f"User {request.user.username} is attempting AI challenge.")
-
-        # Check if "ai_challenge" coin activity exists
-        ai_activity = CoinActivity.objects.get(name="ai_challenge", is_active=True)
-
-        # Get user balance
-        user = request.user
-        user_balance, created = UserCoinBalance.objects.get_or_create(user=user)
-
-        # Check if user has enough coins
-        if user_balance.balance < ai_activity.coin_amount:
-            messages.error(request, "❌ Insufficient coins to participate in the AI challenge.")
-            logger.warning(f"User {user.username} has insufficient coins.")
-            return redirect("mrsafe_app:profile")
-
-        # Deduct coins
-        user_balance.update_balance(ai_activity.coin_amount, "spend", ai_activity)
-        user_balance.save()
-
-        # Log transaction
-        CoinTransaction.objects.create(
-            user=user,
-            amount=ai_activity.coin_amount,
-            transaction_type="spent",
-            activity=ai_activity
-        )
-
-        logger.info(f"User {user.username} spent {ai_activity.coin_amount} coins for AI challenge.")
-
-        # Proceed to the challenge
-        return render(request, "mrsafe_app/ai_challenge/ai_challenge.html")
-
-    except CoinActivity.DoesNotExist:
-        messages.error(request, "❌ Coin activity 'ai_challenge' not found or inactive.")
-        logger.error("CoinActivity 'ai_challenge' does not exist.")
-        return redirect("mrsafe_app:profile")
-
-    except Exception as e:
-        logger.exception(f"Unexpected error in ai_challenge: {e}")
-        messages.error(request, "❌ Something went wrong. Try again later.")
-        return redirect("mrsafe_app:profile")
-
-@login_required
-def choose_topic(request):
-    if request.method == "POST":
-        topic = request.POST.get("topic", "general knowledge")
-        request.session["challenge_topic"] = topic
-        return redirect("start_ai_challenge")
-    return render(request, "mrsafe_app/ai_challenge/choose_topic.html")
-
-#_______________________________________________________________________
-
-def leaderboard_view(request):
-    top_players = AIChallengeLeaderboard.get_top_players()
-    data = [{"username": p.user.username, "score": p.score} for p in top_players]
-    return JsonResponse({"leaderboard": data})
-#______________________________________________________________________________
-
-@csrf_exempt  # ✅ Allows POST requests without CSRF token
-def submit_score(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)  # ✅ Get JSON data from request
-            score = data.get("score", 0)  # ✅ Extract score
-            return JsonResponse({"message": "Score submitted successfully!", "score": score})
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON data"}, status=400)
-
-    return JsonResponse({"error": "Invalid request method"}, status=400)
-#_______________________________________________________________________________________
-
-def shopify_products_view(request):
-    """View to display Shopify products in the QuizAi app"""
-    products = get_products()
-
-    if "error" in products:
-        return render(request, "shopify_products.html", {"error": products["error"]})
-
-    return render(request, "shopify_products.html", {"products": products})
 
 def switch_language(request):
     lang_code = request.POST.get('language', settings.LANGUAGE_CODE)
@@ -1004,15 +811,6 @@ def switch_language(request):
     response = redirect(next_url)
     response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang_code)
     return response
-
-def shopify_store_view(request):
-    """View to display the full Shopify store and available products"""
-    products = get_products()
-
-    if "error" in products:
-        return render(request, "shopify_store.html", {"error": products["error"]})
-
-    return render(request, "shopify_store.html", {"products": products})
 
 def terms_and_conditions(request):
     terms = TermsAndConditions.objects.first()  # ✅ Get the first terms entry
@@ -1064,89 +862,76 @@ def generate_ai_questions(topic, difficulty, num_questions=5):
 
 ################################################################################################
 
-def edit_reward(request, reward_id):
-    reward = get_object_or_404(Reward, id=reward_id)
-    if request.method == "POST":
-        form = RewardForm(request.POST, request.FILES, instance=reward)
-        if form.is_valid():
-            form.save()
-            return redirect('mrsafe_app:manage_rewards')  # ✅ Correct Redirect to the Named URL
-    else:
-        form = RewardForm(instance=reward)
-
-    return render(request, 'mrsafe_app/admin/edit_reward.html', {'form': form, 'reward': reward})
-
-
-def delete_reward(request, reward_id):
-    reward = get_object_or_404(Reward, id=reward_id)
-    if request.method == "POST":
-        reward.delete()
-        return redirect('manage_rewards')  # ✅ Redirect to Rewards Management
-    return redirect('manage_rewards')
-
-def add_reward(request):
-    if request.method == "POST":
-        form = RewardForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "✅ Reward added successfully!")
-            return redirect("manage_rewards")
-    else:
-        form = RewardForm()
-
-    return render(request, "mrsafe_app/admin/add_reward.html", {"form": form})
-
-
-def manage_rewards(request):
-    rewards = Reward.objects.all()
-    return render(request, "mrsafe_app/admin/manage_rewards.html", {"rewards": rewards})
-
-from django.http import JsonResponse
 
 ######################COiNS Coins Coins ###################################################
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import get_user_model
+from django.shortcuts import render
+from ..models import CoinActivity, CoinTransaction  # ✅ Ensure these are imported from your app
+
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+@login_required
+@user_passes_test(is_admin)
+def coin_manage_view(request):
+    User = get_user_model()
+    users = User.objects.all().order_by("username")
+
+    coin_activities = CoinActivity.objects.all().order_by('-id')
+    transactions = CoinTransaction.objects.select_related('user', 'activity').order_by('-timestamp')[:100]  # Limit recent
+
+    return render(request, "mrsafe/admin/admin_coin_manage.html", {
+        "users": users,
+        "coin_activities": coin_activities,
+        "transactions": transactions,
+    })
+
+
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from ..models import UserCoinBalance, CoinActivity
+
+User = get_user_model()
 
 def update_user_coins(request):
     """Handles adding or deducting coins from a user."""
     if request.method == "POST":
         user_id = request.POST.get("user_id")
         amount = int(request.POST.get("amount"))
-        action = request.POST.get("action")
+        action = request.POST.get("action")  # should be 'earn' or 'spend'
 
         user = get_object_or_404(User, id=user_id)
-        user_balance, created = UserCoinBalance.objects.get_or_create(user=user)
+        user_balance, _ = UserCoinBalance.objects.get_or_create(user=user)
 
-        # Fetch the appropriate coin activity (if needed for logging or extra tracking)
         try:
-            coin_activity = CoinActivity.objects.get(name=action, is_active=True)
+            coin_activity = CoinActivity.objects.get(
+                name=request.POST.get("activity_name"), is_active=True
+            )
         except CoinActivity.DoesNotExist:
-            messages.error(request, f"❌ The '{action}' activity is not found or is inactive.")
+            messages.error(request, "❌ Activity not found or inactive.")
             return redirect("mrsafe_app:admin_dashboard")
 
-        # Handle the action (add or deduct coins)
-        if action == "add":
-            # Using the update_balance method to add coins
-            user_balance.update_balance(action)  # Using action as the activity name
-            transaction_type = "earned"
-            messages.success(request, f"✅ {amount} coins added to {user.username}.")
+        if action == "earn":
+            success = user_balance.update_balance(amount=amount, action="earn", activity=coin_activity)
+            if success:
+                messages.success(request, f"✅ {amount} coins added to {user.username}.")
+            else:
+                messages.error(request, "❌ Failed to add coins.")
 
-        elif action == "deduct":
-            if user_balance.balance < amount:
-                messages.error(request, "❌ Insufficient balance.")
-                return redirect("mrsafe_app:admin_dashboard")
-            # Using the update_balance method to deduct coins
-            user_balance.update_balance(action)  # Using action as the activity name
-            transaction_type = "spent"
-            messages.success(request, f"⚠️ {amount} coins deducted from {user.username}.")
-
-        # Log the transaction
-        CoinTransaction.objects.create(
-            user=user, amount=amount, transaction_type=transaction_type
-        )
-
-        # Save the updated balance
-        user_balance.save()
+        elif action == "spend":
+            success = user_balance.update_balance(amount=amount, action="spend", activity=coin_activity)
+            if success:
+                messages.success(request, f"⚠️ {amount} coins deducted from {user.username}.")
+            else:
+                messages.error(request, "❌ Not enough balance to deduct coins.")
+        else:
+            messages.error(request, f"❌ Unknown action '{action}'")
 
     return redirect("mrsafe_app:admin_dashboard")
+
 
 def add_coin_activity(request):
     """Allows admin to add new coin activities dynamically."""
@@ -1163,7 +948,7 @@ def add_coin_activity(request):
         messages.success(request, f"✅ '{name}' activity added.")
         return redirect("mrsafe_app:admin_dashboard")
 
-    return render(request, "mrsafe_app/admin/add_coin_activity.html")  # ✅ Ensure correct template path
+    return render(request, "mrsafe/admin/add_coin_activity.html")  # ✅ Ensure correct template path
 
 def edit_coin_activity(request, activity_id):
     print(f"🔍 Debug: Looking for activity with ID {activity_id}")
@@ -1183,11 +968,73 @@ def edit_coin_activity(request, activity_id):
         messages.success(request, f"✅ '{activity.name}' updated successfully!")
         return redirect("mrsafe_app:admin_dashboard")
 
-    return render(request, "mrsafe_app/admin/edit_coin_activity.html", {"activity": activity})
+    return render(request, "mrsafe/admin/edit_coin_activity.html", {"activity": activity})
 
 
 
+def is_admin(user):
+    return user.is_staff or user.is_superuser
 
+@login_required
+@user_passes_test(is_admin)
+def delete_coin_activity(request, activity_id):
+    activity = get_object_or_404(CoinActivity, id=activity_id)
+    activity.delete()
+    messages.success(request, "✅ Coin activity deleted.")
+    return redirect("mrsafe_app:coin_manage")
+
+
+from django.db.models import Sum
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.decorators import login_required
+from mrsafe_app.models import CoinTransaction, CustomUser
+
+@login_required
+def coin_transaction_history(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    sort = request.GET.get("sort", "date")
+    per_page = request.GET.get("per_page", "10")
+
+    # Handle "all"
+    if per_page == "all":
+        per_page = None
+    else:
+        per_page = int(per_page)
+
+    # Sorting
+    transactions = CoinTransaction.objects.filter(user=user).select_related("activity")
+    if sort == "type":
+        transactions = transactions.order_by("transaction_type", "-timestamp")
+    else:
+        transactions = transactions.order_by("-timestamp")
+
+    # Totals
+    total_earned = transactions.filter(transaction_type='earned').aggregate(total=Sum('amount'))['total'] or 0
+    total_spent = transactions.filter(transaction_type='spent').aggregate(total=Sum('amount'))['total'] or 0
+
+    # Pagination
+    if per_page:
+        paginator = Paginator(transactions, per_page)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+    else:
+        # No pagination — show all
+        page_obj = transactions
+
+    return render(request, "mrsafe_app/admin/coin_transaction_history.html", {
+        "user": user,
+        "page_obj": page_obj,
+        "sort": sort,
+        "per_page": request.GET.get("per_page", "10"),
+        "total_earned": total_earned,
+        "total_spent": total_spent,
+    })
+    
+    #################################################################################
+    
+    
+    
 def change_theme(request):
     """Handles theme change and stores it in session"""
     if request.method == 'POST':
@@ -1201,12 +1048,7 @@ def test_css(request):
     return render(request, 'test_css.html')
 
 #######################################################################################    
-
-
-
-
 ##############################################################################################
-
 #############################################################################################
 def view_ads(request):
     active_ads = AdActivity.objects.filter(is_active=True)
@@ -1681,28 +1523,6 @@ def store_manage_view(request):
         "store_items": store_items
     })
 
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth import get_user_model
-from django.shortcuts import render
-
-def is_admin(user):
-    return user.is_staff or user.is_superuser
-
-@login_required
-@user_passes_test(is_admin)
-def coin_manage_view(request):
-    User = get_user_model()  # ✅ Correct way to access the custom user model
-    users = User.objects.all()
-
-    coin_activities = CoinActivity.objects.all()
-    transactions = CoinTransaction.objects.all().order_by('-timestamp')  # ✅ You forgot to import this originally
-
-    return render(request, "mrsafe_app/admin/admin_coin_manage.html", {
-        "users": users,
-        "coin_activities": coin_activities,  # ❗ Fix typo here
-        "transactions": transactions         # ✅ Include this so template doesn’t break
-    })
-
 
 @login_required
 @user_passes_test(is_admin)
@@ -1737,52 +1557,6 @@ from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from mrsafe_app.models import CoinTransaction, CustomUser
 
-from django.db.models import Sum
-from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, render
-from django.contrib.auth.decorators import login_required
-from mrsafe_app.models import CoinTransaction, CustomUser
-
-@login_required
-def coin_transaction_history(request, user_id):
-    user = get_object_or_404(CustomUser, id=user_id)
-    sort = request.GET.get("sort", "date")
-    per_page = request.GET.get("per_page", "10")
-
-    # Handle "all"
-    if per_page == "all":
-        per_page = None
-    else:
-        per_page = int(per_page)
-
-    # Sorting
-    transactions = CoinTransaction.objects.filter(user=user).select_related("activity")
-    if sort == "type":
-        transactions = transactions.order_by("transaction_type", "-timestamp")
-    else:
-        transactions = transactions.order_by("-timestamp")
-
-    # Totals
-    total_earned = transactions.filter(transaction_type='earned').aggregate(total=Sum('amount'))['total'] or 0
-    total_spent = transactions.filter(transaction_type='spent').aggregate(total=Sum('amount'))['total'] or 0
-
-    # Pagination
-    if per_page:
-        paginator = Paginator(transactions, per_page)
-        page_number = request.GET.get("page")
-        page_obj = paginator.get_page(page_number)
-    else:
-        # No pagination — show all
-        page_obj = transactions
-
-    return render(request, "mrsafe_app/admin/coin_transaction_history.html", {
-        "user": user,
-        "page_obj": page_obj,
-        "sort": sort,
-        "per_page": request.GET.get("per_page", "10"),
-        "total_earned": total_earned,
-        "total_spent": total_spent,
-    })
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
@@ -1814,37 +1588,3 @@ from django.shortcuts import render
 
 def public_landing(request):
     return render(request, "index.html")
-
-from django.contrib.auth import get_user_model
-from django.shortcuts import render
-
-def create_superuser_view(request):
-    User = get_user_model()
-    created = False
-
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser(
-            username='admin',
-            email='admin@example.com',
-            password='YourSecurePassword123'  # Change before launch
-        )
-        created = True
-
-    return render(request, "mrsafe/create_superuser.html", {"created": created})
-
-from django.contrib.auth import get_user_model
-from django.shortcuts import render
-
-def create_superuser_view(request):
-    User = get_user_model()
-    created = False
-
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser(
-            username='saidengineer',
-            email='saidengineer@hotmail.com',
-            password='Razan@1978'
-        )
-        created = True
-
-    return render(request, "mrsafe/create_superuser.html", {"created": created})

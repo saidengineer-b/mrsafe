@@ -25,7 +25,7 @@ from .views import (
     process_payment,payment_history_view,
 
     # Certificates
-    user_management_view,manage_categories_view,coin_transaction_history,premium_plan_manage_view,reward_manage_view,admin_google_ads_manage_view,
+    user_management_view,manage_categories_view,coin_transaction_history,premium_plan_manage_view,admin_google_ads_manage_view,
     
     terms_view,edit_google_ad_activity,
     premium_subscription_success,
@@ -57,7 +57,7 @@ from .views import (contact,
                     google_ad_activity_list,
                     
                     change_theme,test_css,delete_item,
-                    manage_rewards,
+                    
                     
                     terms_and_conditions,privacy_policy,
                     premium_membership,add_premium_plan,
@@ -70,7 +70,8 @@ from .views import (contact,
                     inspection_full_report,export_inspection_docx,
                     
                     
-                    subscribe_premium,PremiumPlanListView,create_superuser_view,plan_checkout,CartCheckoutView)
+                    subscribe_premium,PremiumPlanListView,plan_checkout,CartCheckoutView
+                    ,coin_manage_view,delete_coin_activity)
 
 
 from django.urls import path
@@ -81,7 +82,7 @@ from django.shortcuts import redirect
 urlpatterns = [
  
 
-path('create-superuser/', create_superuser_view, name='create_superuser'),
+
 
 path('register/', register, name='register'),
     
@@ -128,15 +129,17 @@ path("inspections/<int:inspection_id>/export/docx/", export_inspection_docx, nam
 path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium"),
     
     path('admin/user-management/', user_management_view, name='user_management'),
-   
+    path("admin/coins/", coin_manage_view, name="coin_manage"),
+    path("admin/coins/delete/<int:activity_id>/", delete_coin_activity, name="delete_coin_activity"),
+
     path("admin/coin-history/<int:user_id>/", coin_transaction_history, name="coin_transaction_history"),
     path("admin/payments/<int:user_id>/", payment_history_view, name="payment_history"),
 
     # urls.py
-    path('admin/categories/', manage_categories_view, name='manage_categories'),
+    
    
     path("admin/premium-plans/", premium_plan_manage_view, name="premium_plan_manage"),
-    path("admin/rewards/", reward_manage_view, name="admin_reward_manage"),
+    
 
     path("admin/google-ads/", admin_google_ads_manage_view, name="google_ads_manage"),
 
@@ -187,9 +190,7 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
     path("add-coin-activity/", add_coin_activity, name="add_coin_activity"),  # ✅ URL added
     path("update-user-coins/", update_user_coins, name="update_user_coins"),
 
-    path('admin/manage-rewards/', manage_rewards, name='manage_rewards'),
-    
-#####################################################################################
+    #####################################################################################
     path("terms-and-conditions/", terms_and_conditions, name="terms_and_conditions"),
 
     path("terms/", terms_view, name="terms"),

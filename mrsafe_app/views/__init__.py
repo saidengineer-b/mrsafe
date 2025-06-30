@@ -20,7 +20,7 @@ from .views_inspect import (safety_image_test,inspect,save_observation,inspect_s
                             inspection_full_report,export_inspection_docx) 
 
 
-from .views_files import (create_superuser_view,
+from .views_files import (
     public_landing,
     home,
     profile,
@@ -51,24 +51,15 @@ from .views_files import (create_superuser_view,
     add_members_to_group,
     assign_quiz_group,
     generate_quiz_ai,
-    start_ai_challenge,
-    ai_challenge_set,
-    continue_ai_challenge,
-    ai_challenge_end,
-    ai_challenge,
-    choose_topic,
-    leaderboard_view,
-    submit_score,
+   
+    
     switch_language,
-    shopify_products_view,
-    shopify_store_view,
+    
     terms_and_conditions,
     terms_view,
     privacy_policy,
-    edit_reward,
-    delete_reward,
-    add_reward,
-    manage_rewards,
+    coin_manage_view,
+    delete_coin_activity,
     update_user_coins,
     add_coin_activity,
     edit_coin_activity,
