@@ -59,16 +59,7 @@
             </div>
             
             <!-- Action Buttons -->
-            <div class="d-flex align-items-center safety-action-buttons">
-                <a href="{% url 'mrsafe_app:store' %}" class="safety-nav-item mx-3">
-                    <i class="fas fa-toolbox safety-nav-icon"></i>
-                    <span class="safety-nav-label">Equipment</span>
-                </a>
-                <a href="#" class="safety-nav-item mx-3" onclick="shareApp()">
-                    <i class="fas fa-shield-alt safety-nav-icon"></i>
-                    <span class="safety-nav-label">Share</span>
-                </a>
-            </div>
+          
         </div>
 
         <!-- Header Right Icons -->
@@ -77,12 +68,7 @@
                 <i class="fas fa-arrow-left safety-icon"></i>
             </a>
           
-            <!-- Emergency Button -->
-            <button class="safety-emergency-btn" onclick="triggerEmergency()">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>EMERGENCY</span>
-            </button>
-            
+
             <!-- Notifications -->
             <div class="safety-notification-container position-relative">
                 <div class="safety-header-icon" onclick="toggleNotifications()" title="Alerts">
@@ -99,12 +85,16 @@
                 </div>
             </div>
 
-            <a href="{% url 'mrsafe_app:profile' %}" class="safety-header-icon" title="Profile">
-                <i class="fas fa-user-hard-hat safety-icon"></i>
-            </a>
-            <a href="{% url 'mrsafe_app:help' %}" class="safety-header-icon" title="Help">
-                <i class="fas fa-life-ring safety-icon"></i>
-            </a>
+             <div class="d-flex align-items-center safety-action-buttons">
+                <a href="{% url 'mrsafe_app:store' %}" class="safety-nav-item mx-3">
+                    <i class="fas fa-toolbox safety-nav-icon"></i>
+                    <span class="safety-nav-label">Store</span>
+                </a>
+                <a href="#" class="safety-nav-item mx-3" onclick="shareApp()">
+                    <i class="fas fa-shield-alt safety-nav-icon"></i>
+                    <span class="safety-nav-label">Share</span>
+                </a>
+            </div>
         </div>
     </header>
 

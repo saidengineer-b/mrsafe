@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block content %}
-<div class="container-fluid px-4 safety-dashboard">
+<div class="container-fluid px-0 px-md-3 safety-dashboard">
     <!-- 🔴 EMERGENCY ALERT BAR - Enhanced -->
     {% if critical_hazards %}
     <div class="alert alert-emergency alert-dismissible fade show mb-4" role="alert">
@@ -41,14 +41,14 @@
     {% endif %}
 
     <!-- 🦺 SAFETY DASHBOARD HEADER - Premium Version -->
-    <div class="dashboard-header industrial-bg p-5 mb-4 rounded-4">
+    <div class="dashboard-header industrial-bg p-3 p-md-5 mb-4 rounded-0 rounded-md-4">
         <div class="header-content">
             <div class="header-text">
                 <h1 class="display-4 fw-bold text-white mb-2">
                     <i class="fas fa-shield-alt me-3"></i>
-                    MRSAFE <span class="text-warning">COMMAND</span> CENTER
+                    SAFETY <span class="text-warning">COMMAND</span> CENTER
                 </h1>
-                <p class="text-white-50 mb-4">AI safety management with real-time threat detection</p>
+                <p class="text-white-50 mb-4">Enterprise-grade safety management with real-time threat detection</p>
                 
                 <div class="user-badges">
                     <div class="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-2 me-3">
@@ -104,8 +104,8 @@
     </div>
 
     <!-- 🚀 PREMIUM QUICK ACTIONS -->
-    <div class="row quick-actions mb-4 g-3">
-        <div class="col-md-3">
+    <div class="row quick-actions mb-4 g-2 g-md-3">
+        <div class="col-6 col-md-3">
             <a href="#" class="action-card bg-primary-grad">
                 <div class="action-icon">
                     <i class="fas fa-clipboard-check"></i>
@@ -118,7 +118,7 @@
                 </div>
             </a>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3">
             <a href="#" class="action-card bg-danger-grad">
                 <div class="action-icon">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -131,7 +131,7 @@
                 </div>
             </a>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3">
             <a href="#" class="action-card bg-warning-grad">
                 <div class="action-icon">
                     <i class="fas fa-file-invoice-dollar"></i>
@@ -144,7 +144,7 @@
                 </div>
             </a>
         </div>
-        <div class="col-md-3">
+        <div class="col-6 col-md-3">
             <a href="#" class="action-card bg-success-grad">
                 <div class="action-icon">
                     <i class="fas fa-bell"></i>
@@ -160,9 +160,9 @@
     </div>
 
     <!-- 🏆 PREMIUM METRICS CARDS -->
-    <div class="row g-4">
+    <div class="row g-2 g-md-4">
         <!-- Inspections Card - Enhanced -->
-        <div class="col-xl-3 col-md-6">
+        <div class="col-12 col-md-6 col-xl-3">
             <div class="card safety-metric-card inspection-card">
                 <div class="card-header">
                     <h3>
@@ -230,7 +230,7 @@
         </div>
 
         <!-- Observations Card - Enhanced -->
-        <div class="col-xl-3 col-md-6">
+        <div class="col-12 col-md-6 col-xl-3">
             <div class="card safety-metric-card observation-card">
                 <div class="card-header">
                     <h3>
@@ -298,7 +298,7 @@
         </div>
 
         <!-- Compliance Card - Enhanced -->
-        <div class="col-xl-3 col-md-6">
+        <div class="col-12 col-md-6 col-xl-3">
             <div class="card safety-metric-card compliance-card">
                 <div class="card-header">
                     <h3>
@@ -350,7 +350,7 @@
         </div>
 
         <!-- Top Hazards Card - Enhanced -->
-        <div class="col-xl-3 col-md-6">
+        <div class="col-12 col-md-6 col-xl-3">
             <div class="card safety-metric-card hazards-card">
                 <div class="card-header">
                     <h3>
@@ -402,9 +402,9 @@
     </div>
 
     <!-- 📜 INSPECTION & OBSERVATION DETAILS SECTION -->
-    <div class="row mt-4 g-4">
+    <div class="row mt-2 mt-md-4 g-2 g-md-4">
         <!-- Recent Inspections - Enhanced -->
-        <div class="col-lg-6">
+        <div class="col-12 col-lg-6">
             <div class="card safety-activity-card">
                 <div class="card-header">
                     <div class="header-content">
@@ -489,7 +489,7 @@
         </div>
 
         <!-- Recent Hazards - Enhanced -->
-        <div class="col-lg-6">
+        <div class="col-12 col-lg-6">
             <div class="card safety-activity-card">
                 <div class="card-header">
                     <div class="header-content">
@@ -668,8 +668,17 @@
     
     .emergency-alert-content {
         display: flex;
-        align-items: center;
-        padding: 1.5rem;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+    }
+    
+    @media (min-width: 768px) {
+        .emergency-alert-content {
+            flex-direction: row;
+            align-items: center;
+            padding: 1.5rem;
+        }
     }
     
     .alert-emergency .alert-icon {
@@ -677,17 +686,25 @@
         font-size: 2rem;
         margin-right: 1.5rem;
         padding-right: 1.5rem;
+        text-align: center;
+        margin-bottom: 1rem;
     }
     
-    .alert-emergency .alert-icon::after {
-        content: '';
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 2px;
-        height: 60%;
-        background: rgba(255,255,255,0.2);
+    @media (min-width: 768px) {
+        .alert-emergency .alert-icon {
+            margin-bottom: 0;
+            text-align: left;
+        }
+        .alert-emergency .alert-icon::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 60%;
+            background: rgba(255,255,255,0.2);
+        }
     }
     
     .siren-light {
@@ -705,12 +722,27 @@
     .alert-details {
         flex: 1;
         margin-right: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    @media (min-width: 768px) {
+        .alert-details {
+            margin-bottom: 0;
+        }
     }
     
     .alert-header {
         display: flex;
+        flex-direction: column;
         align-items: center;
         margin-bottom: 0.5rem;
+    }
+    
+    @media (min-width: 768px) {
+        .alert-header {
+            flex-direction: row;
+            align-items: center;
+        }
     }
     
     .alert-header h3 {
@@ -718,6 +750,13 @@
         font-weight: 700;
         margin: 0;
         margin-right: 1rem;
+        text-align: center;
+    }
+    
+    @media (min-width: 768px) {
+        .alert-header h3 {
+            text-align: left;
+        }
     }
     
     .hazard-scroll {
@@ -740,10 +779,20 @@
         border-bottom: 1px solid rgba(255,255,255,0.1);
         display: flex;
         justify-content: space-between;
+        flex-wrap: wrap;
     }
     
     .hazard-type {
         font-weight: 600;
+        width: 100%;
+        margin-bottom: 0.2rem;
+    }
+    
+    @media (min-width: 768px) {
+        .hazard-type {
+            width: auto;
+            margin-bottom: 0;
+        }
     }
     
     .hazard-location {
@@ -758,8 +807,14 @@
     
     .alert-actions {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         gap: 0.5rem;
+    }
+    
+    @media (min-width: 768px) {
+        .alert-actions {
+            flex-direction: column;
+        }
     }
     
     .btn-emergency {
@@ -768,6 +823,13 @@
         padding: 0.5rem 1rem;
         border-radius: 6px;
         white-space: nowrap;
+        width: 100%;
+    }
+    
+    @media (min-width: 768px) {
+        .btn-emergency {
+            width: auto;
+        }
     }
     
     .btn-acknowledge {
@@ -788,6 +850,17 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         position: relative;
         overflow: hidden;
+        margin-left: -0.75rem;
+        margin-right: -0.75rem;
+        border-radius: 0 !important;
+    }
+    
+    @media (min-width: 768px) {
+        .dashboard-header {
+            margin-left: 0;
+            margin-right: 0;
+            border-radius: 0.5rem !important;
+        }
     }
     
     .dashboard-header::before {
@@ -803,1086 +876,1002 @@
     
     .header-content {
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
         align-items: center;
         position: relative;
         z-index: 1;
     }
     
+    @media (min-width: 768px) {
+        .header-content {
+            flex-direction: row;
+            align-items: center;
+        }
+    }
+    
     .header-text h1 {
-        font-size: 2.5rem;
+        font-size: 1.75rem;
         text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+    
+    @media (min-width: 768px) {
+        .header-text h1 {
+            font-size: 2.5rem;
+            text-align: left;
+        }
     }
     
     .header-text p {
-        font-size: 1.1rem;
+        font-size: 1rem;
         opacity: 0.9;
+        text-align: center;
+    }
+    
+    @media (min-width: 768px) {
+        .header-text p {
+            font-size: 1.1rem;
+            text-align: left;
+        }
     }
     
     .user-badges {
         display: flex;
-        gap: 0.75rem;
+        flex-direction: column;
+        gap: 0.5rem;
         margin-top: 1rem;
+        align-items: center;
+    }
+    
+    @media (min-width: 768px) {
+        .user-badges {
+            flex-direction: row;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
     }
     
     .safety-score-display {
         background: rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(10px);
-        padding: 1.5rem;
+        padding: 1rem;
         border-radius: 12px;
         min-width: 200px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         border: 1px solid rgba(255,255,255,0.1);
+        margin-top: 1.5rem;
+        width: 100%;
+    }
+    
+    @media (min-width: 768px) {
+        .safety-score-display {
+            margin-top: 0;
+            width: auto;
+            padding: 1.5rem;
+        }
     }
     
     .score-container .score-value {
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 700;
         line-height: 1;
+    }
+    
+    @media (min-width: 768px) {
+        .score-container .score-value {
+            font-size: 2.5rem;
+        }
     }
     
     .score-container .score-label {
         font-size: 0.85rem;
         text-transform: uppercase;
         letter-spacing: 1px;
-        opacity: 0.8;
-        margin-bottom: 0.5rem;
-    }
-    
-    .score-comparison {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 1rem;
-        font-size: 0.85rem;
-    }
-    
-    .comparison-item {
-        text-align: center;
-    }
-    
-    .comparison-item .value {
-        display: block;
-        font-weight: 600;
-        margin-top: 0.25rem;
-    }
-    
-    .security-badges {
-        display: flex;
-        justify-content: center;
-        gap: 1.5rem;
-        margin-top: 1.5rem;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .badge-item {
-        display: flex;
-        align-items: center;
-        background: rgba(255,255,255,0.1);
-        backdrop-filter: blur(5px);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.85rem;
-    }
-    
-    .badge-item i {
-        margin-right: 0.5rem;
-        font-size: 0.9rem;
-    }
-
-    /* ⚡ QUICK ACTIONS - Enhanced */
-    .quick-actions .action-card {
-        display: block;
-        height: 100%;
-        padding: 1.5rem;
-        border-radius: 12px;
-        color: white;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        border: none;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-    
-    .bg-primary-grad { background: var(--primary-grad); }
-    .bg-danger-grad { background: var(--danger-grad); }
-    .bg-warning-grad { background: var(--warning-grad); }
-    .bg-success-grad { background: var(--success-grad); }
-    
-    .quick-actions .action-card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: linear-gradient(
-            to right,
-            rgba(255,255,255,0) 0%,
-            rgba(255,255,255,0.1) 50%,
-            rgba(255,255,255,0) 100%
-        );
-        transform: rotate(45deg);
-        transition: all 0.6s ease;
-        opacity: 0;
-    }
-    
-    .quick-actions .action-card:hover::before {
-        opacity: 1;
-        left: 100%;
-    }
-    
-    .action-icon {
-        position: relative;
-        width: 60px;
-        height: 60px;
-        margin-bottom: 1.5rem;
-    }
-    
-    .action-icon i {
-        position: relative;
-        z-index: 2;
-        font-size: 1.75rem;
-    }
-    
-    .icon-bg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255,255,255,0.2);
-        border-radius: 50%;
-        z-index: 1;
-    }
-    
-    .action-title {
-        display: block;
-        font-size: 1.25rem;
-       : translateX(0);
-    }
-/* 🏆 METRIC CARDS - Enhanced */
-.safety-metric-card {
-    border: none;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.safety-metric-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.safety-metric-card .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    background: white;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.safety-metric-card .card-header h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0;
-    display: flex;
-    align-items: center;
-}
-
-.safety-metric-card .card-header h3 i {
-    margin-right: 0.75rem;
-    font-size: 1.25rem;
-}
-
-.card-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: white;
-}
-
-.safety-metric-card .card-body {
-    padding: 1.5rem;
-    flex: 1;
-}
-
-.metric-main {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 1.5rem;
-}
-
-.metric-value {
-    font-size: 2.5rem;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--safety-dark);
-}
-
-.metric-change {
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-}
-
-.metric-change.up {
-    background: rgba(40, 167, 69, 0.1);
-    color: #28a745;
-}
-
-.metric-change.down {
-    background: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
-}
-
-.progress-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    margin-bottom: 0.25rem;
-}
-
-.progress {
-    height: 6px;
-    border-radius: 3px;
-    background: rgba(0, 0, 0, 0.05);
-}
-
-.progress-bar {
-    border-radius: 3px;
-}
-
-.metric-details {
-    margin-top: 1.5rem;
-}
-
-.detail-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.detail-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-    flex-shrink: 0;
-}
-
-.detail-text {
-    flex: 1;
-}
-
-.detail-text .label {
-    display: block;
-    font-size: 0.8rem;
-    color: #6c757d;
-}
-
-.detail-text .value {
-    display: block;
-    font-weight: 600;
-    color: var(--safety-dark);
-}
-
-.bg-primary-light { 
-    background: rgba(29, 53, 87, 0.1); 
-    color: var(--safety-blue); 
-}
-.bg-danger-light { 
-    background: rgba(230, 57, 70, 0.1); 
-    color: var(--safety-red); 
-}
-.bg-warning-light { 
-    background: rgba(247, 127, 0, 0.1); 
-    color: var(--safety-orange); 
-}
-
-/* Compliance Gauge */
-.compliance-gauge {
-    margin-bottom: 1.5rem;
-}
-
-.gauge-container {
-    width: 100%;
-    max-width: 200px;
-    margin: 0 auto;
-}
-
-.gauge-body {
-    width: 100%;
-    height: 0;
-    padding-bottom: 50%;
-    position: relative;
-    border-top-left-radius: 100% 200%;
-    border-top-right-radius: 100% 200%;
-    overflow: hidden;
-    background: #f5f5f5;
-}
-
-.gauge-fill {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
-    transform-origin: center top;
-    transform: rotate(0.5turn);
-    transition: all 1s ease-out;
-}
-
-.gauge-cover {
-    width: 75%;
-    height: 150%;
-    background: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 25%;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--safety-dark);
-    box-shadow: 0 0 10px rgba(0,0,0,0.1) inset;
-}
-
-.gauge-range {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
-    font-size: 0.8rem;
-    color: #6c757d;
-}
-
-.compliance-stats {
-    margin-top: 1.5rem;
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem;
-    border-radius: 8px;
-    margin-bottom: 0.75rem;
-}
-
-.stat-item.positive {
-    background: rgba(40, 167, 69, 0.1);
-}
-
-.stat-item.negative {
-    background: rgba(220, 53, 69, 0.1);
-}
-
-.stat-item i {
-    font-size: 1.25rem;
-    margin-right: 0.75rem;
-    flex-shrink: 0;
-}
-
-.stat-item.positive i {
-    color: #28a745;
-}
-
-.stat-item.negative i {
-    color: #dc3545;
-}
-
-.stat-value {
-    font-weight: 700;
-    font-size: 1.1rem;
-    display: block;
-}
-
-.stat-label {
-    font-size: 0.85rem;
-    color: #6c757d;
-    display: block;
-}
-
-/* Hazard Radar Chart */
-.hazard-radar {
-    height: 150px;
-    margin-bottom: 1rem;
-}
-
-.hazard-list {
-    margin-top: 1rem;
-}
-
-.hazard-item {
-    margin-bottom: 1rem;
-}
-
-.hazard-info {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.25rem;
-}
-
-.hazard-type {
-    font-weight: 600;
-}
-
-.hazard-count {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-.hazard-percentage {
-    display: flex;
-    align-items: center;
-}
-
-.hazard-percentage .progress {
-    flex: 1;
-    margin-right: 0.75rem;
-}
-
-.hazard-percentage span {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--safety-orange);
-}
-
-.no-hazards {
-    text-align: center;
-    padding: 2rem 0;
-}
-
-.no-hazards-icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(40, 167, 69, 0.1);
-    color: #28a745;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin: 0 auto 1rem;
-}
-
-.no-hazards h4 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-}
-
-.no-hazards p {
-    color: #6c757d;
-    margin-bottom: 1.5rem;
-}
-
-.safety-metric-card .card-footer {
-    padding: 1rem 1.5rem;
-    background: white;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.btn-block {
-    width: 100%;
-}
-
-/* 📰 ACTIVITY FEED - Enhanced */
-.safety-activity-card {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.safety-activity-card .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    background: white;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-}
-
-.safety-activity-card .card-header h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0;
-    display: flex;
-    align-items: center;
-}
-
-.safety-activity-card .card-header h3 i {
-    margin-right: 0.75rem;
-    font-size: 1.25rem;
-}
-
-.safety-activity-card .card-header .badge {
-    margin-left: 1rem;
-}
-
-.safety-activity-card .card-body {
-    padding: 0;
-    flex: 1;
-}
-
-.inspection-feed, .hazard-feed {
-    padding: 0.5rem 0;
-}
-
-.inspection-item, .hazard-item {
-    display: flex;
-    padding: 1.25rem 1.5rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.inspection-item:hover, .hazard-item:hover {
-    background: rgba(0, 0, 0, 0.02);
-}
-
-.inspection-icon, .hazard-icon {
-    margin-right: 1.25rem;
-    flex-shrink: 0;
-}
-
-.icon-container {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-}
-
-.icon-container.completed {
-    background: rgba(40, 167, 69, 0.1);
-    color: #28a745;
-}
-
-.icon-container.pending {
-    background: rgba(255, 193, 7, 0.1);
-    color: #ffc107;
-}
-
-.icon-container.active {
-    background: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
-}
-
-.icon-container.resolved {
-    background: rgba(13, 110, 253, 0.1);
-    color: #0d6efd;
-}
-
-.inspection-details, .hazard-details {
-    flex: 1;
-}
-
-.inspection-header, .hazard-header {
-    margin-bottom: 0.5rem;
-}
-
-.inspection-header h4, .hazard-header h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0;
-    color: var(--safety-dark);
-}
-
-.inspection-meta, .hazard-meta {
-    display: flex;
-    align-items: center;
-}
-
-.inspection-meta .badge, .hazard-meta .badge {
-    margin-right: 0.75rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.25rem 0.5rem;
-}
-
-.inspection-meta .time, .hazard-meta .time {
-    font-size: 0.85rem;
-    color: #6c757d;
-}
-
-.inspection-info, .hazard-info {
-    display: flex;
-    margin-bottom: 0.5rem;
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
-    margin-right: 1.5rem;
-    font-size: 0.85rem;
-    color: #495057;
-}
-
-.info-item i {
-    margin-right: 0.5rem;
-    font-size: 0.85rem;
-}
-
-.inspection-stats, .hazard-status {
-    display: flex;
-}
-
-.stat-item, .status-item {
-    display: flex;
-    align-items: center;
-    margin-right: 1.5rem;
-    font-size: 0.85rem;
-    color: #495057;
-}
-
-.stat-item i, .status-item i {
-    margin-right: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.inspection-actions, .hazard-actions {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.view-details {
-    white-space: nowrap;
-}
-
-.continue-btn, .resolve-btn {
-    white-space: nowrap;
-}
-
-.empty-state {
-    text-align: center;
-    padding: 2rem;
-}
-
-.empty-icon {
-    font-size: 3rem;
-    color: #dee2e6;
-    margin-bottom: 1.5rem;
-}
-
-.empty-state h4 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    color: var(--safety-dark);
-}
-
-.empty-state p {
-    color: #6c757d;
-    margin-bottom: 1.5rem;
-}
-
-/* ANIMATIONS */
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
-    100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
-}
-</style>
-
-
-
-
-<!-- 📜 INTERACTIVITY - Enhanced -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Make inspection/hazard items clickable
-    document.querySelectorAll('.inspection-item, .hazard-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            // Don't trigger if clicking on a button or link
-            if (!e.target.closest('button') && !e.target.closest('a')) {
-                const id = this.getAttribute('data-inspection-id') || 
-                          this.getAttribute('data-observation-id');
-                const type = this.classList.contains('inspection-item') ? 'inspection' : 'hazard';
-                
-                if (type === 'inspection') {
-                    loadInspectionDetails(id);
-                } else {
-                    loadHazardDetails(id);
-                }
+        opacity: 0                            
+   }
+           .score-comparison {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .comparison-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .comparison-item .value {
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+        
+        .security-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+        
+        @media (min-width: 768px) {
+            .security-badges {
+                justify-content: flex-start;
+                margin-top: 1rem;
             }
-        });
-    });
-    
-    // View Details buttons
-    document.querySelectorAll('.view-details').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const item = this.closest('.inspection-item, .hazard-item');
-            const id = item.getAttribute('data-inspection-id') || 
-                      item.getAttribute('data-observation-id');
-            const type = item.classList.contains('inspection-item') ? 'inspection' : 'hazard';
+        }
+        
+        .badge-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+        }
+        
+        /* 🚀 QUICK ACTIONS - Enhanced */
+        .quick-actions {
+            margin-top: 1.5rem;
+        }
+        
+        .action-card {
+            display: block;
+            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .action-card:hover::before {
+            opacity: 1;
+        }
+        
+        .action-icon {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 1rem;
+        }
+        
+        .action-icon i {
+            font-size: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .icon-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .action-title {
+            display: block;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .action-desc {
+            display: block;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .action-hover {
+            position: absolute;
+            right: 1rem;
+            bottom: 1rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .action-card:hover .action-hover {
+            opacity: 1;
+            transform: translateX(-5px);
+        }
+        
+        .bg-primary-grad {
+            background: var(--primary-grad);
+        }
+        
+        .bg-danger-grad {
+            background: var(--danger-grad);
+        }
+        
+        .bg-warning-grad {
+            background: var(--warning-grad);
+        }
+        
+        .bg-success-grad {
+            background: var(--success-grad);
+        }
+        
+        /* 🏆 METRIC CARDS - Enhanced */
+        .safety-metric-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .safety-metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .safety-metric-card .card-header {
+            background: white;
+            border-bottom: none;
+            padding: 1.25rem 1.5rem;
+            position: relative;
+        }
+        
+        .safety-metric-card .card-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .safety-metric-card .card-header h3 i {
+            margin-right: 0.75rem;
+            font-size: 1.2em;
+        }
+        
+        .card-badge {
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .safety-metric-card .card-body {
+            padding: 1.5rem;
+        }
+        
+        .metric-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .metric-change {
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+        }
+        
+        .metric-change.up {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .metric-change.down {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .metric-progress {
+            margin-bottom: 1.5rem;
+        }
+        
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+            font-size: 0.8rem;
+        }
+        
+        .progress {
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .metric-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .detail-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        .detail-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-text .label {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        
+        .detail-text .value {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .bg-primary-light {
+            background: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+        }
+        
+        .bg-danger-light {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        /* Compliance Gauge Specific Styles */
+        .compliance-gauge {
+            margin-bottom: 1.5rem;
+        }
+        
+        .gauge-container {
+            position: relative;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        
+        .gauge-body {
+            width: 100%;
+            height: 0;
+            padding-bottom: 50%;
+            position: relative;
+            border-top-left-radius: 100% 200%;
+            border-top-right-radius: 100% 200%;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        
+        .gauge-fill {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+            transform-origin: center top;
+            transform: rotate(0.5turn);
+            transition: transform 1s ease-out;
+        }
+        
+        .gauge-cover {
+            width: 75%;
+            height: 150%;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1) inset;
+        }
+        
+        .gauge-range {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10%;
+            margin-top: 0.5rem;
+            font-size: 0.7rem;
+        }
+        
+        .compliance-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .stat-item i {
+            font-size: 1.2rem;
+        }
+        
+        .stat-item.positive i {
+            color: #28a745;
+        }
+        
+        .stat-item.negative i {
+            color: #dc3545;
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        
+        /* Hazard Radar Chart Container */
+        .hazard-radar {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 1rem;
+        }
+        
+        .hazard-list {
+            margin-top: 1rem;
+        }
+        
+        .hazard-item {
+            margin-bottom: 0.75rem;
+        }
+        
+        .hazard-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
+        }
+        
+        .hazard-type {
+            font-weight: 600;
+        }
+        
+        .hazard-count {
+            opacity: 0.7;
+        }
+        
+        .hazard-percentage {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .hazard-percentage .progress {
+            flex: 1;
+            height: 4px;
+        }
+        
+        .hazard-percentage span {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .no-hazards {
+            text-align: center;
+            padding: 1rem 0;
+        }
+        
+        .no-hazards-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: #28a745;
+        }
+        
+        .no-hazards h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .no-hazards p {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 1rem;
+        }
+        
+        /* Activity Cards */
+        .safety-activity-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            height: 100%;
+        }
+        
+        .safety-activity-card .card-header {
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+        }
+        
+        .safety-activity-card .card-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .safety-activity-card .card-header h3 i {
+            margin-right: 0.75rem;
+            font-size: 1.2em;
+        }
+        
+        .safety-activity-card .card-header .badge {
+            margin-left: 0.75rem;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.6rem;
+        }
+        
+        /* Inspection Feed */
+        .inspection-feed {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .inspection-feed::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .inspection-feed::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+        }
+        
+        .inspection-item {
+            display: flex;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            align-items: center;
+        }
+        
+        .inspection-item:last-child {
+            border-bottom: none;
+        }
+        
+        .inspection-icon {
+            margin-right: 1rem;
+        }
+        
+        .icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .icon-container.completed {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .icon-container.pending {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            animation: pulse 2s infinite;
+        }
+        
+        .inspection-details {
+            flex: 1;
+        }
+        
+        .inspection-header {
+            margin-bottom: 0.5rem;
+        }
+        
+        .inspection-header h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .inspection-meta {
+            display: flex;
+            align-items: center;
+            margin-top: 0.3rem;
+        }
+        
+        .inspection-meta .badge {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .inspection-meta .time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+        
+        .inspection-info {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .info-item i {
+            margin-right: 0.3rem;
+            font-size: 0.9em;
+        }
+        
+        .inspection-stats {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.75rem;
+        }
+        
+        .stat-item i {
+            margin-right: 0.3rem;
+            font-size: 0.9em;
+        }
+        
+        .inspection-actions {
+            margin-left: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .view-details {
+            white-space: nowrap;
+        }
+        
+        .continue-btn {
+            white-space: nowrap;
+        }
+        
+        /* Hazard Feed */
+        .hazard-feed {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .hazard-item {
+            display: flex;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            align-items: center;
+        }
+        
+        .hazard-item:last-child {
+            border-bottom: none;
+        }
+        
+        .hazard-icon .icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .icon-container.resolved {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .icon-container.active {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .hazard-details {
+            flex: 1;
+            margin-left: 1rem;
+        }
+        
+        .hazard-header {
+            margin-bottom: 0.5rem;
+        }
+        
+        .hazard-header h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .hazard-meta {
+            display: flex;
+            align-items: center;
+            margin-top: 0.3rem;
+        }
+        
+        .hazard-meta .badge {
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .hazard-meta .time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+        
+        .hazard-info {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .hazard-status {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .hazard-actions {
+            margin-left: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .resolve-btn {
+            white-space: nowrap;
+        }
+        
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        
+        .empty-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .empty-state h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 767.98px) {
+            .metric-details {
+                grid-template-columns: 1fr;
+            }
             
-            if (type === 'inspection') {
-                loadInspectionDetails(id);
-            } else {
-                loadHazardDetails(id);
+            .inspection-item, .hazard-item {
+                flex-direction: column;
+                align-items: flex-start;
             }
-        });
-    });
+            
+            .inspection-actions, .hazard-actions {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+                flex-direction: row;
+            }
+            
+            .inspection-actions .btn,
+            .hazard-actions .btn {
+                flex: 1;
+            }
+        }
+    </style>
     
-    // Initialize hazard radar chart
-    const hazardCtx = document.getElementById('hazardRadarChart');
-    if (hazardCtx) {
-        const hazardData = {
-            labels: [
-                {% for hazard in observation_metrics.hazard_types|slice:":5" %}
-                '{{ hazard.structured_json__hazard_type|default:"Unknown" }}'{% if not forloop.last %},{% endif %}
-                {% endfor %}
-            ],
-            datasets: [{
-                label: 'Hazard Frequency',
-                data: [
-                    {% for hazard in observation_metrics.hazard_types|slice:":5" %}
-                    {{ hazard.count }}{% if not forloop.last %},{% endif %}
-                    {% endfor %}
-                ],
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                pointBackgroundColor: 'rgba(255, 99, 132, 1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
-            }]
-        };
-        
-        new Chart(hazardCtx, {
-            type: 'radar',
-            data: hazardData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        angleLines: {
-                            display: true,
-                            color: 'rgba(0, 0, 0, 0.1)'
+    <!-- 📊 CHARTS & INTERACTIVITY -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize hazard radar chart
+        document.addEventListener('DOMContentLoaded', function() {
+            // Radar Chart for Top Hazards
+            const hazardCtx = document.getElementById('hazardRadarChart');
+            if (hazardCtx) {
+                const hazardData = {
+                    labels: [
+                        {% for hazard in observation_metrics.hazard_types|slice:":5" %}
+                            '{{ hazard.structured_json__hazard_type|default:"Unknown" }}',
+                        {% endfor %}
+                    ],
+                    datasets: [{
+                        label: 'Hazard Frequency',
+                        data: [
+                            {% for hazard in observation_metrics.hazard_types|slice:":5" %}
+                                {{ hazard.count }},
+                            {% endfor %}
+                        ],
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        pointBackgroundColor: 'rgba(255, 159, 64, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 2
+                    }]
+                };
+                
+                new Chart(hazardCtx, {
+                    type: 'radar',
+                    data: hazardData,
+                    options: {
+                        scales: {
+                            r: {
+                                angleLines: {
+                                    display: true,
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                suggestedMin: 0,
+                                ticks: {
+                                    display: false,
+                                    stepSize: 1
+                                }
+                            }
                         },
-                        suggestedMin: 0,
-                        suggestedMax: Math.max(...hazardData.datasets[0].data) + 2
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        elements: {
+                            line: {
+                                tension: 0.1
+                            }
+                        }
                     }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+                });
+            }
+            
+            // Set gauge rotation based on compliance rate
+            const complianceRate = {{ compliance_rate }};
+            const gaugeFill = document.querySelector('.gauge-fill');
+            if (gaugeFill) {
+                const rotation = complianceRate / 100 * 0.5;
+                gaugeFill.style.transform = `rotate(${rotation}turn)`;
+                
+                // Change color based on compliance level
+                if (complianceRate > 80) {
+                    gaugeFill.style.background = 'linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%)';
+                } else if (complianceRate > 50) {
+                    gaugeFill.style.background = 'linear-gradient(90deg, #FFC107 0%, #FF9800 100%)';
+                } else {
+                    gaugeFill.style.background = 'linear-gradient(90deg, #F44336 0%, #E53935 100%)';
                 }
             }
-        });
-    }
-    
-    // Set compliance gauge rotation
-    const complianceGauges = document.querySelectorAll('.gauge-container');
-    complianceGauges.forEach(gauge => {
-        const value = parseFloat(gauge.getAttribute('data-value'));
-        const fill = gauge.querySelector('.gauge-fill');
-        const rotation = value / 100 * 0.5;
-        fill.style.transform = `rotate(${rotation}turn)`;
-        
-        // Change color based on value
-        if (value > 90) {
-            fill.style.background = 'linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%)';
-        } else if (value > 70) {
-            fill.style.background = 'linear-gradient(90deg, #FFC107 0%, #FF9800 100%)';
-        } else {
-            fill.style.background = 'linear-gradient(90deg, #F44336 0%, #E53935 100%)';
-        }
-    });
-    
-    // Inspection item click handler
-    document.querySelectorAll('.inspection-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            // Don't trigger if clicking on a button
-            if (!e.target.closest('.view-details') && !e.target.closest('.continue-btn')) {
-                const inspectionId = this.dataset.inspectionId;
-                loadInspectionDetails(inspectionId);
-            }
-        });
-        
-        // View details button
-        const viewBtn = item.querySelector('.view-details');
-        if (viewBtn) {
-            viewBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const inspectionId = item.dataset.inspectionId;
-                loadInspectionDetails(inspectionId);
+            
+            // Inspection modal handling
+            const inspectionModal = new bootstrap.Modal(document.getElementById('inspectionModal'));
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', function() {
+                    const inspectionId = this.closest('.inspection-item').dataset.inspectionId;
+                    // Here you would typically fetch the inspection details via AJAX
+                    // For this template, we'll just show the modal with a loading state
+                    inspectionModal.show();
+                });
             });
-        }
-        
-        // Continue button
-        const continueBtn = item.querySelector('.continue-btn');
-        if (continueBtn) {
-            continueBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const inspectionId = item.dataset.inspectionId;
-                // Redirect to continue inspection
-                window.location.href = `/inspections/${inspectionId}/continue/`;
+            
+            // Hazard modal handling
+            const hazardModal = new bootstrap.Modal(document.getElementById('hazardModal'));
+            document.querySelectorAll('.resolve-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const hazardId = this.closest('.hazard-item').dataset.observationId;
+                    // Here you would typically fetch the hazard details via AJAX
+                    hazardModal.show();
+                });
             });
-        }
-    });
-    
-    // Hazard item click handler
-    document.querySelectorAll('.hazard-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            // Don't trigger if clicking on a button
-            if (!e.target.closest('.view-details') && !e.target.closest('.resolve-btn')) {
-                const observationId = this.dataset.observationId;
-                loadHazardDetails(observationId);
-            }
-        });
-        
-        // View details button
-        const viewBtn = item.querySelector('.view-details');
-        if (viewBtn) {
-            viewBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const observationId = item.dataset.observationId;
-                loadHazardDetails(observationId);
+            
+            // Acknowledge emergency alert
+            document.querySelector('.btn-acknowledge')?.addEventListener('click', function() {
+                // Implement acknowledgment logic here
+                this.innerHTML = '<i class="fas fa-check-circle me-2"></i> Acknowledged';
+                this.classList.add('disabled');
             });
-        }
-        
-        // Resolve button
-        const resolveBtn = item.querySelector('.resolve-btn');
-        if (resolveBtn) {
-            resolveBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const observationId = item.dataset.observationId;
-                // Show resolve modal
-                loadHazardDetails(observationId, true);
+            
+            // Take action button
+            document.querySelector('.btn-action')?.addEventListener('click', function() {
+                // Implement action logic here
+                alert('Emergency protocol initiated! All safety officers notified.');
             });
-        }
-    });
-    
-    // Load inspection details
-    function loadInspectionDetails(inspectionId) {
-        const modal = new bootstrap.Modal(document.getElementById('inspectionModal'));
-        const modalContent = document.querySelector('.inspection-modal-content');
-        
-        // Show loading spinner
-        modalContent.innerHTML = `
-            <div class="loading-spinner">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        `;
-        
-        modal.show();
-        
-        // Simulate AJAX loading (replace with actual API call)
-        setTimeout(() => {
-            // This would be replaced with actual data from your backend
-            modalContent.innerHTML = `
-                <div class="inspection-details">
-                    <div class="detail-header">
-                        <h4>Inspection #${inspectionId}</h4>
-                        <span class="badge bg-success">Completed</span>
-                    </div>
-                    <div class="detail-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Main Construction Site</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>${new Date().toLocaleDateString()}</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-user-hard-hat"></i>
-                            <span>${user.get_full_name}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <h5>Summary</h5>
-                        <p>This inspection covered all safety protocols at the main construction site, including PPE compliance, equipment safety, and hazard communication.</p>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <h5>Findings</h5>
-                        <div class="findings-list">
-                            <div class="finding-item positive">
-                                <i class="fas fa-check-circle"></i>
-                                <span>All workers wearing proper PPE</span>
-                            </div>
-                            <div class="finding-item positive">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Emergency exits clear and marked</span>
-                            </div>
-                            <div class="finding-item negative">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <span>Unguarded machinery in sector B</span>
-                            </div>
-                            <div class="finding-item negative">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <span>Tripping hazards in walkway</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <h5>Photos</h5>
-                        <div class="photos-grid">
-                            <div class="photo-item" style="background-image: url('https://via.placeholder.com/300x200')"></div>
-                            <div class="photo-item" style="background-image: url('https://via.placeholder.com/300x200')"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }, 800);
-    }
-    
-    // Load hazard details
-    function loadHazardDetails(observationId, showResolve = false) {
-        const modal = new bootstrap.Modal(document.getElementById('hazardModal'));
-        const modalContent = document.querySelector('.hazard-modal-content');
-        
-        // Show loading spinner
-        modalContent.innerHTML = `
-            <div class="loading-spinner">
-                <div class="spinner-border text-danger" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        `;
-        
-        modal.show();
-        
-        // Hide resolve button if not needed
-        const resolveBtn = document.querySelector('.resolve-modal-btn');
-        resolveBtn.style.display = showResolve ? 'block' : 'none';
-        
-        // Simulate AJAX loading (replace with actual API call)
-        setTimeout(() => {
-            // This would be replaced with actual data from your backend
-            modalContent.innerHTML = `
-                <div class="hazard-details">
-                    <div class="detail-header">
-                        <h4>Hazard #${observationId}</h4>
-                        <span class="badge bg-danger">HIGH PRIORITY</span>
-                    </div>
-                    <div class="hazard-type-badge bg-warning">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>TRIP HAZARD</span>
-                    </div>
-                    
-                    <div class="detail-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Main Construction Site - North Corridor</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>${new Date().toLocaleDateString()}</span>
-                        </div>
-                        <div class="meta-item">
-                            <i class="fas fa-user-hard-hat"></i>
-                            <span>Reported by Sarah Johnson</span>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <h5>Hazard Description</h5>
-                        <p>Extension cords running across high-traffic walkway without proper covering or securing, creating significant trip hazard for workers moving materials.</p>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <h5>Photos</h5>
-                        <div class="photos-grid">
-                            <div class="photo-item" style="background-image: url('https://via.placeholder.com/300x200')"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <h5>Risk Assessment</h5>
-                        <div class="risk-matrix">
-                            <div class="risk-item severity high">
-                                <span>Severity</span>
-                                <strong>High</strong>
-                            </div>
-                            <div class="risk-item likelihood medium">
-                                <span>Likelihood</span>
-                                <strong>Medium</strong>
-                            </div>
-                            <div class="risk-item overall high">
-                                <span>Overall Risk</span>
-                                <strong>High</strong>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <h5>Action Plan</h5>
-                        <ol>
-                            <li>Immediately stop use of unguarded machinery</li>
-                            <li>Install proper guards before resuming operations</li>
-                        </div>
-                </div>
-            `;
-        }, 800);
-    }
-    
-    // Print button handler
-    document.querySelector('.print-btn')?.addEventListener('click', function() {
-        window.print();
-    });
-    
-    // Resolve button handler
-    document.querySelector('.resolve-modal-btn')?.addEventListener('click', function() {
-        alert('Hazard marked as resolved! This would trigger an API call in production.');
-        bootstrap.Modal.getInstance(document.getElementById('hazardModal')).hide();
-    });
-    
-    // Continue inspection button handler
-    document.querySelectorAll('.continue-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const inspectionId = this.closest('.inspection-item').getAttribute('data-inspection-id');
-            alert(`Continuing inspection ${inspectionId}. This would open the inspection form in production.`);
         });
-    });
-    
-    // Resolve hazard button handler
-    document.querySelectorAll('.resolve-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const hazardId = this.closest('.hazard-item').getAttribute('data-observation-id');
-            alert(`Resolving hazard ${hazardId}. This would open the resolution form in production.`);
-        });
-    });
-});
-
-
-</script>
+    </script>
 {% endblock %}
+
