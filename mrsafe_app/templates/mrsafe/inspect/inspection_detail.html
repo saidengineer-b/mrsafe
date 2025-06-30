@@ -1,64 +1,64 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="safety-inspection-container">
+<div class="container-fluid inspection-detail-container">
     <div class="row">
         <div class="col-lg-10 mx-auto">
             <!-- Header Section with Export Options -->
-            <div class="safety-header d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 class="safety-title">
-                        <i class="fas fa-clipboard-check me-2"></i>Site Inspection Report
+                    <h2 class="display-5 fw-bold text-safety-blue">
+                        <i class="bi bi-clipboard2-pulse me-2"></i>Site Inspection Report
                     </h2>
-                    <span class="safety-status-badge badge-{% if inspection.is_completed %}success{% else %}warning{% endif %}">
+                    <span class="badge bg-{% if inspection.is_completed %}safety-green{% else %}safety-yellow{% endif %} fs-6 p-3 text-safety-dark">
                         {% if inspection.is_completed %}Completed{% else %}In Progress{% endif %}
                     </span>
                 </div>
-                <div class="safety-export-group">
-                    <button type="button" class="safety-export-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-download me-2"></i>Export
+                <div class="btn-group">
+                    <button type="button" class="btn btn-safety-outline dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-download me-2"></i>Export
                     </button>
-                    <ul class="safety-dropdown-menu dropdown-menu-end">
-                        <li><button class="dropdown-item" id="copyReportBtn"><i class="fas fa-copy me-2"></i>Copy Report</button></li>
-                        <li><button class="dropdown-item" id="exportPdfBtn"><i class="fas fa-file-pdf me-2"></i>Export as PDF</button></li>
-                        <li><button class="dropdown-item" id="exportPptBtn"><i class="fas fa-file-powerpoint me-2"></i>Export as PowerPoint</button></li>
-                        <li><button class="dropdown-item" id="printReportBtn"><i class="fas fa-print me-2"></i>Print Report</button></li>
+                    <ul class="dropdown-menu dropdown-menu-end border-safety">
+                        <li><button class="dropdown-item text-safety-dark" id="copyReportBtn"><i class="bi bi-clipboard me-2"></i>Copy Report</button></li>
+                        <li><button class="dropdown-item text-safety-dark" id="exportPdfBtn"><i class="bi bi-file-earmark-pdf me-2"></i>Export as PDF</button></li>
+                        <li><button class="dropdown-item text-safety-dark" id="exportPptBtn"><i class="bi bi-file-earmark-ppt me-2"></i>Export as PowerPoint</button></li>
+                        <li><button class="dropdown-item text-safety-dark" id="printReportBtn"><i class="bi bi-printer me-2"></i>Print Report</button></li>
                     </ul>
                 </div>
             </div>
 
             <!-- Inspection Summary Card -->
-            <div class="safety-card shadow-lg mb-4">
-                <div class="safety-card-header bg-gradient-primary">
+            <div class="card shadow-lg mb-4 border-safety bg-safety-light">
+                <div class="card-header bg-safety-blue text-white">
                     <h4 class="card-title mb-0">
-                        <i class="fas fa-info-circle me-2"></i>Inspection Summary
+                        <i class="bi bi-info-circle-fill me-2"></i>Inspection Summary
                     </h4>
                 </div>
-                <div class="safety-card-body">
+                <div class="card-body bg-white">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="safety-info-item mb-3">
-                                <h6 class="safety-info-label">Inspection ID</h6>
-                                <p class="safety-info-value">{{ inspection.id }}</p>
+                            <div class="mb-3">
+                                <h6 class="text-safety-dark mb-1">Inspection ID</h6>
+                                <p class="fs-5 fw-bold text-safety-dark">{{ inspection.id }}</p>
                             </div>
-                            <div class="safety-info-item mb-3">
-                                <h6 class="safety-info-label">Inspector</h6>
-                                <p class="safety-info-value">
-                                    <i class="fas fa-user-hard-hat me-2"></i>{{ inspection.inspector.username }}
+                            <div class="mb-3">
+                                <h6 class="text-safety-dark mb-1">Inspector</h6>
+                                <p class="fs-5 text-safety-dark">
+                                    <i class="bi bi-person-badge me-2"></i>{{ inspection.inspector.username }}
                                 </p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="safety-info-item mb-3">
-                                <h6 class="safety-info-label">Date</h6>
-                                <p class="safety-info-value">
-                                    <i class="fas fa-calendar-alt me-2"></i>{{ inspection.date }}
+                            <div class="mb-3">
+                                <h6 class="text-safety-dark mb-1">Date</h6>
+                                <p class="fs-5 text-safety-dark">
+                                    <i class="bi bi-calendar-event me-2"></i>{{ inspection.date }}
                                 </p>
                             </div>
-                            <div class="safety-info-item mb-3">
-                                <h6 class="safety-info-label">Location</h6>
-                                <p class="safety-info-value">
-                                    <i class="fas fa-map-marker-alt me-2"></i>{{ inspection.location }}
+                            <div class="mb-3">
+                                <h6 class="text-safety-dark mb-1">Location</h6>
+                                <p class="fs-5 text-safety-dark">
+                                    <i class="bi bi-geo-alt-fill me-2"></i>{{ inspection.location }}
                                 </p>
                             </div>
                         </div>
@@ -66,38 +66,38 @@
                     
                     <!-- Progress Bar for Completion Status -->
                     {% if not inspection.is_completed %}
-                    <div class="safety-progress-container mt-3">
-                        <div class="safety-progress-bar" 
+                    <div class="progress mt-3" style="height: 10px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-safety-orange" 
                              role="progressbar" 
                              style="width: {{ inspection.completion_percentage }}%" 
                              aria-valuenow="{{ inspection.completion_percentage }}" 
                              aria-valuemin="0" 
                              aria-valuemax="100">
                         </div>
-                        <small class="safety-progress-text">{{ inspection.completion_percentage }}% complete</small>
                     </div>
+                    <small class="text-safety-dark">{{ inspection.completion_percentage }}% complete</small>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Observations Section -->
-            <div class="safety-card shadow-lg mb-4">
-                <div class="safety-card-header bg-gradient-danger">
+            <div class="card shadow-lg mb-4 border-safety bg-safety-light">
+                <div class="card-header bg-safety-red text-white">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="card-title mb-0">
-                            <i class="fas fa-exclamation-triangle me-2"></i>Safety Observations
-                            <span class="safety-count-badge">{{ observations|length }}</span>
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Safety Observations
+                            <span class="badge bg-safety-light text-safety-red ms-2">{{ observations|length }}</span>
                         </h4>
-                        <button class="safety-collapse-btn" data-bs-toggle="collapse" data-bs-target="#observationsCollapse">
-                            <i class="fas fa-chevron-down"></i>
+                        <button class="btn btn-sm btn-safety-light" data-bs-toggle="collapse" data-bs-target="#observationsCollapse">
+                            <i class="bi bi-chevron-down"></i>
                         </button>
                     </div>
                 </div>
-                <div class="safety-card-body collapse show" id="observationsCollapse">
+                <div class="card-body bg-white collapse show" id="observationsCollapse">
                     {% if observations %}
-                        <div class="safety-table-responsive">
-                            <table class="safety-table">
-                                <thead class="safety-table-header">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="bg-safety-light">
                                     <tr>
                                         <th>Photo</th>
                                         <th>Hazard</th>
@@ -112,34 +112,35 @@
                                         <td>
                                             {% if observation.photo %}
                                             <img src="{{ observation.photo.url }}" alt="Observation Photo" 
-                                                 class="safety-thumbnail">
+                                                 class="img-thumbnail rounded" style="width: 80px; height: 60px; object-fit: cover;">
                                             {% else %}
-                                            <div class="safety-thumbnail-placeholder">
-                                                <i class="fas fa-image"></i>
+                                            <div class="bg-safety-light d-flex align-items-center justify-content-center" 
+                                                 style="width: 80px; height: 60px;">
+                                                <i class="bi bi-image text-safety-dark fs-4"></i>
                                             </div>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <strong class="safety-hazard-text">{{ observation.hazard_description|truncatechars:30 }}</strong>
+                                            <strong class="text-safety-dark">{{ observation.hazard_description|truncatechars:30 }}</strong>
                                         </td>
                                         <td>
-                                            <span class="safety-risk-badge risk-{{ observation.risk_level|lower }}">
+                                            <span class="badge bg-{% if observation.risk_level == 'High' %}safety-red{% elif observation.risk_level == 'Medium' %}safety-orange{% else %}safety-yellow{% endif %} text-safety-dark">
                                                 {{ observation.risk_level }}
                                             </span>
                                         </td>
-                                        <td>{{ observation.detected_at|date:"M d, Y" }}</td>
+                                        <td class="text-safety-dark">{{ observation.detected_at|date:"M d, Y" }}</td>
                                         <td>
-                                            <div class="safety-action-buttons">
-                                                <button class="safety-action-btn copy-btn" 
+                                            <div class="d-flex">
+                                                <button class="btn btn-sm btn-safety-outline me-2 copy-hazard-btn" 
                                                         data-hazard="{{ observation.hazard_description }}"
                                                         title="Copy Hazard">
-                                                    <i class="fas fa-copy"></i>
+                                                    <i class="bi bi-clipboard"></i>
                                                 </button>
-                                                <button class="safety-action-btn view-btn"
+                                                <button class="btn btn-sm btn-safety-outline-secondary view-details-btn"
                                                         data-bs-toggle="modal" 
                                                         data-bs-target="#observationModal{{ observation.id }}"
                                                         title="View Details">
-                                                    <i class="fas fa-eye"></i>
+                                                    <i class="bi bi-eye-fill"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -149,26 +150,26 @@
                             </table>
                         </div>
                     {% else %}
-                        <div class="safety-alert success">
-                            <i class="fas fa-check-circle me-2"></i> No safety observations found for this inspection.
+                        <div class="alert alert-safety-success" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i> No safety observations found for this inspection.
                         </div>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="safety-action-container">
-                <a href="{% url 'mrsafe_app:site_inspection_start' inspection.id %}" class="safety-primary-btn">
-                    <i class="fas fa-play-circle me-2"></i> Continue Inspection
+            <div class="d-grid gap-3 d-md-flex justify-content-md-center mb-5">
+                <a href="{% url 'mrsafe_app:site_inspection_start' inspection.id %}" class="btn btn-safety-primary btn-lg px-4 me-md-2">
+                    <i class="bi bi-play-circle-fill me-2"></i> Continue Inspection
                 </a>
                 
-                <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="safety-secondary-btn">
-                    <i class="fas fa-arrow-left me-2"></i> Back to Overview
+                <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="btn btn-safety-outline btn-lg px-4">
+                    <i class="bi bi-arrow-left-circle-fill me-2"></i> Back to Overview
                 </a>
                 
                 {% if not inspection.is_completed %}
-                <a href="#" class="safety-success-btn">
-                    <i class="fas fa-check-circle me-2"></i> Complete Inspection
+                <a href="#" class="btn btn-safety-success btn-lg px-4 ms-md-2">
+                    <i class="bi bi-check-circle-fill me-2"></i> Complete Inspection
                 </a>
                 {% endif %}
             </div>
@@ -178,37 +179,36 @@
 
 <!-- Observation Detail Modals -->
 {% for observation in observations %}
-<div class="safety-modal fade" id="observationModal{{ observation.id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="safety-modal-dialog modal-lg modal-dialog-centered">
-        <div class="safety-modal-content">
-            <div class="safety-modal-header risk-{{ observation.risk_level|lower }}">
+<div class="modal fade" id="observationModal{{ observation.id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-safety">
+            <div class="modal-header bg-{% if observation.risk_level == 'High' %}safety-red{% elif observation.risk_level == 'Medium' %}safety-orange{% else %}safety-yellow{% endif %} text-white">
                 <h5 class="modal-title">Observation Details</h5>
-                <button type="button" class="safety-modal-close" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="safety-modal-body">
+            <div class="modal-body bg-white">
                 <div class="row">
                     <!-- Photo Column -->
                     <div class="col-md-5">
-                        <div class="safety-photo-container mb-3">
+                        <div class="observation-photo-container mb-3 shadow-sm">
                             {% if observation.photo %}
                             <img src="{{ observation.photo.url }}" alt="Observation Photo" 
-                                 class="safety-modal-image">
+                                 class="img-fluid rounded" style="max-height: 300px; width: 100%; object-fit: contain;">
                             {% else %}
-                            <div class="safety-no-image">
-                                <i class="fas fa-image"></i>
+                            <div class="bg-safety-light d-flex align-items-center justify-content-center" 
+                                 style="height: 200px; border-radius: 8px;">
+                                <i class="bi bi-image text-safety-dark fs-1"></i>
                             </div>
                             {% endif %}
                         </div>
-                        <div class="safety-meta-info">
-                            <div class="safety-meta-item">
-                                <span class="safety-meta-label">Detected At:</span>
-                                <span class="safety-meta-value">{{ observation.detected_at }}</span>
+                        <div class="observation-meta bg-safety-light p-3 rounded">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-safety-dark">Detected At:</span>
+                                <span class="fw-medium">{{ observation.detected_at }}</span>
                             </div>
-                            <div class="safety-meta-item">
-                                <span class="safety-meta-label">Risk Level:</span>
-                                <span class="safety-risk-badge risk-{{ observation.risk_level|lower }}">
+                            <div class="d-flex justify-content-between">
+                                <span class="text-safety-dark">Risk Level:</span>
+                                <span class="badge bg-{% if observation.risk_level == 'High' %}safety-red{% elif observation.risk_level == 'Medium' %}safety-orange{% else %}safety-yellow{% endif %} text-safety-dark">
                                     {{ observation.risk_level }}
                                 </span>
                             </div>
@@ -217,35 +217,35 @@
                     
                     <!-- Details Column -->
                     <div class="col-md-7">
-                        <div class="safety-detail-section mb-3">
-                            <h6 class="safety-detail-title">Hazard Description</h6>
-                            <div class="safety-detail-content">
-                                <p>{{ observation.hazard_description }}</p>
+                        <div class="hazard-section mb-3">
+                            <h6 class="text-safety-dark mb-2">Hazard Description</h6>
+                            <div class="hazard-content bg-white p-3 rounded border-safety">
+                                <p class="mb-0 text-safety-dark">{{ observation.hazard_description }}</p>
                             </div>
                         </div>
                         
-                        <div class="safety-detail-section mb-3">
-                            <h6 class="safety-detail-title">Recommendations</h6>
-                            <div class="safety-detail-content">
-                                <p>{{ observation.recommendations }}</p>
+                        <div class="recommendations-section mb-3">
+                            <h6 class="text-safety-dark mb-2">Recommendations</h6>
+                            <div class="recommendations-content bg-white p-3 rounded border-safety">
+                                <p class="mb-0 text-safety-dark">{{ observation.recommendations }}</p>
                             </div>
                         </div>
                         
                         {% if observation.additional_notes %}
-                        <div class="safety-detail-section">
-                            <h6 class="safety-detail-title">Additional Notes</h6>
-                            <div class="safety-detail-content">
-                                <p>{{ observation.additional_notes }}</p>
+                        <div class="notes-section">
+                            <h6 class="text-safety-dark mb-2">Additional Notes</h6>
+                            <div class="notes-content bg-white p-3 rounded border-safety">
+                                <p class="mb-0 text-safety-dark">{{ observation.additional_notes }}</p>
                             </div>
                         </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
-            <div class="safety-modal-footer">
-                <button type="button" class="safety-modal-btn secondary" data-bs-dismiss="modal">Close</button>
-                <a href="{% url 'mrsafe_app:observation_detail' observation.id %}" class="safety-modal-btn primary">
-                    <i class="fas fa-external-link-alt me-2"></i>View Full Details
+            <div class="modal-footer bg-safety-light">
+                <button type="button" class="btn btn-safety-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="{% url 'mrsafe_app:observation_detail' observation.id %}" class="btn btn-safety-primary">
+                    <i class="bi bi-box-arrow-up-right me-2"></i>View Full Details
                 </a>
             </div>
         </div>
@@ -254,51 +254,32 @@
 {% endfor %}
 
 <!-- Toast Notifications -->
-<div class="safety-toast-container">
-    <div id="exportToast" class="safety-toast success" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="safety-toast-header">
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="exportToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-safety-success text-white">
             <strong class="me-auto">Success</strong>
-            <button type="button" class="safety-toast-close" data-bs-dismiss="toast" aria-label="Close">
-                <i class="fas fa-times"></i>
-            </button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
-        <div class="safety-toast-body">
+        <div class="toast-body bg-white text-safety-dark">
             Report exported successfully!
         </div>
     </div>
     
-    <div id="copyToast" class="safety-toast primary" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="safety-toast-header">
+    <div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-safety-blue text-white">
             <strong class="me-auto">Copied</strong>
-            <button type="button" class="safety-toast-close" data-bs-dismiss="toast" aria-label="Close">
-                <i class="fas fa-times"></i>
-            </button>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
-        <div class="safety-toast-body">
+        <div class="toast-body bg-white text-safety-dark">
             Content copied to clipboard!
         </div>
     </div>
 </div>
 
-{% if not inspection.completed %}
-<form method="post" action="{% url 'mrsafe_app:finalize_inspection' inspection.id %}" class="safety-finalize-form">
-    {% csrf_token %}
-    <button class="safety-finalize-btn">
-        <i class="fas fa-check-circle me-2"></i> Finalize Inspection
-    </button>
-</form>
-{% else %}
-<p class="safety-finalized-text">
-    <i class="fas fa-calendar-check me-2"></i>Inspection finalized on {{ inspection.completed_at }}
-</p>
-{% endif %}
 
-<a href="{% url 'mrsafe_app:inspection_full_report' inspection.id %}" class="safety-report-link">
-    <i class="fas fa-file-alt me-2"></i> View Full Report
-</a>
 
 <style>
-    /* 🎨 COLOR PALETTE */
+    /* 🎨 COLOR PALETTE - Consolidated at the top */
     :root {
         --safety-red: #e63946;
         --safety-orange: #f77f00;
@@ -314,678 +295,634 @@
         --success-grad: linear-gradient(135deg, #2a9d8f 0%, #8ac926 100%);
     }
 
-    /* 🏗️ SAFETY INSPECTION CONTAINER */
-    .safety-inspection-container {
+    /* 🏗️ SAFETY CARD STYLES - Combined from both */
+    .inspection-detail-container {
         background-color: #f8f9fa;
         padding: 2rem 0;
-        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     }
-
-    /* 🚧 SAFETY HEADER */
-    .safety-header {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        border-left: 5px solid var(--safety-blue);
-    }
-
-    .safety-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--safety-blue);
-        margin: 0;
-        display: flex;
-        align-items: center;
-    }
-
-    .safety-title i {
-        color: var(--safety-green);
-    }
-
-    .safety-status-badge {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
-    }
-
-    .badge-success {
-        background: var(--success-grad);
-        color: white;
-    }
-
-    .badge-warning {
-        background: var(--warning-grad);
-        color: var(--safety-dark);
-    }
-
-    /* 📤 EXPORT BUTTONS */
-    .safety-export-group {
-        position: relative;
-    }
-
-    .safety-export-btn {
-        background: white;
-        color: var(--safety-blue);
-        border: 2px solid var(--safety-blue);
-        padding: 0.5rem 1.5rem;
-        border-radius: 6px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        transition: all 0.3s;
-    }
-
-    .safety-export-btn:hover {
-        background: var(--safety-blue);
-        color: white;
-    }
-
-    .safety-dropdown-menu {
-        border: 2px solid var(--safety-blue);
-        border-radius: 6px;
-        overflow: hidden;
-    }
-
-    .safety-dropdown-menu .dropdown-item {
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-    }
-
-    .safety-dropdown-menu .dropdown-item:hover {
-        background: rgba(29, 53, 87, 0.1);
-    }
-
-    .safety-dropdown-menu i {
-        width: 20px;
-        text-align: center;
-        margin-right: 0.5rem;
-    }
-
-    /* 🏗️ SAFETY CARDS */
-    .safety-card {
-        background: white;
+    
+    .card {
         border-radius: 8px;
         overflow: hidden;
         margin-bottom: 1.5rem;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: none;
+        border: 1px solid rgba(0, 0, 0, 0.1);
     }
-
-    .safety-card:hover {
+    
+    .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
     }
-
-    .safety-card-header {
-        padding: 1rem 1.5rem;
+    
+    .card-header {
         font-weight: 600;
         letter-spacing: 0.5px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    /* 🚨 RISK LEVEL BADGES - Combined */
+    .badge.bg-safety-red {
+        background-color: var(--safety-red) !important;
+        color: white !important;
+    }
+    
+    .badge.bg-safety-orange {
+        background-color: var(--safety-orange) !important;
+        color: var(--safety-dark) !important;
+    }
+    
+    .badge.bg-safety-yellow {
+        background-color: var(--safety-yellow) !important;
+        color: var(--safety-dark) !important;
+    }
+    
+    .badge.bg-safety-green {
+        background-color: var(--safety-green) !important;
+        color: white !important;
+    }
+
+    /* 🎨 SAFETY COLOR UTILITIES - Combined */
+    .bg-safety-red { background-color: var(--safety-red); }
+    .bg-safety-orange { background-color: var(--safety-orange); }
+    .bg-safety-yellow { background-color: var(--safety-yellow); }
+    .bg-safety-green { background-color: var(--safety-green); }
+    .bg-safety-blue { background-color: var(--safety-blue); }
+    .bg-safety-dark { background-color: var(--safety-dark); }
+    .bg-safety-light { background-color: var(--safety-light); }
+    
+    .text-safety-red { color: var(--safety-red); }
+    .text-safety-orange { color: var(--safety-orange); }
+    .text-safety-yellow { color: var(--safety-yellow); }
+    .text-safety-green { color: var(--safety-green); }
+    .text-safety-blue { color: var(--safety-blue); }
+    .text-safety-dark { color: var(--safety-dark); }
+    .text-safety-light { color: var(--safety-light); }
+    
+    .border-safety { border: 1px solid var(--safety-blue); }
+    
+    /* 🚧 SAFETY BUTTONS - Combined */
+    .btn-safety-primary {
+        background-color: var(--safety-blue);
+        color: white;
+        border: none;
+    }
+    .btn-safety-primary:hover {
+        background-color: var(--safety-dark);
+        color: white;
+    }
+    
+    .btn-safety-outline {
+        border: 1px solid var(--safety-blue);
+        color: var(--safety-blue);
+    }
+    .btn-safety-outline:hover {
+        background-color: var(--safety-blue);
+        color: white;
+    }
+    
+    .btn-safety-secondary {
+        background-color: var(--safety-light);
+        color: var(--safety-dark);
+        border: 1px solid var(--safety-blue);
+    }
+    .btn-safety-secondary:hover {
+        background-color: var(--safety-blue);
+        color: white;
+    }
+    
+    .btn-safety-success {
+        background-color: var(--safety-green);
+        color: white;
+        border: none;
+    }
+    .btn-safety-success:hover {
+        background-color: #21867a;
+        color: white;
+    }
+    
+    .btn-safety-light {
+        background-color: var(--safety-light);
+        color: var(--safety-dark);
+    }
+    
+    .alert-safety-success {
+        background-color: rgba(42, 157, 143, 0.2);
+        color: var(--safety-dark);
+        border-left: 4px solid var(--safety-green);
+    }
+
+    /* 🖼️ IMAGE STYLES - Combined */
+    .observation-photo-container {
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: var(--safety-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+    
+    .observation-photo-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 📊 TABLE STYLES - Combined */
+    .table thead th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        background-color: var(--safety-light);
+        color: var(--safety-dark);
+    }
+    
+    .table tbody td {
+        vertical-align: middle;
+        border-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(29, 53, 87, 0.05);
+    }
+    
+    /* 🔍 DETAILS SECTION - Combined */
+    .hazard-content, 
+    .recommendations-content,
+    .notes-content {
+        min-height: 80px;
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: var(--safety-light);
+        border-radius: 6px;
+    }
+
+    /* ⚠️ SAFETY ELEMENTS - Combined */
+    .safety-alert {
+        border-left: 4px solid var(--safety-red);
+        background-color: rgba(230, 57, 70, 0.1);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0 4px 4px 0;
+    }
+    
+    .safety-warning {
+        border-left: 4px solid var(--safety-orange);
+        background-color: rgba(247, 127, 0, 0.1);
+    }
+    
+    .safety-caution {
+        border-left: 4px solid var(--safety-yellow);
+        background-color: rgba(252, 191, 73, 0.1);
+    }
+
+    /* 🖨️ PRINT STYLES - Combined */
+    @media print {
+        .inspection-detail-container {
+            background-color: white;
+            padding: 0;
+        }
+        .card {
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+        .btn, .dropdown-menu {
+            display: none !important;
+        }
+        .progress-bar {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    }
+
+    /* 🚧 SAFETY FORM STRUCTURE - From second style block */
+    .safety-upload-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* 🚨 SAFETY HEADER - From second style block */
+    .safety-upload-header {
+        padding: 2rem 1rem;
+        text-align: center;
+        position: relative;
+        color: var(--safety-dark);
+        margin-bottom: 2rem;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .safety-camera-container {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+
+    .safety-camera-icon {
+        font-size: 4rem;
+        color: white;
+        text-shadow: 2px 2px 0 var(--safety-dark);
+        position: relative;
+        z-index: 2;
+    }
+
+    .safety-camera-flash {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background: white;
+        border-radius: 50%;
+        top: -5px;
+        right: -5px;
+        opacity: 0.8;
+        animation: flash-pulse 3s infinite;
+    }
+
+    .safety-upload-title {
+        font-size: 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin: 0.5rem 0;
+        position: relative;
+        display: inline-block;
+    }
+
+    .safety-title-underline {
+        position: relative;
+        padding-bottom: 5px;
+    }
+
+    .safety-title-underline::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 4px;
+        background: var(--danger-grad);
+        bottom: 0;
+        left: 0;
+        border-radius: 2px;
+    }
+
+    .safety-title-badge {
+        background: var(--safety-red);
+        color: white;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.8rem;
+        border-radius: 20px;
+        margin-left: 1rem;
+        vertical-align: middle;
+        position: relative;
+        top: -5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .safety-upload-subtitle {
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin: 0;
+        color: var(--safety-dark);
+    }
+
+    /* ⚠️ UPLOAD CARD - From second style block */
+    .safety-upload-card {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border: 2px solid var(--safety-blue);
+    }
+
+    /* 📸 UPLOAD OPTIONS - From second style block */
+    .safety-upload-options {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .safety-upload-btn {
+        flex: 1;
+        min-width: 200px;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        border: 2px dashed transparent;
+    }
+
+    .safety-btn-camera {
+        background: var(--primary-grad);
         color: white;
     }
 
-    .bg-gradient-primary {
-        background: var(--primary-grad);
+    .safety-btn-camera:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(29, 53, 87, 0.3);
     }
 
-    .bg-gradient-danger {
-        background: var(--danger-grad);
-    }
-
-    .safety-card-body {
-        padding: 1.5rem;
-    }
-
-    /* ℹ️ INFO ITEMS */
-    .safety-info-item {
-        padding: 0.5rem 0;
-    }
-
-    .safety-info-label {
-        color: #666;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .safety-info-value {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: var(--safety-dark);
-        margin: 0;
-        display: flex;
-        align-items: center;
-    }
-
-    .safety-info-value i {
+    .safety-btn-gallery {
+        background: white;
         color: var(--safety-blue);
-        margin-right: 0.5rem;
+        border-color: var(--safety-blue);
     }
 
-    /* 📊 PROGRESS BAR */
+    .safety-btn-gallery:hover {
+        background: rgba(29, 53, 87, 0.05);
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .safety-btn-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .safety-btn-glow {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.5) 50%,
+            rgba(255,255,255,0) 100%
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .safety-btn-camera:hover .safety-btn-glow {
+        opacity: 1;
+        animation: glow-animation 2s infinite;
+    }
+
+    /* 📌 UPLOAD PROGRESS - From second style block */
     .safety-progress-container {
-        margin-top: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .safety-progress-bar {
         height: 10px;
-        background: var(--warning-grad);
+        background: #e9ecef;
         border-radius: 5px;
-        transition: width 0.5s ease;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .safety-progress-fill {
+        height: 100%;
+        background: var(--success-grad);
+        border-radius: 5px;
+        transition: width 0.3s;
     }
 
     .safety-progress-text {
         font-size: 0.9rem;
-        color: #666;
-        font-weight: 500;
-        margin-top: 0.25rem;
-    }
-
-    /* 🚨 OBSERVATIONS TABLE */
-    .safety-table-responsive {
-        overflow-x: auto;
-    }
-
-    .safety-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-
-    .safety-table-header {
-        background: rgba(29, 53, 87, 0.1);
-    }
-
-    .safety-table-header th {
-        padding: 1rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.5px;
         color: var(--safety-blue);
-        border-bottom: 2px solid var(--safety-blue);
+        font-weight: 600;
     }
 
-    .safety-table tbody tr {
-        transition: background 0.2s;
+    /* 🖼️ IMAGE PREVIEW - From second style block */
+    .safety-preview-container {
+        margin-bottom: 2rem;
     }
 
-    .safety-table tbody tr:hover {
-        background: rgba(29, 53, 87, 0.05);
-    }
-
-    .safety-table td {
-        padding: 1rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #eee;
-    }
-
-    .safety-thumbnail {
-        width: 80px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-    }
-
-    .safety-thumbnail-placeholder {
-        width: 80px;
-        height: 60px;
-        background: #f5f5f5;
+    .safety-preview-alert {
         display: flex;
         align-items: center;
-        justify-content: center;
+        padding: 1rem;
+        background: rgba(42, 157, 143, 0.1);
+        border-left: 4px solid var(--safety-green);
         border-radius: 4px;
-        color: #999;
-        border: 1px dashed #ccc;
+        margin-bottom: 1rem;
     }
 
-    .safety-hazard-text {
-        color: var(--safety-dark);
-    }
-
-    /* 🚦 RISK BADGES */
-    .safety-risk-badge {
-        display: inline-block;
-        padding: 0.35rem 0.75rem;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .risk-high {
-        background: var(--danger-grad);
-        color: white;
-    }
-
-    .risk-medium {
-        background: var(--warning-grad);
-        color: var(--safety-dark);
-    }
-
-    .risk-low {
-        background: var(--success-grad);
-        color: white;
-    }
-
-    /* 🔧 ACTION BUTTONS */
-    .safety-action-buttons {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .safety-action-btn {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent;
-        border: 1px solid #ddd;
-        color: #666;
-        transition: all 0.2s;
-    }
-
-    .safety-action-btn:hover {
-        transform: scale(1.1);
-        color: var(--safety-blue);
-        border-color: var(--safety-blue);
-    }
-
-    .copy-btn:hover {
+    .safety-preview-alert i {
         color: var(--safety-green);
-        border-color: var(--safety-green);
+        margin-right: 0.8rem;
+        font-size: 1.2rem;
     }
 
-    .view-btn:hover {
-        color: var(--safety-blue);
-        border-color: var(--safety-blue);
+    .safety-preview-alert span {
+        flex: 1;
+        font-weight: 600;
     }
 
-    /* 🚀 ACTION CONTAINER */
-    .safety-action-container {
+    .safety-preview-close {
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        font-size: 1.1rem;
+    }
+
+    .safety-preview-image {
+        max-width: 100%;
+        max-height: 300px;
+        display: block;
+        margin: 0 auto;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    /* 🛠️ ACTION BUTTONS - From second style block */
+    .safety-form-actions {
         display: flex;
         gap: 1rem;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin: 2rem 0;
     }
 
-    .safety-primary-btn,
-    .safety-secondary-btn,
-    .safety-success-btn {
-        padding: 0.75rem 1.5rem;
+    .safety-btn {
+        flex: 1;
+        padding: 1rem;
         border-radius: 6px;
         font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
         display: flex;
         align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
         transition: all 0.3s;
-        text-decoration: none;
-    }
-
-    .safety-primary-btn {
-        background: var(--primary-grad);
-        color: white;
+        position: relative;
+        overflow: hidden;
         border: none;
     }
 
-    .safety-primary-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(29, 53, 87, 0.3);
-        color: white;
+    .safety-btn i {
+        font-size: 1.1rem;
     }
 
-    .safety-secondary-btn {
+    .safety-btn-back {
         background: white;
         color: var(--safety-blue);
         border: 2px solid var(--safety-blue);
     }
 
-    .safety-secondary-btn:hover {
+    .safety-btn-back:hover {
         background: var(--safety-blue);
         color: white;
     }
 
-    .safety-success-btn {
-        background: var(--success-grad);
+    .safety-btn-submit {
+        background: var(--primary-grad);
         color: white;
-        border: none;
     }
 
-    .safety-success-btn:hover {
+    .safety-btn-submit:hover {
         transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3);
-        color: white;
+        box-shadow: 0 8px 25px rgba(29, 53, 87, 0.3);
     }
 
-    /* 🖼️ MODAL STYLES */
-    .safety-modal {
-        z-index: 1060;
-    }
-
-    .safety-modal-content {
-        border: none;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .safety-modal-header {
-        padding: 1.25rem 1.5rem;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .safety-modal-header.risk-high {
-        background: var(--danger-grad);
-    }
-
-    .safety-modal-header.risk-medium {
-        background: var(--warning-grad);
-    }
-
-    .safety-modal-header.risk-low {
-        background: var(--success-grad);
-    }
-
-    .safety-modal-close {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.25rem;
-        opacity: 0.8;
-        transition: opacity 0.2s;
-    }
-
-    .safety-modal-close:hover {
-        opacity: 1;
-    }
-
-    .safety-modal-body {
-        padding: 1.5rem;
-    }
-
-    .safety-photo-container {
-        margin-bottom: 1rem;
-        border-radius: 8px;
-        overflow: hidden;
-        background: #f8f9fa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #dee2e6;
-    }
-
-    .safety-modal-image {
-        max-width: 100%;
-        max-height: 300px;
-        object-fit: contain;
-    }
-
-    .safety-no-image {
-        height: 200px;
+    .safety-btn-pulse {
+        position: absolute;
         width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #999;
-        font-size: 3rem;
-    }
-
-    .safety-meta-info {
-        background: #f8f9fa;
-        padding: 1rem;
-        border-radius: 8px;
-    }
-
-    .safety-meta-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-    }
-
-    .safety-meta-label {
-        color: #666;
-        font-weight: 500;
-    }
-
-    .safety-meta-value {
-        font-weight: 600;
-        color: var(--safety-dark);
-    }
-
-    .safety-detail-section {
-        margin-bottom: 1.5rem;
-    }
-
-    .safety-detail-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--safety-blue);
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .safety-detail-content {
-        background: #f8f9fa;
-        padding: 1rem;
-        border-radius: 8px;
-        max-height: 200px;
-        overflow-y: auto;
-    }
-
-    .safety-detail-content p {
-        margin: 0;
-        color: var(--safety-dark);
-    }
-
-    .safety-modal-footer {
-        padding: 1rem 1.5rem;
-        background: #f8f9fa;
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
-    }
-
-    .safety-modal-btn {
-        padding: 0.5rem 1.25rem;
+        height: 100%;
         border-radius: 6px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        transition: all 0.2s;
-        border: none;
-    }
-
-    .safety-modal-btn.primary {
-        background: var(--primary-grad);
-        color: white;
-    }
-
-    .safety-modal-btn.secondary {
-        background: white;
-        color: var(--safety-blue);
-        border: 1px solid var(--safety-blue);
-    }
-
-    .safety-modal-btn:hover {
-        transform: translateY(-2px);
-    }
-
-    /* 🍞 TOAST NOTIFICATIONS */
-    .safety-toast-container {
-        position: fixed;
-        bottom: 1rem;
-        right: 1rem;
-        z-index: 1100;
-    }
-
-    .safety-toast {
-        width: 300px;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        margin-bottom: 1rem;
+        top: 0;
+        left: 0;
+        background: rgba(255,255,255,0.3);
         opacity: 0;
-        transition: opacity 0.3s;
+        animation: pulse-animation 2s infinite;
     }
 
-    .safety-toast.show {
+    .safety-btn-submit:hover .safety-btn-pulse {
         opacity: 1;
     }
 
-    .safety-toast-header {
-        padding: 0.75rem 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-weight: 600;
-    }
-
-    .safety-toast.primary .safety-toast-header {
-        background: var(--primary-grad);
-        color: white;
-    }
-
-    .safety-toast.success .safety-toast-header {
-        background: var(--success-grad);
-        color: white;
-    }
-
-    .safety-toast-close {
-        background: none;
-        border: none;
-        color: inherit;
-        opacity: 0.8;
-    }
-
-    .safety-toast-close:hover {
-        opacity: 1;
-    }
-
-    .safety-toast-body {
-        padding: 1rem;
+    /* 🚦 SAFETY GUIDELINES - From second style block */
+    .safety-guidelines-card {
         background: white;
-        color: var(--safety-dark);
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border: 2px solid var(--safety-yellow);
     }
 
-    /* 📝 FINALIZE FORM */
-    .safety-finalize-form {
-        margin: 2rem 0;
-        text-align: center;
-    }
-
-    .safety-finalize-btn {
-        padding: 0.75rem 1.5rem;
-        background: var(--success-grad);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        transition: all 0.3s;
-    }
-
-    .safety-finalize-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3);
-    }
-
-    .safety-finalized-text {
-        text-align: center;
-        color: var(--safety-green);
-        font-weight: 500;
-        margin: 2rem 0;
+    .safety-guidelines-header {
         display: flex;
         align-items: center;
-        justify-content: center;
+        margin-bottom: 1.5rem;
+        color: var(--safety-blue);
     }
 
-    .safety-report-link {
-        display: inline-flex;
+    .safety-guidelines-header i {
+        font-size: 1.8rem;
+        margin-right: 1rem;
+        color: var(--safety-yellow);
+    }
+
+    .safety-guidelines-header h3 {
+        font-size: 1.3rem;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .safety-guidelines-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .safety-section-title {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
         align-items: center;
-        padding: 0.75rem 1.5rem;
-        background: var(--safety-dark);
-        color: white;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s;
-        margin: 1rem auto;
+        gap: 0.8rem;
     }
 
-    .safety-report-link:hover {
-        background: var(--safety-blue);
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(20, 33, 61, 0.3);
+    .safety-section-title-good {
+        color: var(--safety-green);
     }
 
-    /* 📱 RESPONSIVE DESIGN */
-    @media (max-width: 992px) {
-        .safety-title {
-            font-size: 1.75rem;
-        }
+    .safety-section-title-bad {
+        color: var(--safety-red);
     }
 
+    .safety-checklist {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .safety-checklist li {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .safety-checklist i {
+        font-size: 1.1rem;
+    }
+
+    .safety-checklist .fa-check {
+        color: var(--safety-green);
+    }
+
+    .safety-checklist .fa-times {
+        color: var(--safety-red);
+    }
+
+    /* 🎬 ANIMATIONS - From second style block */
+    @keyframes glow-animation {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    @keyframes pulse-animation {
+        0% { transform: scale(1); opacity: 0.3; }
+        50% { transform: scale(1.05); opacity: 0.1; }
+        100% { transform: scale(1); opacity: 0.3; }
+    }
+
+    @keyframes flash-pulse {
+        0% { opacity: 0.3; }
+        50% { opacity: 0.8; }
+        100% { opacity: 0.3; }
+    }
+
+    /* 📱 RESPONSIVE DESIGN - From second style block */
     @media (max-width: 768px) {
-        .safety-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-        
-        .safety-export-group {
-            width: 100%;
-        }
-        
-        .safety-export-btn {
-            width: 100%;
-            justify-content: center;
-        }
-        
-        .safety-action-container {
+        .safety-upload-options {
             flex-direction: column;
         }
         
-        .safety-primary-btn,
-        .safety-secondary-btn,
-        .safety-success-btn {
-            width: 100%;
-            justify-content: center;
+        .safety-form-actions {
+            flex-direction: column;
+        }
+        
+        .safety-guidelines-content {
+            grid-template-columns: 1fr;
+        }
+        
+        .safety-upload-title {
+            font-size: 1.8rem;
         }
     }
 
-    @media (max-width: 576px) {
-        .safety-title {
+    @media (max-width: 480px) {
+        .safety-upload-header {
+            padding: 1.5rem 1rem;
+        }
+        
+        .safety-upload-card,
+        .safety-guidelines-card {
+            padding: 1.5rem;
+        }
+        
+        .safety-upload-title {
             font-size: 1.5rem;
-        }
-        
-        .safety-card-header h4 {
-            font-size: 1.25rem;
-        }
-        
-        .safety-modal-body .row {
-            flex-direction: column;
-        }
-        
-        .safety-modal-body .col-md-5,
-        .safety-modal-body .col-md-7 {
-            width: 100%;
         }
     }
 </style>
@@ -1003,12 +940,11 @@
         const copyToast = new bootstrap.Toast(document.getElementById('copyToast'));
         
         // Copy hazard functionality
-        document.querySelectorAll('.copy-btn').forEach(btn => {
+        document.querySelectorAll('.copy-hazard-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const hazardText = this.getAttribute('data-hazard');
                 navigator.clipboard.writeText(hazardText).then(() => {
-                    copyToast.classList.add('show');
-                    setTimeout(() => copyToast.classList.remove('show'), 3000);
+                    copyToast.show();
                 });
             });
         });
@@ -1016,20 +952,20 @@
         // Export buttons functionality
         document.getElementById('copyReportBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            exportToast.classList.add('show');
-            setTimeout(() => exportToast.classList.remove('show'), 3000);
+            // Implement copy report logic here
+            exportToast.show();
         });
         
         document.getElementById('exportPdfBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            exportToast.classList.add('show');
-            setTimeout(() => exportToast.classList.remove('show'), 3000);
+            // Implement PDF export logic here
+            exportToast.show();
         });
         
         document.getElementById('exportPptBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            exportToast.classList.add('show');
-            setTimeout(() => exportToast.classList.remove('show'), 3000);
+            // Implement PPT export logic here
+            exportToast.show();
         });
         
         document.getElementById('printReportBtn').addEventListener('click', function(e) {
@@ -1038,7 +974,7 @@
         });
         
         // Add animation to progress bar when it comes into view
-        const progressBar = document.querySelector('.safety-progress-bar');
+        const progressBar = document.querySelector('.progress-bar');
         if (progressBar) {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
