@@ -1,64 +1,64 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid inspection-detail-container">
+<div class="safety-inspection-container">
     <div class="row">
         <div class="col-lg-10 mx-auto">
             <!-- Header Section with Export Options -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="safety-header d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 class="display-5 fw-bold text-primary">
-                        <i class="bi bi-clipboard2-pulse me-2"></i>Site Inspection Report
+                    <h2 class="safety-title">
+                        <i class="fas fa-clipboard-check me-2"></i>Site Inspection Report
                     </h2>
-                    <span class="badge bg-{% if inspection.is_completed %}success{% else %}warning{% endif %} fs-6 p-3">
+                    <span class="safety-status-badge badge-{% if inspection.is_completed %}success{% else %}warning{% endif %}">
                         {% if inspection.is_completed %}Completed{% else %}In Progress{% endif %}
                     </span>
                 </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-download me-2"></i>Export
+                <div class="safety-export-group">
+                    <button type="button" class="safety-export-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-download me-2"></i>Export
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><button class="dropdown-item" id="copyReportBtn"><i class="bi bi-clipboard me-2"></i>Copy Report</button></li>
-                        <li><button class="dropdown-item" id="exportPdfBtn"><i class="bi bi-file-earmark-pdf me-2"></i>Export as PDF</button></li>
-                        <li><button class="dropdown-item" id="exportPptBtn"><i class="bi bi-file-earmark-ppt me-2"></i>Export as PowerPoint</button></li>
-                        <li><button class="dropdown-item" id="printReportBtn"><i class="bi bi-printer me-2"></i>Print Report</button></li>
+                    <ul class="safety-dropdown-menu dropdown-menu-end">
+                        <li><button class="dropdown-item" id="copyReportBtn"><i class="fas fa-copy me-2"></i>Copy Report</button></li>
+                        <li><button class="dropdown-item" id="exportPdfBtn"><i class="fas fa-file-pdf me-2"></i>Export as PDF</button></li>
+                        <li><button class="dropdown-item" id="exportPptBtn"><i class="fas fa-file-powerpoint me-2"></i>Export as PowerPoint</button></li>
+                        <li><button class="dropdown-item" id="printReportBtn"><i class="fas fa-print me-2"></i>Print Report</button></li>
                     </ul>
                 </div>
             </div>
 
             <!-- Inspection Summary Card -->
-            <div class="card shadow-lg mb-4 border-0 bg-white">
-                <div class="card-header bg-gradient-primary text-white">
+            <div class="safety-card shadow-lg mb-4">
+                <div class="safety-card-header bg-gradient-primary">
                     <h4 class="card-title mb-0">
-                        <i class="bi bi-info-circle-fill me-2"></i>Inspection Summary
+                        <i class="fas fa-info-circle me-2"></i>Inspection Summary
                     </h4>
                 </div>
-                <div class="card-body bg-white">
+                <div class="safety-card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <h6 class="text-muted mb-1">Inspection ID</h6>
-                                <p class="fs-5 fw-bold text-dark">{{ inspection.id }}</p>
+                            <div class="safety-info-item mb-3">
+                                <h6 class="safety-info-label">Inspection ID</h6>
+                                <p class="safety-info-value">{{ inspection.id }}</p>
                             </div>
-                            <div class="mb-3">
-                                <h6 class="text-muted mb-1">Inspector</h6>
-                                <p class="fs-5 text-dark">
-                                    <i class="bi bi-person-badge me-2"></i>{{ inspection.inspector.username }}
+                            <div class="safety-info-item mb-3">
+                                <h6 class="safety-info-label">Inspector</h6>
+                                <p class="safety-info-value">
+                                    <i class="fas fa-user-hard-hat me-2"></i>{{ inspection.inspector.username }}
                                 </p>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <h6 class="text-muted mb-1">Date</h6>
-                                <p class="fs-5 text-dark">
-                                    <i class="bi bi-calendar-event me-2"></i>{{ inspection.date }}
+                            <div class="safety-info-item mb-3">
+                                <h6 class="safety-info-label">Date</h6>
+                                <p class="safety-info-value">
+                                    <i class="fas fa-calendar-alt me-2"></i>{{ inspection.date }}
                                 </p>
                             </div>
-                            <div class="mb-3">
-                                <h6 class="text-muted mb-1">Location</h6>
-                                <p class="fs-5 text-dark">
-                                    <i class="bi bi-geo-alt-fill me-2"></i>{{ inspection.location }}
+                            <div class="safety-info-item mb-3">
+                                <h6 class="safety-info-label">Location</h6>
+                                <p class="safety-info-value">
+                                    <i class="fas fa-map-marker-alt me-2"></i>{{ inspection.location }}
                                 </p>
                             </div>
                         </div>
@@ -66,38 +66,38 @@
                     
                     <!-- Progress Bar for Completion Status -->
                     {% if not inspection.is_completed %}
-                    <div class="progress mt-3" style="height: 10px;">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                    <div class="safety-progress-container mt-3">
+                        <div class="safety-progress-bar" 
                              role="progressbar" 
                              style="width: {{ inspection.completion_percentage }}%" 
                              aria-valuenow="{{ inspection.completion_percentage }}" 
                              aria-valuemin="0" 
                              aria-valuemax="100">
                         </div>
+                        <small class="safety-progress-text">{{ inspection.completion_percentage }}% complete</small>
                     </div>
-                    <small class="text-muted">{{ inspection.completion_percentage }}% complete</small>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Observations Section -->
-            <div class="card shadow-lg mb-4 border-0 bg-white">
-                <div class="card-header bg-gradient-danger text-white">
+            <div class="safety-card shadow-lg mb-4">
+                <div class="safety-card-header bg-gradient-danger">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="card-title mb-0">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Safety Observations
-                            <span class="badge bg-white text-danger ms-2">{{ observations|length }}</span>
+                            <i class="fas fa-exclamation-triangle me-2"></i>Safety Observations
+                            <span class="safety-count-badge">{{ observations|length }}</span>
                         </h4>
-                        <button class="btn btn-sm btn-light" data-bs-toggle="collapse" data-bs-target="#observationsCollapse">
-                            <i class="bi bi-chevron-down"></i>
+                        <button class="safety-collapse-btn" data-bs-toggle="collapse" data-bs-target="#observationsCollapse">
+                            <i class="fas fa-chevron-down"></i>
                         </button>
                     </div>
                 </div>
-                <div class="card-body bg-white collapse show" id="observationsCollapse">
+                <div class="safety-card-body collapse show" id="observationsCollapse">
                     {% if observations %}
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="bg-light">
+                        <div class="safety-table-responsive">
+                            <table class="safety-table">
+                                <thead class="safety-table-header">
                                     <tr>
                                         <th>Photo</th>
                                         <th>Hazard</th>
@@ -112,35 +112,34 @@
                                         <td>
                                             {% if observation.photo %}
                                             <img src="{{ observation.photo.url }}" alt="Observation Photo" 
-                                                 class="img-thumbnail rounded" style="width: 80px; height: 60px; object-fit: cover;">
+                                                 class="safety-thumbnail">
                                             {% else %}
-                                            <div class="bg-light d-flex align-items-center justify-content-center" 
-                                                 style="width: 80px; height: 60px;">
-                                                <i class="bi bi-image text-muted fs-4"></i>
+                                            <div class="safety-thumbnail-placeholder">
+                                                <i class="fas fa-image"></i>
                                             </div>
                                             {% endif %}
                                         </td>
                                         <td>
-                                            <strong class="text-dark">{{ observation.hazard_description|truncatechars:30 }}</strong>
+                                            <strong class="safety-hazard-text">{{ observation.hazard_description|truncatechars:30 }}</strong>
                                         </td>
                                         <td>
-                                            <span class="badge bg-{% if observation.risk_level == 'High' %}danger{% elif observation.risk_level == 'Medium' %}warning{% else %}info{% endif %}">
+                                            <span class="safety-risk-badge risk-{{ observation.risk_level|lower }}">
                                                 {{ observation.risk_level }}
                                             </span>
                                         </td>
-                                        <td class="text-dark">{{ observation.detected_at|date:"M d, Y" }}</td>
+                                        <td>{{ observation.detected_at|date:"M d, Y" }}</td>
                                         <td>
-                                            <div class="d-flex">
-                                                <button class="btn btn-sm btn-outline-primary me-2 copy-hazard-btn" 
+                                            <div class="safety-action-buttons">
+                                                <button class="safety-action-btn copy-btn" 
                                                         data-hazard="{{ observation.hazard_description }}"
                                                         title="Copy Hazard">
-                                                    <i class="bi bi-clipboard"></i>
+                                                    <i class="fas fa-copy"></i>
                                                 </button>
-                                                <button class="btn btn-sm btn-outline-secondary view-details-btn"
+                                                <button class="safety-action-btn view-btn"
                                                         data-bs-toggle="modal" 
                                                         data-bs-target="#observationModal{{ observation.id }}"
                                                         title="View Details">
-                                                    <i class="bi bi-eye-fill"></i>
+                                                    <i class="fas fa-eye"></i>
                                                 </button>
                                             </div>
                                         </td>
@@ -150,26 +149,26 @@
                             </table>
                         </div>
                     {% else %}
-                        <div class="alert alert-success" role="alert">
-                            <i class="bi bi-check-circle-fill me-2"></i> No safety observations found for this inspection.
+                        <div class="safety-alert success">
+                            <i class="fas fa-check-circle me-2"></i> No safety observations found for this inspection.
                         </div>
                     {% endif %}
                 </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="d-grid gap-3 d-md-flex justify-content-md-center mb-5">
-                <a href="{% url 'mrsafe_app:site_inspection_start' inspection.id %}" class="btn btn-primary btn-lg px-4 me-md-2">
-                    <i class="bi bi-play-circle-fill me-2"></i> Continue Inspection
+            <div class="safety-action-container">
+                <a href="{% url 'mrsafe_app:site_inspection_start' inspection.id %}" class="safety-primary-btn">
+                    <i class="fas fa-play-circle me-2"></i> Continue Inspection
                 </a>
                 
-                <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="btn btn-outline-secondary btn-lg px-4">
-                    <i class="bi bi-arrow-left-circle-fill me-2"></i> Back to Overview
+                <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="safety-secondary-btn">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Overview
                 </a>
                 
                 {% if not inspection.is_completed %}
-                <a href="#" class="btn btn-success btn-lg px-4 ms-md-2">
-                    <i class="bi bi-check-circle-fill me-2"></i> Complete Inspection
+                <a href="#" class="safety-success-btn">
+                    <i class="fas fa-check-circle me-2"></i> Complete Inspection
                 </a>
                 {% endif %}
             </div>
@@ -179,36 +178,37 @@
 
 <!-- Observation Detail Modals -->
 {% for observation in observations %}
-<div class="modal fade" id="observationModal{{ observation.id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0">
-            <div class="modal-header bg-{% if observation.risk_level == 'High' %}danger{% elif observation.risk_level == 'Medium' %}warning{% else %}info{% endif %} text-white">
+<div class="safety-modal fade" id="observationModal{{ observation.id }}" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="safety-modal-dialog modal-lg modal-dialog-centered">
+        <div class="safety-modal-content">
+            <div class="safety-modal-header risk-{{ observation.risk_level|lower }}">
                 <h5 class="modal-title">Observation Details</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="safety-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="modal-body bg-white">
+            <div class="safety-modal-body">
                 <div class="row">
                     <!-- Photo Column -->
                     <div class="col-md-5">
-                        <div class="observation-photo-container mb-3 shadow-sm">
+                        <div class="safety-photo-container mb-3">
                             {% if observation.photo %}
                             <img src="{{ observation.photo.url }}" alt="Observation Photo" 
-                                 class="img-fluid rounded" style="max-height: 300px; width: 100%; object-fit: contain;">
+                                 class="safety-modal-image">
                             {% else %}
-                            <div class="bg-light d-flex align-items-center justify-content-center" 
-                                 style="height: 200px; border-radius: 8px;">
-                                <i class="bi bi-image text-muted fs-1"></i>
+                            <div class="safety-no-image">
+                                <i class="fas fa-image"></i>
                             </div>
                             {% endif %}
                         </div>
-                        <div class="observation-meta bg-light p-3 rounded">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted">Detected At:</span>
-                                <span class="fw-medium">{{ observation.detected_at }}</span>
+                        <div class="safety-meta-info">
+                            <div class="safety-meta-item">
+                                <span class="safety-meta-label">Detected At:</span>
+                                <span class="safety-meta-value">{{ observation.detected_at }}</span>
                             </div>
-                            <div class="d-flex justify-content-between">
-                                <span class="text-muted">Risk Level:</span>
-                                <span class="badge bg-{% if observation.risk_level == 'High' %}danger{% elif observation.risk_level == 'Medium' %}warning{% else %}info{% endif %}">
+                            <div class="safety-meta-item">
+                                <span class="safety-meta-label">Risk Level:</span>
+                                <span class="safety-risk-badge risk-{{ observation.risk_level|lower }}">
                                     {{ observation.risk_level }}
                                 </span>
                             </div>
@@ -217,32 +217,35 @@
                     
                     <!-- Details Column -->
                     <div class="col-md-7">
-                        <div class="hazard-section mb-3">
-                            <div class="hazard-content bg-white p-3 rounded border">
-                                <p class="mb-0 text-dark">{{ observation.hazard_description }}</p>
+                        <div class="safety-detail-section mb-3">
+                            <h6 class="safety-detail-title">Hazard Description</h6>
+                            <div class="safety-detail-content">
+                                <p>{{ observation.hazard_description }}</p>
                             </div>
                         </div>
                         
-                        <div class="recommendations-section mb-3">
-                            <div class="recommendations-content bg-white p-3 rounded border">
-                                <p class="mb-0 text-dark">{{ observation.recommendations }}</p>
+                        <div class="safety-detail-section mb-3">
+                            <h6 class="safety-detail-title">Recommendations</h6>
+                            <div class="safety-detail-content">
+                                <p>{{ observation.recommendations }}</p>
                             </div>
                         </div>
                         
                         {% if observation.additional_notes %}
-                        <div class="notes-section">
-                            <div class="notes-content bg-white p-3 rounded border">
-                                <p class="mb-0 text-dark">{{ observation.additional_notes }}</p>
+                        <div class="safety-detail-section">
+                            <h6 class="safety-detail-title">Additional Notes</h6>
+                            <div class="safety-detail-content">
+                                <p>{{ observation.additional_notes }}</p>
                             </div>
                         </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a href="{% url 'mrsafe_app:observation_detail' observation.id %}" class="btn btn-primary">
-                    <i class="bi bi-box-arrow-up-right me-2"></i>View Full Details
+            <div class="safety-modal-footer">
+                <button type="button" class="safety-modal-btn secondary" data-bs-dismiss="modal">Close</button>
+                <a href="{% url 'mrsafe_app:observation_detail' observation.id %}" class="safety-modal-btn primary">
+                    <i class="fas fa-external-link-alt me-2"></i>View Full Details
                 </a>
             </div>
         </div>
@@ -251,149 +254,738 @@
 {% endfor %}
 
 <!-- Toast Notifications -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="exportToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header bg-success text-white">
+<div class="safety-toast-container">
+    <div id="exportToast" class="safety-toast success" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="safety-toast-header">
             <strong class="me-auto">Success</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="safety-toast-close" data-bs-dismiss="toast" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <div class="toast-body">
+        <div class="safety-toast-body">
             Report exported successfully!
         </div>
     </div>
     
-    <div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header bg-primary text-white">
+    <div id="copyToast" class="safety-toast primary" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="safety-toast-header">
             <strong class="me-auto">Copied</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            <button type="button" class="safety-toast-close" data-bs-dismiss="toast" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <div class="toast-body">
+        <div class="safety-toast-body">
             Content copied to clipboard!
         </div>
     </div>
 </div>
+
 {% if not inspection.completed %}
-<form method="post" action="{% url 'mrsafe_app:finalize_inspection' inspection.id %}">
+<form method="post" action="{% url 'mrsafe_app:finalize_inspection' inspection.id %}" class="safety-finalize-form">
     {% csrf_token %}
-    <button class="btn btn-success mt-3">✅ Finalize Inspection</button>
+    <button class="safety-finalize-btn">
+        <i class="fas fa-check-circle me-2"></i> Finalize Inspection
+    </button>
 </form>
 {% else %}
-<p class="text-success mt-3">Inspection finalized on {{ inspection.completed_at }}</p>
+<p class="safety-finalized-text">
+    <i class="fas fa-calendar-check me-2"></i>Inspection finalized on {{ inspection.completed_at }}
+</p>
 {% endif %}
 
-<a href="{% url 'mrsafe_app:inspection_full_report' inspection.id %}" class="btn btn-outline-dark mt-3">
-    📋 View Full Report
+<a href="{% url 'mrsafe_app:inspection_full_report' inspection.id %}" class="safety-report-link">
+    <i class="fas fa-file-alt me-2"></i> View Full Report
 </a>
 
 <style>
-    .inspection-detail-container {
+    /* 🎨 COLOR PALETTE */
+    :root {
+        --safety-red: #e63946;
+        --safety-orange: #f77f00;
+        --safety-yellow: #fcbf49;
+        --safety-green: #2a9d8f;
+        --safety-blue: #1d3557;
+        --safety-dark: #14213d;
+        --safety-light: #f8f9fa;
+        
+        --primary-grad: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+        --danger-grad: linear-gradient(135deg, #e63946 0%, #f77f00 100%);
+        --warning-grad: linear-gradient(135deg, #f77f00 0%, #fcbf49 100%);
+        --success-grad: linear-gradient(135deg, #2a9d8f 0%, #8ac926 100%);
+    }
+
+    /* 🏗️ SAFETY INSPECTION CONTAINER */
+    .safety-inspection-container {
         background-color: #f8f9fa;
         padding: 2rem 0;
+        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     }
-    
-    .card {
-        border-radius: 12px;
+
+    /* 🚧 SAFETY HEADER */
+    .safety-header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-left: 5px solid var(--safety-blue);
+    }
+
+    .safety-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--safety-blue);
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .safety-title i {
+        color: var(--safety-green);
+    }
+
+    .safety-status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .badge-success {
+        background: var(--success-grad);
+        color: white;
+    }
+
+    .badge-warning {
+        background: var(--warning-grad);
+        color: var(--safety-dark);
+    }
+
+    /* 📤 EXPORT BUTTONS */
+    .safety-export-group {
+        position: relative;
+    }
+
+    .safety-export-btn {
+        background: white;
+        color: var(--safety-blue);
+        border: 2px solid var(--safety-blue);
+        padding: 0.5rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s;
+    }
+
+    .safety-export-btn:hover {
+        background: var(--safety-blue);
+        color: white;
+    }
+
+    .safety-dropdown-menu {
+        border: 2px solid var(--safety-blue);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .safety-dropdown-menu .dropdown-item {
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+    }
+
+    .safety-dropdown-menu .dropdown-item:hover {
+        background: rgba(29, 53, 87, 0.1);
+    }
+
+    .safety-dropdown-menu i {
+        width: 20px;
+        text-align: center;
+        margin-right: 0.5rem;
+    }
+
+    /* 🏗️ SAFETY CARDS */
+    .safety-card {
+        background: white;
+        border-radius: 8px;
         overflow: hidden;
         margin-bottom: 1.5rem;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.1);
+        border: none;
     }
-    
-    .card:hover {
+
+    .safety-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     }
-    
-    .card-header {
+
+    .safety-card-header {
+        padding: 1rem 1.5rem;
         font-weight: 600;
         letter-spacing: 0.5px;
+        color: white;
     }
-    
+
     .bg-gradient-primary {
-        background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+        background: var(--primary-grad);
     }
-    
+
     .bg-gradient-danger {
-        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        background: var(--danger-grad);
     }
-    
-    .badge {
-        border-radius: 10px;
-        padding: 0.5em 1em;
-        font-weight: 500;
-    }
-    
-    .observation-photo-container {
-        border-radius: 8px;
-        overflow: hidden;
-        background-color: #f8f9fa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #dee2e6;
-        transition: all 0.3s ease;
-    }
-    
-    .observation-photo-container:hover {
-        transform: scale(1.02);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .modal-content {
-        border: none;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
-    }
-    
-    .modal-body {
+
+    .safety-card-body {
         padding: 1.5rem;
     }
-    
-    .modal-footer {
-        border-top: 1px solid #dee2e6;
+
+    /* ℹ️ INFO ITEMS */
+    .safety-info-item {
+        padding: 0.5rem 0;
     }
-    
-    .hazard-content, 
-    .recommendations-content,
-    .notes-content {
-        min-height: 80px;
-        max-height: 200px;
-        overflow-y: auto;
+
+    .safety-info-label {
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
-    
-    .text-dark {
-        color: #333 !important;
+
+    .safety-info-value {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: var(--safety-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
     }
-    
-    .table thead th {
+
+    .safety-info-value i {
+        color: var(--safety-blue);
+        margin-right: 0.5rem;
+    }
+
+    /* 📊 PROGRESS BAR */
+    .safety-progress-container {
+        margin-top: 1rem;
+    }
+
+    .safety-progress-bar {
+        height: 10px;
+        background: var(--warning-grad);
+        border-radius: 5px;
+        transition: width 0.5s ease;
+    }
+
+    .safety-progress-text {
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 500;
+        margin-top: 0.25rem;
+    }
+
+    /* 🚨 OBSERVATIONS TABLE */
+    .safety-table-responsive {
+        overflow-x: auto;
+    }
+
+    .safety-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .safety-table-header {
+        background: rgba(29, 53, 87, 0.1);
+    }
+
+    .safety-table-header th {
+        padding: 1rem;
         font-weight: 600;
         text-transform: uppercase;
         font-size: 0.8rem;
         letter-spacing: 0.5px;
+        color: var(--safety-blue);
+        border-bottom: 2px solid var(--safety-blue);
     }
-    
-    .table tbody td {
+
+    .safety-table tbody tr {
+        transition: background 0.2s;
+    }
+
+    .safety-table tbody tr:hover {
+        background: rgba(29, 53, 87, 0.05);
+    }
+
+    .safety-table td {
+        padding: 1rem;
         vertical-align: middle;
+        border-bottom: 1px solid #eee;
     }
-    
-    .copy-hazard-btn:hover, 
-    .view-details-btn:hover {
+
+    .safety-thumbnail {
+        width: 80px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+
+    .safety-thumbnail-placeholder {
+        width: 80px;
+        height: 60px;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        color: #999;
+        border: 1px dashed #ccc;
+    }
+
+    .safety-hazard-text {
+        color: var(--safety-dark);
+    }
+
+    /* 🚦 RISK BADGES */
+    .safety-risk-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .risk-high {
+        background: var(--danger-grad);
+        color: white;
+    }
+
+    .risk-medium {
+        background: var(--warning-grad);
+        color: var(--safety-dark);
+    }
+
+    .risk-low {
+        background: var(--success-grad);
+        color: white;
+    }
+
+    /* 🔧 ACTION BUTTONS */
+    .safety-action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .safety-action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: 1px solid #ddd;
+        color: #666;
+        transition: all 0.2s;
+    }
+
+    .safety-action-btn:hover {
         transform: scale(1.1);
-        transition: transform 0.2s;
+        color: var(--safety-blue);
+        border-color: var(--safety-blue);
     }
-    
-    @media print {
-        .inspection-detail-container {
-            background-color: white;
-            padding: 0;
+
+    .copy-btn:hover {
+        color: var(--safety-green);
+        border-color: var(--safety-green);
+    }
+
+    .view-btn:hover {
+        color: var(--safety-blue);
+        border-color: var(--safety-blue);
+    }
+
+    /* 🚀 ACTION CONTAINER */
+    .safety-action-container {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 2rem 0;
+    }
+
+    .safety-primary-btn,
+    .safety-secondary-btn,
+    .safety-success-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+    .safety-primary-btn {
+        background: var(--primary-grad);
+        color: white;
+        border: none;
+    }
+
+    .safety-primary-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(29, 53, 87, 0.3);
+        color: white;
+    }
+
+    .safety-secondary-btn {
+        background: white;
+        color: var(--safety-blue);
+        border: 2px solid var(--safety-blue);
+    }
+
+    .safety-secondary-btn:hover {
+        background: var(--safety-blue);
+        color: white;
+    }
+
+    .safety-success-btn {
+        background: var(--success-grad);
+        color: white;
+        border: none;
+    }
+
+    .safety-success-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3);
+        color: white;
+    }
+
+    /* 🖼️ MODAL STYLES */
+    .safety-modal {
+        z-index: 1060;
+    }
+
+    .safety-modal-content {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .safety-modal-header {
+        padding: 1.25rem 1.5rem;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .safety-modal-header.risk-high {
+        background: var(--danger-grad);
+    }
+
+    .safety-modal-header.risk-medium {
+        background: var(--warning-grad);
+    }
+
+    .safety-modal-header.risk-low {
+        background: var(--success-grad);
+    }
+
+    .safety-modal-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.25rem;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+
+    .safety-modal-close:hover {
+        opacity: 1;
+    }
+
+    .safety-modal-body {
+        padding: 1.5rem;
+    }
+
+    .safety-photo-container {
+        margin-bottom: 1rem;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dee2e6;
+    }
+
+    .safety-modal-image {
+        max-width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+    }
+
+    .safety-no-image {
+        height: 200px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 3rem;
+    }
+
+    .safety-meta-info {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .safety-meta-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .safety-meta-label {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .safety-meta-value {
+        font-weight: 600;
+        color: var(--safety-dark);
+    }
+
+    .safety-detail-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .safety-detail-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--safety-blue);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .safety-detail-content {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .safety-detail-content p {
+        margin: 0;
+        color: var(--safety-dark);
+    }
+
+    .safety-modal-footer {
+        padding: 1rem 1.5rem;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    .safety-modal-btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s;
+        border: none;
+    }
+
+    .safety-modal-btn.primary {
+        background: var(--primary-grad);
+        color: white;
+    }
+
+    .safety-modal-btn.secondary {
+        background: white;
+        color: var(--safety-blue);
+        border: 1px solid var(--safety-blue);
+    }
+
+    .safety-modal-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* 🍞 TOAST NOTIFICATIONS */
+    .safety-toast-container {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        z-index: 1100;
+    }
+
+    .safety-toast {
+        width: 300px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .safety-toast.show {
+        opacity: 1;
+    }
+
+    .safety-toast-header {
+        padding: 0.75rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+    }
+
+    .safety-toast.primary .safety-toast-header {
+        background: var(--primary-grad);
+        color: white;
+    }
+
+    .safety-toast.success .safety-toast-header {
+        background: var(--success-grad);
+        color: white;
+    }
+
+    .safety-toast-close {
+        background: none;
+        border: none;
+        color: inherit;
+        opacity: 0.8;
+    }
+
+    .safety-toast-close:hover {
+        opacity: 1;
+    }
+
+    .safety-toast-body {
+        padding: 1rem;
+        background: white;
+        color: var(--safety-dark);
+    }
+
+    /* 📝 FINALIZE FORM */
+    .safety-finalize-form {
+        margin: 2rem 0;
+        text-align: center;
+    }
+
+    .safety-finalize-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--success-grad);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s;
+    }
+
+    .safety-finalize-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(42, 157, 143, 0.3);
+    }
+
+    .safety-finalized-text {
+        text-align: center;
+        color: var(--safety-green);
+        font-weight: 500;
+        margin: 2rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .safety-report-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        background: var(--safety-dark);
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        margin: 1rem auto;
+    }
+
+    .safety-report-link:hover {
+        background: var(--safety-blue);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(20, 33, 61, 0.3);
+    }
+
+    /* 📱 RESPONSIVE DESIGN */
+    @media (max-width: 992px) {
+        .safety-title {
+            font-size: 1.75rem;
         }
-        .card {
-            box-shadow: none;
-            border: 1px solid #ddd;
+    }
+
+    @media (max-width: 768px) {
+        .safety-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
         }
-        .btn, .dropdown-menu {
-            display: none !important;
+        
+        .safety-export-group {
+            width: 100%;
+        }
+        
+        .safety-export-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .safety-action-container {
+            flex-direction: column;
+        }
+        
+        .safety-primary-btn,
+        .safety-secondary-btn,
+        .safety-success-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .safety-title {
+            font-size: 1.5rem;
+        }
+        
+        .safety-card-header h4 {
+            font-size: 1.25rem;
+        }
+        
+        .safety-modal-body .row {
+            flex-direction: column;
+        }
+        
+        .safety-modal-body .col-md-5,
+        .safety-modal-body .col-md-7 {
+            width: 100%;
         }
     }
 </style>
@@ -411,11 +1003,12 @@
         const copyToast = new bootstrap.Toast(document.getElementById('copyToast'));
         
         // Copy hazard functionality
-        document.querySelectorAll('.copy-hazard-btn').forEach(btn => {
+        document.querySelectorAll('.copy-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const hazardText = this.getAttribute('data-hazard');
                 navigator.clipboard.writeText(hazardText).then(() => {
-                    copyToast.show();
+                    copyToast.classList.add('show');
+                    setTimeout(() => copyToast.classList.remove('show'), 3000);
                 });
             });
         });
@@ -423,20 +1016,20 @@
         // Export buttons functionality
         document.getElementById('copyReportBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            // Implement copy report logic here
-            exportToast.show();
+            exportToast.classList.add('show');
+            setTimeout(() => exportToast.classList.remove('show'), 3000);
         });
         
         document.getElementById('exportPdfBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            // Implement PDF export logic here
-            exportToast.show();
+            exportToast.classList.add('show');
+            setTimeout(() => exportToast.classList.remove('show'), 3000);
         });
         
         document.getElementById('exportPptBtn').addEventListener('click', function(e) {
             e.preventDefault();
-            // Implement PPT export logic here
-            exportToast.show();
+            exportToast.classList.add('show');
+            setTimeout(() => exportToast.classList.remove('show'), 3000);
         });
         
         document.getElementById('printReportBtn').addEventListener('click', function(e) {
@@ -445,7 +1038,7 @@
         });
         
         // Add animation to progress bar when it comes into view
-        const progressBar = document.querySelector('.progress-bar');
+        const progressBar = document.querySelector('.safety-progress-bar');
         if (progressBar) {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -456,19 +1049,6 @@
             });
             observer.observe(progressBar);
         }
-        
-        // Fix for modal shaking issue
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('show.bs.modal', function () {
-                document.body.style.overflow = 'hidden';
-                document.body.style.paddingRight = '0';
-            });
-            
-            modal.addEventListener('hidden.bs.modal', function () {
-                document.body.style.overflow = 'auto';
-                document.body.style.paddingRight = '0';
-            });
-        });
     });
 </script>
 {% endblock %}

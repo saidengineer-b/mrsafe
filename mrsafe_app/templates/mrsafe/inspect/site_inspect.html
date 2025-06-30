@@ -32,4 +32,940 @@
         </div>
     {% endif %}
 </div>
+
+<!-- 🎨 PREMIUM SAFETY STYLES -->
+<style>
+    /* 🎨 COLOR PALETTE */
+    :root {
+        --safety-red: #e63946;
+        --safety-orange: #f77f00;
+        --safety-yellow: #fcbf49;
+        --safety-green: #2a9d8f;
+        --safety-blue: #1d3557;
+        --safety-dark: #14213d;
+        --safety-light: #f8f9fa;
+        
+        --primary-grad: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+        --danger-grad: linear-gradient(135deg, #e63946 0%, #f77f00 100%);
+        --warning-grad: linear-gradient(135deg, #f77f00 0%, #fcbf49 100%);
+        --success-grad: linear-gradient(135deg, #2a9d8f 0%, #8ac926 100%);
+    }
+
+    /* 🚧 SAFETY INSPECTION CONTAINER 🚧 */
+    .safety-inspection-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        border: 3px solid var(--safety-dark);
+        background: white;
+    }
+
+    /* 🚨 INSPECTION HEADER 🚨 */
+    .safety-inspection-header {
+        padding: 2rem;
+        background: var(--primary-grad);
+        color: white;
+        position: relative;
+    }
+
+    .safety-inspection-title {
+        font-size: 2.2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .safety-inspection-title i {
+        margin-right: 1rem;
+    }
+
+    .safety-status-badge {
+        font-size: 1rem;
+        font-weight: 700;
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        background: white;
+        color: var(--safety-dark);
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    .safety-status-complete {
+        background: var(--success-grad);
+        color: white;
+    }
+
+    .safety-status-inprogress {
+        background: var(--warning-grad);
+        color: var(--safety-dark);
+    }
+
+    .safety-export-btn {
+        background: white;
+        color: var(--safety-blue);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 20px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .safety-export-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .safety-export-menu {
+        border: 2px solid var(--safety-blue);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .safety-export-item {
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s;
+    }
+
+    .safety-export-item:hover {
+        background: rgba(29, 53, 87, 0.1);
+    }
+
+    .safety-export-item i {
+        margin-right: 0.8rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    /* 🔍 INSPECTION SUMMARY 🔍 */
+    .safety-summary-card {
+        background: white;
+        padding: 2rem;
+        border-bottom: 3px solid var(--safety-light);
+    }
+
+    .safety-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .safety-summary-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .safety-summary-icon {
+        font-size: 1.5rem;
+        color: var(--safety-blue);
+        margin-right: 1rem;
+        width: 40px;
+        height: 40px;
+        background: rgba(29, 53, 87, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .safety-summary-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--safety-dark);
+        opacity: 0.7;
+        margin-bottom: 0.2rem;
+    }
+
+    .safety-summary-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--safety-dark);
+    }
+
+    .safety-progress-container {
+        margin-top: 1.5rem;
+    }
+
+    .safety-progress-bar {
+        height: 10px;
+        background: var(--safety-light);
+        border-radius: 5px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .safety-progress-fill {
+        height: 100%;
+        background: var(--warning-grad);
+        width: 0;
+        transition: width 1s ease;
+    }
+
+    .safety-progress-text {
+        font-size: 0.8rem;
+        color: var(--safety-dark);
+        margin-top: 0.5rem;
+        text-align: right;
+    }
+
+    /* ⚠️ OBSERVATIONS SECTION ⚠️ */
+    .safety-observations-header {
+        background: var(--danger-grad);
+        color: white;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .safety-observations-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+    }
+
+    .safety-observations-title i {
+        margin-right: 1rem;
+    }
+
+    .safety-observations-count {
+        background: white;
+        color: var(--safety-red);
+        font-weight: 700;
+        padding: 0.2rem 1rem;
+        border-radius: 20px;
+        margin-left: 1rem;
+    }
+
+    .safety-toggle-btn {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .safety-observations-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+    .safety-observations-table thead th {
+        background: var(--safety-light);
+        padding: 1rem;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        color: var(--safety-dark);
+        text-align: left;
+    }
+
+    .safety-observations-table tbody tr {
+        background: white;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        border-radius: 8px;
+    }
+
+    .safety-observations-table td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    .safety-photo-thumb {
+        width: 80px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+        border: 2px solid var(--safety-light);
+    }
+
+    .safety-photo-placeholder {
+        width: 80px;
+        height: 60px;
+        background: var(--safety-light);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--safety-dark);
+    }
+
+    .safety-hazard-text {
+        font-weight: 600;
+        color: var(--safety-dark);
+    }
+
+    .safety-risk-badge {
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.8rem;
+    }
+
+    .safety-risk-high {
+        background: var(--danger-grad);
+        color: white;
+    }
+
+    .safety-risk-medium {
+        background: var(--warning-grad);
+        color: var(--safety-dark);
+    }
+
+    .safety-risk-low {
+        background: var(--primary-grad);
+        color: white;
+    }
+
+    .safety-action-btn {
+        background: none;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        transition: all 0.2s;
+    }
+
+    .safety-action-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .safety-copy-btn {
+        background: rgba(29, 53, 87, 0.1);
+        color: var(--safety-blue);
+    }
+
+    .safety-view-btn {
+        background: rgba(230, 57, 70, 0.1);
+        color: var(--safety-red);
+    }
+
+    /* 🛠️ ACTION BUTTONS 🛠️ */
+    .safety-action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 2rem;
+        background: white;
+    }
+
+    .safety-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 1rem 2rem;
+        border-radius: 6px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .safety-btn i {
+        margin-right: 0.8rem;
+        font-size: 1.1rem;
+    }
+
+    .safety-btn-primary {
+        background: var(--primary-grad);
+        color: white;
+    }
+
+    .safety-btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(29, 53, 87, 0.3);
+    }
+
+    .safety-btn-outline {
+        background: white;
+        color: var(--safety-blue);
+        border: 2px solid var(--safety-blue);
+    }
+
+    .safety-btn-outline:hover {
+        background: var(--safety-blue);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(29, 53, 87, 0.3);
+    }
+
+    .safety-btn-success {
+        background: var(--success-grad);
+        color: white;
+    }
+
+    .safety-btn-success:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(42, 157, 143, 0.3);
+    }
+
+    /* 🖼️ MODAL STYLES 🖼️ */
+    .safety-modal {
+        border: 3px solid var(--safety-dark);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .safety-modal-header {
+        padding: 1.5rem;
+        background: var(--primary-grad);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .safety-modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .safety-modal-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .safety-modal-body {
+        padding: 2rem;
+        background: white;
+    }
+
+    .safety-modal-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .safety-modal-photo {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid var(--safety-light);
+    }
+
+    .safety-modal-photo img {
+        width: 100%;
+        height: auto;
+        max-height: 300px;
+        object-fit: contain;
+    }
+
+    .safety-modal-photo-placeholder {
+        height: 200px;
+        background: var(--safety-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--safety-dark);
+        font-size: 3rem;
+    }
+
+    .safety-modal-meta {
+        background: var(--safety-light);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .safety-meta-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+
+    .safety-meta-label {
+        font-size: 0.8rem;
+        color: var(--safety-dark);
+        opacity: 0.7;
+    }
+
+    .safety-meta-value {
+        font-weight: 600;
+        color: var(--safety-dark);
+    }
+
+    .safety-content-box {
+        background: white;
+        border: 1px solid var(--safety-light);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .safety-content-title {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--safety-dark);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .safety-content-title i {
+        margin-right: 0.5rem;
+    }
+
+    .safety-content-text {
+        color: var(--safety-dark);
+    }
+
+    .safety-modal-footer {
+        padding: 1.5rem;
+        background: var(--safety-light);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .safety-btn-secondary {
+        background: var(--safety-light);
+        color: var(--safety-dark);
+        border: 2px solid var(--safety-dark);
+    }
+
+    .safety-btn-secondary:hover {
+        background: var(--safety-dark);
+        color: white;
+    }
+
+    /* 📱 RESPONSIVE DESIGN 📱 */
+    @media (max-width: 992px) {
+        .safety-modal-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .safety-action-buttons {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .safety-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .safety-inspection-container {
+            margin: 0;
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+        }
+        
+        .safety-inspection-title {
+            font-size: 1.8rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .safety-observations-table thead {
+            display: none;
+        }
+        
+        .safety-observations-table tbody tr {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+        
+        .safety-observations-table td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--safety-light);
+        }
+        
+        .safety-observations-table td:last-child {
+            border-bottom: none;
+        }
+        
+        .safety-observations-table td::before {
+            content: attr(data-label);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--safety-dark);
+            opacity: 0.7;
+            margin-right: 1rem;
+        }
+    }
+</style>
+
+<!-- 🚧 SAFETY INSPECTION CONTAINER 🚧 -->
+<div class="safety-inspection-container">
+    <!-- 🚨 INSPECTION HEADER 🚨 -->
+    <div class="safety-inspection-header">
+        <h1 class="safety-inspection-title">
+            <span>
+                <i class="fas fa-clipboard-check"></i> SITE INSPECTION REPORT
+            </span>
+            <span class="safety-status-badge {% if inspection.is_completed %}safety-status-complete{% else %}safety-status-inprogress{% endif %}">
+                {% if inspection.is_completed %}COMPLETED{% else %}IN PROGRESS{% endif %}
+            </span>
+        </h1>
+        
+        <div class="dropdown" style="position: absolute; top: 2rem; right: 2rem;">
+            <button class="safety-export-btn dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-download"></i> EXPORT
+            </button>
+            <ul class="dropdown-menu safety-export-menu" aria-labelledby="exportDropdown">
+                <li><button class="dropdown-item safety-export-item" id="copyReportBtn"><i class="far fa-copy"></i> Copy Report</button></li>
+                <li><button class="dropdown-item safety-export-item" id="exportPdfBtn"><i class="far fa-file-pdf"></i> Export as PDF</button></li>
+                <li><button class="dropdown-item safety-export-item" id="exportPptBtn"><i class="far fa-file-powerpoint"></i> Export as PPT</button></li>
+                <li><button class="dropdown-item safety-export-item" id="printReportBtn"><i class="fas fa-print"></i> Print Report</button></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 🔍 INSPECTION SUMMARY 🔍 -->
+    <div class="safety-summary-card">
+        <div class="safety-summary-grid">
+            <div class="safety-summary-item">
+                <div class="safety-summary-icon">
+                    <i class="fas fa-id-badge"></i>
+                </div>
+                <div>
+                    <div class="safety-summary-label">Inspection ID</div>
+                    <div class="safety-summary-value">{{ inspection.id }}</div>
+                </div>
+            </div>
+            
+            <div class="safety-summary-item">
+                <div class="safety-summary-icon">
+                    <i class="fas fa-user-hard-hat"></i>
+                </div>
+                <div>
+                    <div class="safety-summary-label">Inspector</div>
+                    <div class="safety-summary-value">{{ inspection.inspector.username }}</div>
+                </div>
+            </div>
+            
+            <div class="safety-summary-item">
+                <div class="safety-summary-icon">
+                    <i class="far fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <div class="safety-summary-label">Date</div>
+                    <div class="safety-summary-value">{{ inspection.date }}</div>
+                </div>
+            </div>
+            
+            <div class="safety-summary-item">
+                <div class="safety-summary-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                    <div class="safety-summary-label">Location</div>
+                    <div class="safety-summary-value">{{ inspection.location }}</div>
+                </div>
+            </div>
+        </div>
+        
+        {% if not inspection.is_completed %}
+        <div class="safety-progress-container">
+            <div class="safety-progress-bar">
+                <div class="safety-progress-fill" style="width: {{ inspection.completion_percentage }}%"></div>
+            </div>
+            <div class="safety-progress-text">{{ inspection.completion_percentage }}% COMPLETE</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ⚠️ OBSERVATIONS SECTION ⚠️ -->
+    <div>
+        <div class="safety-observations-header">
+            <h2 class="safety-observations-title">
+                <i class="fas fa-exclamation-triangle"></i> SAFETY OBSERVATIONS
+                <span class="safety-observations-count">{{ observations|length }}</span>
+            </h2>
+            <button class="safety-toggle-btn" data-bs-toggle="collapse" data-bs-target="#observationsCollapse">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+        
+        <div class="collapse show" id="observationsCollapse" style="padding: 2rem;">
+            {% if observations %}
+                <table class="safety-observations-table">
+                    <thead>
+                        <tr>
+                            <th>PHOTO</th>
+                            <th>HAZARD</th>
+                            <th>RISK LEVEL</th>
+                            <th>DETECTED</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for observation in observations %}
+                        <tr>
+                            <td data-label="Photo">
+                                {% if observation.photo %}
+                                <img src="{{ observation.photo.url }}" alt="Observation Photo" class="safety-photo-thumb">
+                                {% else %}
+                                <div class="safety-photo-placeholder">
+                                    <i class="far fa-image"></i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td data-label="Hazard">
+                                <div class="safety-hazard-text">{{ observation.hazard_description|truncatechars:30 }}</div>
+                            </td>
+                            <td data-label="Risk Level">
+                                <span class="safety-risk-badge 
+                                    {% if observation.risk_level == 'High' %}safety-risk-high
+                                    {% elif observation.risk_level == 'Medium' %}safety-risk-medium
+                                    {% else %}safety-risk-low{% endif %}">
+                                    {{ observation.risk_level }}
+                                </span>
+                            </td>
+                            <td data-label="Detected">{{ observation.detected_at|date:"M d, Y" }}</td>
+                            <td data-label="Actions">
+                                <button class="safety-action-btn safety-copy-btn copy-hazard-btn" 
+                                        data-hazard="{{ observation.hazard_description }}"
+                                        title="Copy Hazard">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                                <button class="safety-action-btn safety-view-btn view-details-btn"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#observationModal{{ observation.id }}"
+                                        title="View Details">
+                                    <i class="far fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div style="text-align: center; padding: 2rem; background: var(--safety-light); border-radius: 8px;">
+                    <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--safety-green); margin-bottom: 1rem;"></i>
+                    <h3 style="color: var(--safety-green);">NO SAFETY OBSERVATIONS FOUND</h3>
+                    <p style="color: var(--safety-dark);">This inspection has no recorded hazards.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 🛠️ ACTION BUTTONS 🛠️ -->
+    <div class="safety-action-buttons">
+        <a href="{% url 'mrsafe_app:site_inspection_start' inspection.id %}" class="safety-btn safety-btn-primary">
+            <i class="fas fa-play-circle"></i> CONTINUE INSPECTION
+        </a>
+        
+        <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="safety-btn safety-btn-outline">
+            <i class="fas fa-arrow-left"></i> BACK TO OVERVIEW
+        </a>
+        
+        {% if not inspection.is_completed %}
+        <a href="#" class="safety-btn safety-btn-success">
+            <i class="fas fa-check-circle"></i> COMPLETE INSPECTION
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 🖼️ OBSERVATION DETAIL MODALS 🖼️ -->
+{% for observation in observations %}
+<div class="modal fade" id="observationModal{{ observation.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content safety-modal">
+            <div class="safety-modal-header">
+                <h3 class="safety-modal-title">OBSERVATION DETAILS</h3>
+                <button type="button" class="safety-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="safety-modal-body">
+                <div class="safety-modal-grid">
+                    <!-- Photo Column -->
+                    <div>
+                        <div class="safety-modal-photo">
+                            {% if observation.photo %}
+                            <img src="{{ observation.photo.url }}" alt="Observation Photo">
+                            {% else %}
+                            <div class="safety-modal-photo-placeholder">
+                                <i class="far fa-image"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="safety-modal-meta">
+                            <div class="safety-meta-item">
+                                <span class="safety-meta-label">Detected At:</span>
+                                <span class="safety-meta-value">{{ observation.detected_at }}</span>
+                            </div>
+                            <div class="safety-meta-item">
+                                <span class="safety-meta-label">Risk Level:</span>
+                                <span class="safety-meta-value">
+                                    <span class="safety-risk-badge 
+                                        {% if observation.risk_level == 'High' %}safety-risk-high
+                                        {% elif observation.risk_level == 'Medium' %}safety-risk-medium
+                                        {% else %}safety-risk-low{% endif %}">
+                                        {{ observation.risk_level }}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Details Column -->
+                    <div>
+                        <div class="safety-content-box">
+                            <h4 class="safety-content-title">
+                                <i class="fas fa-exclamation-triangle" style="color: var(--safety-red);"></i> HAZARD DESCRIPTION
+                            </h4>
+                            <p class="safety-content-text">{{ observation.hazard_description }}</p>
+                        </div>
+                        
+                        <div class="safety-content-box">
+                            <h4 class="safety-content-title">
+                                <i class="fas fa-lightbulb" style="color: var(--safety-green);"></i> RECOMMENDATIONS
+                            </h4>
+                            <p class="safety-content-text">{{ observation.recommendations }}</p>
+                        </div>
+                        
+                        {% if observation.additional_notes %}
+                        <div class="safety-content-box">
+                            <h4 class="safety-content-title">
+                                <i class="fas fa-sticky-note" style="color: var(--safety-blue);"></i> ADDITIONAL NOTES
+                            </h4>
+                            <p class="safety-content-text">{{ observation.additional_notes }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="safety-modal-footer">
+                <button type="button" class="safety-btn safety-btn-secondary" data-bs-dismiss="modal">CLOSE</button>
+                <a href="{% url 'mrsafe_app:observation_detail' observation.id %}" class="safety-btn safety-btn-primary">
+                    <i class="fas fa-external-link-alt"></i> VIEW FULL DETAILS
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- 🍞 TOAST NOTIFICATIONS 🍞 -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="exportToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" style="background: var(--safety-green); color: white;">
+            <strong class="me-auto">SUCCESS</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" style="background: white; color: var(--safety-dark);">
+            Report exported successfully!
+        </div>
+    </div>
+    
+    <div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" style="background: var(--safety-blue); color: white;">
+            <strong class="me-auto">COPIED</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" style="background: white; color: var(--safety-dark);">
+            Content copied to clipboard!
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Initialize toasts
+        const exportToast = new bootstrap.Toast(document.getElementById('exportToast'));
+        const copyToast = new bootstrap.Toast(document.getElementById('copyToast'));
+        
+        // Copy hazard functionality
+        document.querySelectorAll('.copy-hazard-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const hazardText = this.getAttribute('data-hazard');
+                navigator.clipboard.writeText(hazardText).then(() => {
+                    copyToast.show();
+                });
+            });
+        });
+        
+        // Export buttons functionality
+        document.getElementById('copyReportBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implement copy report logic here
+            exportToast.show();
+        });
+        
+        document.getElementById('exportPdfBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implement PDF export logic here
+            exportToast.show();
+        });
+        
+        document.getElementById('exportPptBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implement PPT export logic here
+            exportToast.show();
+        });
+        
+        document.getElementById('printReportBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.print();
+        });
+        
+        // Animate progress bar on page load
+        const progressFill = document.querySelector('.safety-progress-fill');
+        if (progressFill) {
+            // The width is already set inline, this just triggers the transition
+            progressFill.style.width = progressFill.style.width;
+        }
+        
+        // Fix for modal shaking issue
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('show.bs.modal', function () {
+                document.body.style.overflow = 'hidden';
+                document.body.style.paddingRight = '0';
+            });
+            
+            modal.addEventListener('hidden.bs.modal', function () {
+                document.body.style.overflow = 'auto';
+                document.body.style.paddingRight = '0';
+            });
+        });
+    });
+</script>
 {% endblock %}
