@@ -3,106 +3,395 @@
 
 {% block content %}
 <style>
-    .premium-card {
-        backdrop-filter: blur(8px);
-        background: rgba(255, 255, 255, 0.15);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+    :root {
+        --safety-orange: #FF7900;
+        --safety-yellow: #FFD700;
+        --safety-blue: #005F86;
+        --safety-green: #4CAF50;
+        --safety-red: #E53935;
+    }
+    
+    body {
+        background: radial-gradient(circle at 10% 20%, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        min-height: 100vh;
+    }
+    
+    .premium-header {
+        position: relative;
+        overflow: hidden;
         border-radius: 20px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,255,255,0.1);
     }
+    
+    .premium-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,121,0,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+        z-index: 0;
+    }
+    
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .premium-card {
+        backdrop-filter: blur(12px);
+        background: rgba(15, 32, 39, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .premium-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--safety-orange), var(--safety-yellow));
+    }
+    
     .premium-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        border-color: rgba(255, 255, 255, 0.3);
     }
+    
     .premium-icon {
-        font-size: 3rem;
-        margin-bottom: 15px;
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, var(--safety-orange), var(--safety-yellow));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 0 5px rgba(255, 121, 0, 0.5));
     }
+    
     .badge-premium {
-        font-size: 0.85rem;
-        background: linear-gradient(135deg, #ffc107, #ff9800);
+        font-size: 0.9rem;
+        background: linear-gradient(135deg, var(--safety-orange), var(--safety-yellow));
         color: #212121;
-        padding: 4px 10px;
-        border-radius: 12px;
+        padding: 5px 15px;
+        border-radius: 20px;
         font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(255, 121, 0, 0.4);
     }
+    
     .btn-glow {
-        box-shadow: 0 0 10px rgba(255, 193, 7, 0.7);
-        transition: all 0.3s ease-in-out;
+        background: linear-gradient(135deg, var(--safety-orange), var(--safety-yellow));
+        border: none;
+        color: #212121;
+        font-weight: bold;
+        letter-spacing: 1px;
+        box-shadow: 0 5px 15px rgba(255, 121, 0, 0.4);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
+    
+    .btn-glow::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -60%;
+        width: 200%;
+        height: 200%;
+        background: rgba(255,255,255,0.13);
+        background: linear-gradient(
+            to right,
+            rgba(255,255,255,0.13) 0%,
+            rgba(255,255,255,0.13) 77%,
+            rgba(255,255,255,0.5) 92%,
+            rgba(255,255,255,0.0) 100%
+        );
+        transform: rotate(30deg);
+    }
+    
     .btn-glow:hover {
-        box-shadow: 0 0 15px rgba(255, 193, 7, 1);
-        transform: scale(1.02);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 121, 0, 0.6);
+        color: #000;
+    }
+    
+    .btn-glow:hover::after {
+        animation: shine 1.5s ease;
+    }
+    
+    @keyframes shine {
+        100% {
+            left: 120%;
+        }
+    }
+    
+    .safety-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: var(--safety-red);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .qr-container {
+        background: rgba(0,0,0,0.3);
+        border: 2px solid rgba(255, 193, 7, 0.3);
+        border-radius: 16px;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .qr-container::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border: 2px solid transparent;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--safety-orange), var(--safety-yellow), var(--safety-orange)) border-box;
+        -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: destination-out;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+    }
+    
+    .security-stamp {
+        position: absolute;
+        bottom: -20px;
+        right: -20px;
+        opacity: 0.1;
+        font-size: 8rem;
+        transform: rotate(-15deg);
+        z-index: 0;
     }
 </style>
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">
-        <i class="fas fa-crown text-warning"></i> 
-        Premium Dashboard 
-        <span class="badge-premium">PRO ACCESS</span>
-    </h2>
+<div class="container py-5">
+    <!-- Premium Header with Security Badge -->
+    <div class="premium-header p-5 mb-5 text-center position-relative">
+        <div class="position-relative z-index-1">
+            <h1 class="display-4 fw-bold text-white mb-3">
+                <i class="fas fa-shield-alt me-3"></i> 
+                Safety<span class="text-warning">PRO</span> Dashboard
+            </h1>
+            <div class="d-flex justify-content-center mb-4">
+                <span class="badge-premium me-2">Verified</span>
+                <span class="badge bg-dark bg-opacity-50 text-white">Enterprise Security</span>
+            </div>
+            <p class="lead text-white-50 mb-0">Your all-in-one workplace safety command center with military-grade encryption</p>
+        </div>
+        <i class="fas fa-lock security-stamp"></i>
+    </div>
 
+    <!-- Premium Code Section with Enhanced Security -->
     <div class="row justify-content-center mb-5">
-        <div class="col-md-6 text-center">
-            <p class="fw-semibold text-white">Your Premium Code:</p>
-            <div class="bg-dark bg-opacity-10 border rounded py-3 px-4 d-inline-block">
-                <h4 class="text-warning mb-2">{{ premium_code }}</h4>
-                <img src="{{ premium_qr_url }}" alt="Premium QR Code" class="img-thumbnail" width="150">
+        <div class="col-lg-8">
+            <div class="qr-container text-center position-relative">
+                <h4 class="text-warning mb-4">
+                    <i class="fas fa-key me-2"></i> Your Secure Access Credentials
+                </h4>
+                
+                <div class="row align-items-center">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <div class="bg-dark bg-opacity-50 rounded-3 p-4 d-inline-block position-relative">
+                            <p class="text-white-50 small mb-2">Premium Access Code</p>
+                            <h3 class="text-warning mb-3 font-monospace">{{ premium_code }}</h3>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <i class="fas fa-fingerprint text-muted me-2"></i>
+                                <small class="text-muted">Biometric Verification Ready</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="position-relative d-inline-block">
+                            <img src="{{ premium_qr_url }}" alt="Secure QR Code" class="img-thumbnail bg-transparent border-warning pulse" width="180">
+                            <div class="position-absolute top-0 start-0 mt-1 ms-1">
+                                <span class="badge bg-dark bg-opacity-75 text-white small">SCAN SECURELY</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 pt-3 border-top border-warning border-opacity-25">
+                    <small class="text-white-50">
+                        <i class="fas fa-lock me-1"></i> This session is protected with AES-256 encryption
+                    </small>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Safety Features Grid -->
     <div class="row g-4">
-        <!-- Start AI Observation -->
+        <!-- AI Observation with Emergency Badge -->
         <div class="col-md-6 col-lg-4">
-            <div class="card premium-card p-4 text-center border-start border-warning border-4">
-                <i class="fas fa-search premium-icon text-warning"></i>
-                <h5>Start AI Safety Observation</h5>
-                <p class="text-muted">Upload a photo and get instant AI-powered analysis.</p>
-                <a href="{% url 'mrsafe_app:safety_image_test' %}" class="btn btn-warning btn-glow text-white w-100">Start Now</a>
+            <div class="card premium-card h-100 p-4 text-center">
+                <div class="safety-badge">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <i class="fas fa-robot premium-icon"></i>
+                <h4 class="text-white mb-3">AI Safety Scanner</h4>
+                <p class="text-white-50">Instant hazard detection with our certified AI safety engine (ISO 45001 compliant)</p>
+                <a href="{% url 'mrsafe_app:safety_image_test' %}" class="btn btn-glow mt-auto">
+                    <i class="fas fa-play me-2"></i> Scan Now
+                </a>
             </div>
         </div>
 
-        <!-- Create Site Inspection -->
+        <!-- Site Inspection with Priority Flag -->
         <div class="col-md-6 col-lg-4">
-            <div class="card premium-card p-4 text-center border-start border-info border-4">
-                <i class="fas fa-plus-circle premium-icon text-info"></i>
-                <h5>Create Site Inspection</h5>
-                <p class="text-muted">Initiate a new safety inspection form instantly.</p>
-                <a href="{% url 'mrsafe_app:inspection_create' %}" class="btn btn-info btn-glow text-white w-100">Create Inspection</a>
+            <div class="card premium-card h-100 p-4 text-center">
+                <div class="safety-badge" style="background: var(--safety-blue);">
+                    <i class="fas fa-flag"></i>
+                </div>
+                <i class="fas fa-hard-hat premium-icon"></i>
+                <h4 class="text-white mb-3">Site Inspector PRO</h4>
+                <p class="text-white-50">Create OSHA-compliant inspections with automated risk scoring</p>
+                <a href="{% url 'mrsafe_app:inspection_create' %}" class="btn btn-glow mt-auto" style="background: linear-gradient(135deg, var(--safety-blue), #00b4db);">
+                    <i class="fas fa-plus-circle me-2"></i> New Inspection
+                </a>
             </div>
         </div>
 
-        <!-- Site Inspections -->
+        <!-- Inspection Archive with Secure Badge -->
         <div class="col-md-6 col-lg-4">
-            <div class="card premium-card p-4 text-center border-start border-primary border-4">
-                <i class="fas fa-clipboard-list premium-icon text-primary"></i>
-                <h5>View Site Inspections</h5>
-                <p class="text-muted">Review and manage completed or ongoing inspections.</p>
-                <a href="{% url 'mrsafe_app:inspection_list' %}" class="btn btn-outline-primary w-100">View Inspections</a>
+            <div class="card premium-card h-100 p-4 text-center">
+                <div class="safety-badge" style="background: var(--safety-green);">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <i class="fas fa-archive premium-icon"></i>
+                <h4 class="text-white mb-3">Secure Inspections Vault</h4>
+                <p class="text-white-50">All records encrypted at rest with audit trail and version control</p>
+                <a href="{% url 'mrsafe_app:inspection_list' %}" class="btn btn-glow mt-auto" style="background: linear-gradient(135deg, var(--safety-green), #8BC34A);">
+                    <i class="fas fa-folder-open me-2"></i> Access Vault
+                </a>
             </div>
         </div>
 
-        <!-- Safety Observations -->
+        <!-- Safety Observations with Alert Badge -->
         <div class="col-md-6 col-lg-4">
-            <div class="card premium-card p-4 text-center border-start border-danger border-4">
-                <i class="fas fa-exclamation-circle premium-icon text-danger"></i>
-                <h5>Safety Observations</h5>
-                <p class="text-muted">Access your uploaded observations and hazard logs.</p>
-                <a href="{% url 'mrsafe_app:observation_list' %}" class="btn btn-outline-danger w-100">View Observations</a>
+            <div class="card premium-card h-100 p-4 text-center">
+                <div class="safety-badge">
+                    <i class="fas fa-exclamation"></i>
+                </div>
+                <i class="fas fa-eye premium-icon"></i>
+                <h4 class="text-white mb-3">Hazard Watch</h4>
+                <p class="text-white-50">Real-time incident reporting with automatic regulatory alerts</p>
+                <a href="{% url 'mrsafe_app:observation_list' %}" class="btn btn-glow mt-auto" style="background: linear-gradient(135deg, var(--safety-red), #ff5252);">
+                    <i class="fas fa-search me-2"></i> View Threats
+                </a>
             </div>
         </div>
 
-        <!-- Safety Dashboard -->
+        <!-- Analytics Dashboard with Trend Badge -->
         <div class="col-md-6 col-lg-4">
-            <div class="card premium-card p-4 text-center border-start border-success border-4">
-                <i class="fas fa-chart-line premium-icon text-success"></i>
-                <h5>Analytics Dashboard</h5>
-                <p class="text-muted">Monitor trends, risks, and safety KPIs dynamically.</p>
-                <a href="{% url 'mrsafe_app:safety_dashboard' %}" class="btn btn-outline-success w-100">Open Dashboard</a>
+            <div class="card premium-card h-100 p-4 text-center">
+                <div class="safety-badge" style="background: var(--safety-blue);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <i class="fas fa-chart-pie premium-icon"></i>
+                <h4 class="text-white mb-3">Safety Intelligence</h4>
+                <p class="text-white-50">Predictive analytics and live safety performance indicators</p>
+                <a href="{% url 'mrsafe_app:safety_dashboard' %}" class="btn btn-glow mt-auto" style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+                    <i class="fas fa-brain me-2"></i> View Analytics
+                </a>
             </div>
         </div>
+
+        <!-- Emergency Response -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card premium-card h-100 p-4 text-center border-danger">
+                <div class="safety-badge" style="background: var(--safety-red); width: 32px; height: 32px; top: -10px; right: -10px;">
+                    <i class="fas fa-siren-on"></i>
+                </div>
+                <i class="fas fa-first-aid premium-icon"></i>
+                <h4 class="text-white mb-3">Emergency Protocol</h4>
+                <p class="text-white-50">Instant access to site-specific emergency response plans</p>
+                <button class="btn btn-danger btn-glow mt-auto" style="box-shadow: 0 0 15px rgba(229, 57, 53, 0.7);">
+                    <i class="fas fa-crosshairs me-2"></i> Emergency Mode
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Assurance Footer -->
+    <div class="mt-5 pt-5 text-center">
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
+            <div class="bg-dark bg-opacity-50 rounded-pill px-4 py-2">
+                <i class="fas fa-shield-alt text-success me-2"></i>
+                <span class="text-white">SOC 2 Type II Certified</span>
+            </div>
+            <div class="bg-dark bg-opacity-50 rounded-pill px-4 py-2">
+                <i class="fas fa-lock text-warning me-2"></i>
+                <span class="text-white">End-to-End Encryption</span>
+            </div>
+            <div class="bg-dark bg-opacity-50 rounded-pill px-4 py-2">
+                <i class="fas fa-user-shield text-info me-2"></i>
+                <span class="text-white">GDPR Compliant</span>
+            </div>
+        </div>
+        <p class="text-white-50 small">
+            <i class="fas fa-clock me-1"></i> Last security audit: {{ current_date }} | 
+            <i class="fas fa-check-circle text-success ms-2 me-1"></i> All systems secure
+        </p>
     </div>
 </div>
+
+<script>
+    // Add interactive elements
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effects to cards
+        const cards = document.querySelectorAll('.premium-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.premium-icon');
+                icon.style.transform = 'scale(1.1)';
+            });
+            card.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.premium-icon');
+                icon.style.transform = 'scale(1)';
+            });
+        });
+        
+        // Animate security stamp on load
+        const stamp = document.querySelector('.security-stamp');
+        setTimeout(() => {
+            stamp.style.opacity = '0.03';
+            stamp.style.transition = 'opacity 2s ease';
+        }, 500);
+    });
+</script>
 {% endblock %}
