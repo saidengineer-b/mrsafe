@@ -694,16 +694,27 @@ def finalize_inspection(request, inspection_id):
 
     return redirect("mrsafe_app:inspection_detail", inspection_id=inspection.id)
 
+from django.template.loader import get_template
+from django.http import HttpResponse
+from xhtml2pdf import pisa
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, HttpResponse
 from ..models import SiteInspection
+from django.shortcuts import get_object_or_404
 
 @login_required
 def export_inspection_pdf(request, inspection_id):
     inspection = get_object_or_404(SiteInspection, id=inspection_id)
+    template = get_template('mrsafe/inspect/inspection_pdf.html')
+    html = template.render({'inspection': inspection})
 
-    # For now, just return a simple text response
-    return HttpResponse(f"PDF export for inspection: {inspection.title}", content_type="text/plain")
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="inspection_{inspection.id}.pdf"'
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse("Error generating PDF", status=500)
+    return response
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, HttpResponse
