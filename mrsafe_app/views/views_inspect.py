@@ -529,11 +529,110 @@ def site_inspection_start(request, inspection_id):
 
     return render(request, 'mrsafe/inspect/start_inspection.html', {'inspection': inspection})
 
-from django.shortcuts import render
 
-def dashboard(request):
-    # Your dashboard logic here
-    return render(request, "mrsafe/inspect/dashboard.html")
+from django.views.generic import TemplateView
+from django.db.models import (
+    Count, Avg, Q, F, ExpressionWrapper, 
+    fields, Max, Case, When, Value, BooleanField
+)
+from django.views.generic import TemplateView
+from django.db.models import (
+    Count, Avg, Q, F, ExpressionWrapper, 
+    fields, Case, When, Value, BooleanField
+)
+from django.db.models.functions import TruncMonth
+from django.utils import timezone
+from datetime import timedelta
+from ..models import SiteInspection, SafetyObservation
+
+class SafetyDashboardView(TemplateView):
+    template_name = 'mrsafe/inspect/safety_dashboard.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        current_user = self.request.user
+
+        # 1. Inspection Metrics (only for current user)
+        inspections = SiteInspection.objects.filter(
+            inspector=current_user
+        ).select_related('inspector')
+        
+        completed_inspections = inspections.filter(completed=True)
+        
+        # Ensure we always have data for the chart
+        inspection_by_month = list(inspections.annotate(
+            month=TruncMonth('date')
+        ).values('month').annotate(
+            count=Count('id')
+        ).order_by('month'))
+        
+        context['inspection_metrics'] = {
+            'total': inspections.count(),
+            'completed': completed_inspections.count(),
+            'completion_rate': round(
+                (completed_inspections.count() / inspections.count() * 100) 
+                if inspections.count() else 0, 
+                1
+            ),
+            'avg_completion_time': completed_inspections.annotate(
+                duration=ExpressionWrapper(
+                    F('completed_at') - F('date'),
+                    output_field=fields.DurationField()
+                )
+            ).aggregate(
+                avg_duration=Avg('duration')
+            )['avg_duration'],
+            'by_month': inspection_by_month or [{
+                'month': timezone.now().replace(day=1),
+                'count': 0
+            }]
+        }
+
+        # 2. Observation Metrics (only for current user)
+        observations = SafetyObservation.objects.filter(
+            created_by=current_user
+        ).select_related('site_inspection')
+        
+        # Get hazard types with fallback
+        hazard_types = list(observations.exclude(
+            structured_json__hazard_type__isnull=True
+        ).values(
+            'structured_json__hazard_type'
+        ).annotate(
+            count=Count('id')
+        ).order_by('-count')[:5])
+        
+        context['observation_metrics'] = {
+            'total': observations.count(),
+            'with_photos': observations.exclude(photo='').count(),
+            'recent': observations.filter(detected_at__gte=thirty_days_ago).count(),
+            'by_inspection': list(observations.values(
+                'site_inspection__title'
+            ).annotate(
+                count=Count('id')
+            ).order_by('-count')[:5]),
+            'hazard_types': hazard_types or [{
+                'structured_json__hazard_type': 'No hazards recorded', 
+                'count': 0
+            }]
+        }
+
+        # 3. Recent Activity (only for current user)
+        context['recent_activity'] = {
+            'inspections': list(inspections.order_by('-date')[:5]),
+            'observations': list(observations.order_by('-detected_at')[:5])
+        }
+
+        # Debug output
+        print("\n=== DASHBOARD DATA ===")
+        print(f"User: {current_user.username}")
+        print(f"Inspections: {context['inspection_metrics']['total']}")
+        print(f"Observations: {context['observation_metrics']['total']}")
+        print(f"Last Month: {context['observation_metrics']['recent']} observations")
+        
+        return context
+    
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
 from django.shortcuts import redirect, get_object_or_404, render

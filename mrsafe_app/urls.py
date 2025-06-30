@@ -65,13 +65,13 @@ from .views import (contact,
                     edit_profile,about,store_home,add_item,edit_item,premium_checkout,public_landing, 
                     inspect,save_observation,inspect_success,observation_detail,
                     observation_list,inspection_detail,inspection_create,inspection_list,site_inspection_image_test
-                    ,site_inspection_start,dashboard,safe_site_observation,finalize_inspection,
+                    ,site_inspection_start,safe_site_observation,finalize_inspection,
                     export_inspection_pdf,export_inspection_ppt,
                     inspection_full_report,export_inspection_docx,
                     
                     
                     subscribe_premium,PremiumPlanListView,plan_checkout,CartCheckoutView
-                    ,coin_manage_view,delete_coin_activity)
+                    ,coin_manage_view,delete_coin_activity,SafetyDashboardView)
 
 
 from django.urls import path
@@ -82,7 +82,9 @@ from django.shortcuts import redirect
 urlpatterns = [
  
 
-
+  path('dashboard/', SafetyDashboardView.as_view(), name='safety_dashboard'),
+  
+  
 
 path('register/', register, name='register'),
     
@@ -116,7 +118,7 @@ path('inspections/<int:inspection_id>/', inspection_detail, name='inspection_det
     # Site Inspection Image Test (New View)
 path('inspections/<int:inspection_id>/test/', site_inspection_image_test, name='site_inspection_image_test'),
 path('inspections/<int:inspection_id>/start/', site_inspection_start, name='site_inspection_start'),
-path('dashboard/', dashboard, name='dashboard'),  # Add this line
+
 path("inspections/<int:inspection_id>/save/", safe_site_observation, name="save_observation"),
 path("inspections/<int:inspection_id>/finalize/", finalize_inspection, name="finalize_inspection"),
 path("inspections/<int:inspection_id>/export/pdf/", export_inspection_pdf, name="export_inspection_pdf"),
@@ -238,8 +240,6 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
-
-   
     path('premium-dashboard/', premium_dashboard, name='premium_dashboard'),
 
     path("upgrade-membership/", upgrade_membership, name="upgrade_membership"),

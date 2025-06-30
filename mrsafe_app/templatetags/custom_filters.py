@@ -99,3 +99,13 @@ def mul(value, arg):
         return float(value) * float(arg)
     except (ValueError, TypeError):
         return ''
+    
+
+@register.filter
+def map_attr(iterable, attr_name):
+    return [getattr(obj, attr_name, None) for obj in iterable]
+
+
+@register.filter
+def to_list(value):
+    return list(value)

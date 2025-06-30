@@ -90,43 +90,17 @@ def premium_dashboard(request):
     trainer = request.user
 
     # ✅ Fetch the first group (or adjust to get specific groups if needed)
-    group = TraineeGroup.objects.filter(trainer=trainer).first()  # Use .first() to avoid errors if no group exists
-
+    
     # ✅ Fetch linked trainees (from LinkedUser model)
 
-    linked_trainees = CustomUser.objects.filter(linked_user__premium_users=trainer.premiumprofile).distinct()
-    # ✅ Exclude trainees already in the group (only if a group exists)
+   
 
-    available_trainees = CustomUser.objects.filter(linked_user__premium_users=trainer.premiumprofile )
-
-
-    # ✅ Fetch quizzes created by the trainer
-    trainer_quizzes = Quiz.objects.filter(created_by=trainer)
-    
-
-    # ✅ Fetch quiz results for trainees linked to the trainer
-    if group:
-        trainee_results = QuizResult.objects.filter(user__in=group.trainees.all())
-    else:
-        trainee_results = QuizResult.objects.filter(user__in=linked_trainees)
-
-    # ✅ Fetch groups where the trainer is assigned
-    groups = TraineeGroup.objects.filter(trainer=trainer)
-
-    # ✅ Fetch active and completed competitions
-    active_competitions = Competition.objects.filter(trainer=trainer, winner__isnull=True)
-    completed_competitions = Competition.objects.filter(trainer=trainer, winner__isnull=False)
 
     # ✅ Return data to template
-    return render(request, "mrsafe_app/premium/premium_dashboard.html", {
+    return render(request, "mrsafe/premium/premium_dashboard.html", {
         "premium_qr_url": premium_qr_url,
         "premium_code": premium_code,
-        "trainer_quizzes": trainer_quizzes,
-        "available_trainees": available_trainees,  # ✅ Shows trainees correctly now
-        "trainee_results": trainee_results,
-        "groups": groups,
-        "active_competitions": active_competitions,
-        "completed_competitions": completed_competitions,
+     
           # To loop in table if needed
     })
 
