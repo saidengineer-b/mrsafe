@@ -441,31 +441,58 @@ def site_inspection_image_test(request, inspection_id):
 
             # GPT prompt
             prompt = """
-            **Site Inspection Safety Analysis Request**
+**Safety Inspection Analysis Request**
 
-            You are a senior workplace safety expert with 20+ years of field experience. You are analyzing the uploaded workplace photo related to a site inspection. Provide your response using the following structured format:
 
-            ---
+You are an AI safety inspection assistant. Based on the provided input (such as a photo or observation), generate clearly separated and numbered hazard reports. 
 
-            ### Hazard #1
-            - **Title**: [Short title of hazard]
-            - **Severity**: Low / Medium / High / Critical
-            - **Description**: [Detailed description of the hazard]
-            - **OSHA Reference**: [If applicable]
+Each hazard must be output using the following exact structure. Do not combine or merge hazards. Each block must be self-contained.
 
-            #### Recommendation
-            - **Action**: [Corrective action to eliminate the hazard]
-            - **PPE**: [Required PPE, if any]
-            - **Training**: [Required training, if any]
-            - **Engineering Control**: [Control measure, if any]
-            - **Timeline**: [Suggested resolution timeline]
+For every identified issue, follow **this markdown format**:
 
-            ---
+---
 
-            Repeat the structure for each hazard found in the image. Do not list hazards or recommendations in separate sections. Always keep each hazard and its recommendation grouped.
+### Hazard #{{ n }}
+- **Title**: [Short title of hazard]
+- **Severity**: Low / Medium / High / Critical
+- **Description**: [Detailed explanation of the hazard and its impact]
+- **OSHA Reference**: [e.g., 1926.501(b)(1)] or "N/A" if not applicable
 
-            Format your output in clean markdown as shown above.
-            """
+#### Recommendation
+- **Action**: [Corrective or preventive measure to eliminate or reduce the hazard]
+
+---
+
+### ✅ Example Output
+
+```markdown
+### Hazard #1
+- **Title**: Missing Guardrails on Elevated Platform
+- **Severity**: High
+- **Description**: The platform at the construction site lacks guardrails on two sides, increasing the risk of falls from height.
+- **OSHA Reference**: 1926.501(b)(1)
+
+#### Recommendation
+- **Action**: Install compliant guardrails (at least 42 inches high) on all open sides of the platform immediately.
+
+---
+
+### Hazard #2
+- **Title**: Blocked Emergency Exit
+- **Severity**: Critical
+- **Description**: The designated emergency exit is obstructed by equipment, making it inaccessible during an emergency.
+- **OSHA Reference**: 1910.37(a)(3)
+
+#### Recommendation
+- **Action**: Clear the emergency exit path and place visible signage to ensure constant accessibility.
+
+
+---
+
+Repeat the structure for each hazard found in the image. Do not list hazards or recommendations in separate sections. Always keep each hazard and its recommendation grouped.
+
+Format your output in clean markdown as shown above.
+"""
 
             # GPT-4o call
             response = client.chat.completions.create(
