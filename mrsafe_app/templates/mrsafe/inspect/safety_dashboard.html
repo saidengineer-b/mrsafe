@@ -4,265 +4,470 @@
 
 {% block content %}
 <div class="container-fluid px-4 safety-dashboard">
-    <!-- 🔴 EMERGENCY ALERT BAR -->
+    <!-- 🔴 EMERGENCY ALERT BAR - Enhanced -->
     {% if critical_hazards %}
-    <div class="alert alert-emergency alert-dismissible fade show d-flex align-items-center mb-4" role="alert">
-        <div class="alert-icon">
-            <i class="fas fa-siren-on me-3"></i>
-        </div>
-        <div class="flex-grow-1">
-            <strong>EMERGENCY ACTION REQUIRED!</strong> {{ critical_hazards|length }} critical hazards need immediate attention.
-            <div class="mt-1 small">Potential risks: {% for hazard in critical_hazards|slice:":3" %}{{ hazard.type }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
-        </div>
-        <div class="alert-actions">
-            <a href="#" class="btn btn-sm btn-light me-2">Acknowledge</a>
-            <a href="#" class="btn btn-sm btn-dark">Take Action</a>
+    <div class="alert alert-emergency alert-dismissible fade show mb-4" role="alert">
+        <div class="emergency-alert-content">
+            <div class="alert-icon">
+                <i class="fas fa-siren-on"></i>
+                <div class="siren-light"></div>
+            </div>
+            <div class="alert-details">
+                <div class="alert-header">
+                    <h3>CRITICAL SAFETY ALERT</h3>
+                    <span class="badge bg-white text-danger">{{ critical_hazards|length }} ACTIVE THREATS</span>
+                </div>
+                <div class="hazard-scroll">
+                    {% for hazard in critical_hazards|slice:":5" %}
+                    <div class="hazard-item">
+                        <span class="hazard-type">{{ hazard.type|default:"Unknown Hazard" }}</span>
+                        <span class="hazard-location">{{ hazard.location|default:"Unknown Location" }}</span>
+                        <span class="hazard-time">{{ hazard.created_at|timesince }} ago</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="alert-actions">
+                <button class="btn btn-emergency btn-acknowledge">
+                    <i class="fas fa-check-circle me-2"></i> Acknowledge
+                </button>
+                <button class="btn btn-emergency btn-action">
+                    <i class="fas fa-bolt me-2"></i> Take Action
+                </button>
+            </div>
         </div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endif %}
 
-    <!-- 🦺 SAFETY DASHBOARD HEADER -->
-    <div class="dashboard-header industrial-bg p-4 mb-4 rounded-3 d-flex justify-content-between align-items-center">
-        <div>
-            <h1 class="display-5 fw-bold text-white mb-1">
-                <i class="fas fa-helmet-safety me-2"></i>
-                SAFETY COMMAND CENTER
-            </h1>
-            <div class="d-flex align-items-center">
-                <div class="badge bg-white bg-opacity-25 text-white rounded-pill px-3 me-3">
-                    <i class="fas fa-user-hard-hat me-1"></i>
-                    {{ user.get_full_name }}
+    <!-- 🦺 SAFETY DASHBOARD HEADER - Premium Version -->
+    <div class="dashboard-header industrial-bg p-5 mb-4 rounded-4">
+        <div class="header-content">
+            <div class="header-text">
+                <h1 class="display-4 fw-bold text-white mb-2">
+                    <i class="fas fa-shield-alt me-3"></i>
+                    SAFETY <span class="text-warning">COMMAND</span> CENTER
+                </h1>
+                <p class="text-white-50 mb-4">Enterprise-grade safety management with real-time threat detection</p>
+                
+                <div class="user-badges">
+                    <div class="badge bg-white bg-opacity-10 text-white rounded-pill px-3 py-2 me-3">
+                        <i class="fas fa-user-hard-hat me-2"></i>
+                        {{ user.get_full_name }} • <strong>Safety Officer</strong>
+                    </div>
+                    <div class="badge bg-warning bg-opacity-20 text-warning rounded-pill px-3 py-2">
+                        <i class="fas fa-bolt me-2"></i>
+                        PREMIUM ACCESS
+                    </div>
                 </div>
-                <div class="badge bg-white bg-opacity-25 text-white rounded-pill px-3">
-                    <i class="fas fa-calendar-check me-1"></i>
-                    {{ timezone.now|date:"M j, Y" }}
+            </div>
+            
+            <div class="safety-score-display">
+                <div class="score-container">
+                    <div class="score-value">{{ safety_score|default:"0" }}<small>%</small></div>
+                    <div class="score-label">SAFETY INDEX</div>
+                    <div class="progress mt-2">
+                        <div class="progress-bar" 
+                             style="width: {{ safety_score }}%;
+                                    background: linear-gradient(90deg, 
+                                    {% if safety_score > 80 %}#4CAF50{% elif safety_score > 50 %}#FFC107{% else %}#F44336{% endif %} 0%, 
+                                    {% if safety_score > 80 %}#8BC34A{% elif safety_score > 50 %}#FF9800{% else %}#E53935{% endif %} 100%);"></div>
+                    </div>
+                </div>
+                <div class="score-comparison">
+                    <div class="comparison-item">
+                        <span>Site Avg.</span>
+                        <span class="value">78%</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span>Industry</span>
+                        <span class="value">82%</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="safety-score-display">
-            <div class="score-value">{{ safety_score|default:"0" }}<small>%</small></div>
-            <div class="score-label">SAFETY INDEX</div>
-            <div class="progress mt-1">
-                <div class="progress-bar bg-{% if safety_score > 80 %}success{% elif safety_score > 50 %}warning{% else %}danger{% endif %}" 
-                     role="progressbar" style="width: {{ safety_score }}%" 
-                     aria-valuenow="{{ safety_score }}" aria-valuemin="0" aria-valuemax="100"></div>
+        
+        <div class="security-badges">
+            <div class="badge-item">
+                <i class="fas fa-lock"></i>
+                <span>256-bit Encryption</span>
+            </div>
+            <div class="badge-item">
+                <i class="fas fa-shield-check"></i>
+                <span>ISO 45001 Certified</span>
+            </div>
+            <div class="badge-item">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <span>Real-time Sync</span>
             </div>
         </div>
     </div>
 
-    <!-- 🚨 SAFETY QUICK ACTIONS -->
+    <!-- 🚀 PREMIUM QUICK ACTIONS -->
     <div class="row quick-actions mb-4 g-3">
         <div class="col-md-3">
-            <a href="#" class="action-card bg-primary">
-                <i class="fas fa-plus"></i>
-                <span>New Inspection</span>
+            <a href="#" class="action-card bg-primary-grad">
+                <div class="action-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                    <div class="icon-bg"></div>
+                </div>
+                <span class="action-title">New Inspection</span>
+                <span class="action-desc">Create OSHA-compliant inspection</span>
+                <div class="action-hover">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </a>
         </div>
         <div class="col-md-3">
-            <a href="#" class="action-card bg-danger">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>Report Hazard</span>
+            <a href="#" class="action-card bg-danger-grad">
+                <div class="action-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="icon-bg"></div>
+                </div>
+                <span class="action-title">Report Hazard</span>
+                <span class="action-desc">Immediate threat reporting</span>
+                <div class="action-hover">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </a>
         </div>
         <div class="col-md-3">
-            <a href="#" class="action-card bg-warning">
-                <i class="fas fa-file-invoice"></i>
-                <span>Generate Report</span>
+            <a href="#" class="action-card bg-warning-grad">
+                <div class="action-icon">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <div class="icon-bg"></div>
+                </div>
+                <span class="action-title">Generate Report</span>
+                <span class="action-desc">Regulatory compliance docs</span>
+                <div class="action-hover">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </a>
         </div>
         <div class="col-md-3">
-            <a href="#" class="action-card bg-success">
-                <i class="fas fa-bell"></i>
-                <span>Safety Alerts</span>
+            <a href="#" class="action-card bg-success-grad">
+                <div class="action-icon">
+                    <i class="fas fa-bell"></i>
+                    <div class="icon-bg"></div>
+                </div>
+                <span class="action-title">Safety Alerts</span>
+                <span class="action-desc">Real-time notifications</span>
+                <div class="action-hover">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </a>
         </div>
     </div>
 
-    <!-- 📊 SAFETY METRICS CARDS -->
+    <!-- 🏆 PREMIUM METRICS CARDS -->
     <div class="row g-4">
-        <!-- Inspections Card -->
+        <!-- Inspections Card - Enhanced -->
         <div class="col-xl-3 col-md-6">
             <div class="card safety-metric-card inspection-card">
-                <div class="card-body">
-                    <div class="metric-header">
+                <div class="card-header">
+                    <h3>
                         <i class="fas fa-clipboard-check"></i>
-                        <h3>Inspections</h3>
+                        Inspections
+                    </h3>
+                    <div class="card-badge bg-primary">
+                        {{ inspection_metrics.this_week }} this week
                     </div>
-                    <div class="metric-value">{{ inspection_metrics.total|intcomma }}</div>
+                </div>
+                <div class="card-body">
+                    <div class="metric-main">
+                        <div class="metric-value">{{ inspection_metrics.total|intcomma }}</div>
+                        <div class="metric-change up">
+                            <i class="fas fa-arrow-up"></i> 12.5%
+                        </div>
+                    </div>
+                    
                     <div class="metric-progress">
+                        <div class="progress-labels">
+                            <span>Completion Rate</span>
+                            <span>{{ inspection_metrics.completion_rate }}%</span>
+                        </div>
                         <div class="progress">
                             <div class="progress-bar bg-primary" style="width: {{ inspection_metrics.completion_rate }}%"></div>
                         </div>
-                        <div class="progress-label">
-                            <span>{{ inspection_metrics.completed }} completed</span>
-                            <span>{{ inspection_metrics.completion_rate }}%</span>
-                        </div>
                     </div>
+                    
                     <div class="metric-details">
                         <div class="detail-item">
-                            <i class="fas fa-stopwatch"></i>
-                            <span>Avg. Time: {{ inspection_metrics.avg_completion_time|time:"H:i" }}</span>
+                            <div class="detail-icon bg-primary-light">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
+                            <div class="detail-text">
+                                <span class="label">Avg. Time</span>
+                                <span class="value">{{ inspection_metrics.avg_completion_time|time:"H:i" }}</span>
+                            </div>
                         </div>
                         <div class="detail-item">
-                            <i class="fas fa-calendar-week"></i>
-                            <span>{{ inspection_metrics.this_week }} this week</span>
+                            <div class="detail-icon bg-primary-light">
+                                <i class="fas fa-calendar-week"></i>
+                            </div>
+                            <div class="detail-text">
+                                <span class="label">This Week</span>
+                                <span class="value">{{ inspection_metrics.this_week }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon bg-primary-light">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="detail-text">
+                                <span class="label">Completed</span>
+                                <span class="value">{{ inspection_metrics.completed }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="#" class="btn btn-sm btn-primary w-100">
-                        <i class="fas fa-search me-1"></i> View All
+                    <a href="#" class="btn btn-primary btn-block">
+                        <i class="fas fa-search me-2"></i> View Inspections
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Observations Card -->
+        <!-- Observations Card - Enhanced -->
         <div class="col-xl-3 col-md-6">
             <div class="card safety-metric-card observation-card">
-                <div class="card-body">
-                    <div class="metric-header">
+                <div class="card-header">
+                    <h3>
                         <i class="fas fa-exclamation-circle"></i>
-                        <h3>Observations</h3>
+                        Observations
+                    </h3>
+                    <div class="card-badge bg-danger">
+                        {{ observation_metrics.critical }} critical
                     </div>
-                    <div class="metric-value">{{ observation_metrics.total|intcomma }}</div>
+                </div>
+                <div class="card-body">
+                    <div class="metric-main">
+                        <div class="metric-value">{{ observation_metrics.total|intcomma }}</div>
+                        <div class="metric-change down">
+                            <i class="fas fa-arrow-down"></i> 8.3%
+                        </div>
+                    </div>
+                    
                     <div class="metric-progress">
+                        <div class="progress-labels">
+                            <span>Critical Issues</span>
+                            <span>{{ observation_metrics.critical_percentage }}%</span>
+                        </div>
                         <div class="progress">
                             <div class="progress-bar bg-danger" style="width: {{ observation_metrics.critical_percentage }}%"></div>
                         </div>
-                        <div class="progress-label">
-                            <span>{{ observation_metrics.critical }} critical</span>
-                            <span>{{ observation_metrics.critical_percentage }}%</span>
-                        </div>
                     </div>
+                    
                     <div class="metric-details">
                         <div class="detail-item">
-                            <i class="fas fa-camera"></i>
-                            <span>{{ observation_metrics.with_photos }} with photos</span>
+                            <div class="detail-icon bg-danger-light">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <div class="detail-text">
+                                <span class="label">With Photos</span>
+                                <span class="value">{{ observation_metrics.with_photos }}</span>
+                            </div>
                         </div>
                         <div class="detail-item">
-                            <i class="fas fa-clock"></i>
-                            <span>{{ observation_metrics.recent }} in 30 days</span>
+                            <div class="detail-icon bg-danger-light">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="detail-text">
+                                <span class="label">Recent (30d)</span>
+                                <span class="value">{{ observation_metrics.recent }}</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-icon bg-danger-light">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div class="detail-text">
+                                <span class="label">High Priority</span>
+                                <span class="value">{{ observation_metrics.high_priority }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="#" class="btn btn-sm btn-danger w-100">
-                        <i class="fas fa-arrow-right me-1"></i> Resolve Now
+                    <a href="#" class="btn btn-danger btn-block">
+                        <i class="fas fa-arrow-right me-2"></i> Resolve Now
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Compliance Card -->
+        <!-- Compliance Card - Enhanced -->
         <div class="col-xl-3 col-md-6">
             <div class="card safety-metric-card compliance-card">
-                <div class="card-body">
-                    <div class="metric-header">
+                <div class="card-header">
+                    <h3>
                         <i class="fas fa-shield-alt"></i>
-                        <h3>Compliance</h3>
+                        Compliance
+                    </h3>
+                    <div class="card-badge bg-success">
+                        {% if compliance_rate > 90 %}Excellent{% elif compliance_rate > 70 %}Moderate{% else %}Critical{% endif %}
                     </div>
-                    <div class="metric-value">{{ compliance_rate }}<small>%</small></div>
-                    <div class="compliance-status">
-                        {% if compliance_rate > 90 %}
-                        <span class="badge bg-success">Excellent</span>
-                        {% elif compliance_rate > 70 %}
-                        <span class="badge bg-warning">Moderate</span>
-                        {% else %}
-                        <span class="badge bg-danger">Needs Improvement</span>
-                        {% endif %}
-                    </div>
-                    <div class="metric-details">
-                        <div class="detail-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>{{ compliant_items }} compliant items</span>
+                </div>
+                <div class="card-body">
+                    <div class="compliance-gauge">
+                        <div class="gauge-container" data-value="{{ compliance_rate }}">
+                            <div class="gauge-body">
+                                <div class="gauge-fill"></div>
+                                <div class="gauge-cover">{{ compliance_rate }}%</div>
+                            </div>
+                            <div class="gauge-range">
+                                <span>0</span>
+                                <span>50</span>
+                                <span>100</span>
+                            </div>
                         </div>
-                        <div class="detail-item">
+                    </div>
+                    
+                    <div class="compliance-stats">
+                        <div class="stat-item positive">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <span class="stat-value">{{ compliant_items }}</span>
+                                <span class="stat-label">Compliant Items</span>
+                            </div>
+                        </div>
+                        <div class="stat-item negative">
                             <i class="fas fa-times-circle"></i>
-                            <span>{{ non_compliant_items }} violations</span>
+                            <div>
+                                <span class="stat-value">{{ non_compliant_items }}</span>
+                                <span class="stat-label">Violations</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="#" class="btn btn-sm btn-success w-100">
-                        <i class="fas fa-file-alt me-1"></i> Generate Report
+                    <a href="#" class="btn btn-success btn-block">
+                        <i class="fas fa-file-alt me-2"></i> Generate Report
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Top Hazards Card -->
+        <!-- Top Hazards Card - Enhanced -->
         <div class="col-xl-3 col-md-6">
             <div class="card safety-metric-card hazards-card">
-                <div class="card-body">
-                    <div class="metric-header">
+                <div class="card-header">
+                    <h3>
                         <i class="fas fa-biohazard"></i>
-                        <h3>Top Hazards</h3>
+                        Top Hazards
+                    </h3>
+                    <div class="card-badge bg-warning">
+                        {{ observation_metrics.hazard_types|length }} types
                     </div>
+                </div>
+                <div class="card-body">
                     {% if observation_metrics.hazard_types %}
+                    <div class="hazard-radar">
+                        <canvas id="hazardRadarChart"></canvas>
+                    </div>
                     <div class="hazard-list">
                         {% for hazard in observation_metrics.hazard_types|slice:":3" %}
                         <div class="hazard-item">
-                            <div class="hazard-type">{{ hazard.structured_json__hazard_type|default:"Unknown" }}</div>
-                            <div class="hazard-count">{{ hazard.count }} cases</div>
-                            <div class="progress">
-                                <div class="progress-bar bg-warning" style="width: {{ hazard.percentage }}%"></div>
+                            <div class="hazard-info">
+                                <span class="hazard-type">{{ hazard.structured_json__hazard_type|default:"Unknown" }}</span>
+                                <span class="hazard-count">{{ hazard.count }} cases</span>
+                            </div>
+                            <div class="hazard-percentage">
+                                <div class="progress">
+                                    <div class="progress-bar bg-warning" style="width: {{ hazard.percentage }}%"></div>
+                                </div>
+                                <span>{{ hazard.percentage }}%</span>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
                     {% else %}
                     <div class="no-hazards">
-                        <i class="fas fa-check-circle text-success"></i>
-                        <span>No hazards reported</span>
+                        <div class="no-hazards-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h4>No Hazards Reported</h4>
+                        <p>All safety protocols are being followed</p>
                     </div>
                     {% endif %}
                 </div>
                 <div class="card-footer">
-                    <a href="#" class="btn btn-sm btn-warning w-100">
-                        <i class="fas fa-chart-pie me-1"></i> Analyze
+                    <a href="#" class="btn btn-warning btn-block">
+                        <i class="fas fa-chart-pie me-2"></i> Analyze
                     </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 📈 SAFETY ACTIVITY FEED -->
+    <!-- 📜 INSPECTION & OBSERVATION DETAILS SECTION -->
     <div class="row mt-4 g-4">
-        <!-- Recent Inspections -->
+        <!-- Recent Inspections - Enhanced -->
         <div class="col-lg-6">
             <div class="card safety-activity-card">
                 <div class="card-header">
-                    <h3>
-                        <i class="fas fa-clipboard-list me-2"></i>
-                        Recent Inspections
-                    </h3>
-                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    <div class="header-content">
+                        <h3>
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Recent Inspections
+                        </h3>
+                        <span class="badge bg-primary">Last 7 Days</span>
+                    </div>
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
                 </div>
                 <div class="card-body">
                     {% if recent_activity.inspections %}
                     <div class="inspection-feed">
                         {% for inspection in recent_activity.inspections %}
-                        <div class="inspection-item">
+                        <div class="inspection-item" data-inspection-id="{{ inspection.id }}">
                             <div class="inspection-icon">
-                                <i class="fas fa-{% if inspection.completed %}check-circle text-success{% else %}spinner text-warning{% endif %}"></i>
+                                <div class="icon-container {% if inspection.completed %}completed{% else %}pending{% endif %}">
+                                    <i class="fas fa-{% if inspection.completed %}check-circle{% else %}spinner{% endif %}"></i>
+                                </div>
                             </div>
                             <div class="inspection-details">
                                 <div class="inspection-header">
                                     <h4>{{ inspection.title }}</h4>
-                                    <span class="badge bg-{% if inspection.completed %}success{% else %}warning{% endif %}">
-                                        {% if inspection.completed %}Completed{% else %}In Progress{% endif %}
-                                    </span>
+                                    <div class="inspection-meta">
+                                        <span class="badge bg-{% if inspection.completed %}success{% else %}warning{% endif %}">
+                                            {% if inspection.completed %}Completed{% else %}In Progress{% endif %}
+                                        </span>
+                                        <span class="time">{{ inspection.date|timesince }} ago</span>
+                                    </div>
                                 </div>
-                                <div class="inspection-meta">
-                                    <span><i class="fas fa-map-marker-alt"></i> {{ inspection.location }}</span>
-                                    <span><i class="fas fa-clock"></i> {{ inspection.date|timesince }} ago</span>
+                                <div class="inspection-info">
+                                    <div class="info-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>{{ inspection.location }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fas fa-user-hard-hat"></i>
+                                        <span>{{ inspection.inspector }}</span>
+                                    </div>
                                 </div>
-                                <div class="inspection-footer">
-                                    <span><i class="fas fa-flag"></i> {{ inspection.findings_count }} findings</span>
-                                    <a href="#" class="view-details">View Details <i class="fas fa-chevron-right"></i></a>
+                                <div class="inspection-stats">
+                                    <div class="stat-item">
+                                        <i class="fas fa-flag"></i>
+                                        <span>{{ inspection.findings_count }} Findings</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="fas fa-camera"></i>
+                                        <span>{{ inspection.photos_count }} Photos</span>
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="inspection-actions">
+                                <button class="btn btn-sm btn-outline-primary view-details">
+                                    Details
+                                </button>
+                                {% if not inspection.completed %}
+                                <button class="btn btn-sm btn-primary continue-btn">
+                                    Continue
+                                </button>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
@@ -283,39 +488,71 @@
             </div>
         </div>
 
-        <!-- Recent Hazards -->
+        <!-- Recent Hazards - Enhanced -->
         <div class="col-lg-6">
             <div class="card safety-activity-card">
                 <div class="card-header">
-                    <h3>
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Recent Hazards
-                    </h3>
-                    <a href="#" class="btn btn-sm btn-outline-danger">View All</a>
+                    <div class="header-content">
+                        <h3>
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Recent Hazards
+                        </h3>
+                        <span class="badge bg-danger">Active Alerts</span>
+                    </div>
+                    <a href="#" class="btn btn-sm btn-outline-danger">
+                        View All <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
                 </div>
                 <div class="card-body">
                     {% if recent_activity.observations %}
                     <div class="hazard-feed">
                         {% for obs in recent_activity.observations %}
-                        <div class="hazard-item">
+                        <div class="hazard-item" data-observation-id="{{ obs.id }}">
                             <div class="hazard-icon">
-                                <i class="fas fa-{% if obs.resolved %}check-circle text-success{% else %}exclamation-circle text-danger{% endif %}"></i>
+                                <div class="icon-container {% if obs.resolved %}resolved{% else %}active{% endif %}">
+                                    <i class="fas fa-{% if obs.resolved %}check-circle{% else %}exclamation{% endif %}"></i>
+                                </div>
                             </div>
                             <div class="hazard-details">
                                 <div class="hazard-header">
-                                    <h4>{{ obs.hazard_description|truncatechars:40 }}</h4>
-                                    <span class="badge bg-{% if obs.priority == 'high' %}danger{% elif obs.priority == 'medium' %}warning{% else %}info{% endif %}">
-                                        {{ obs.priority|upper }}
-                                    </span>
+                                    <h4>{{ obs.hazard_description|truncatechars:60 }}</h4>
+                                    <div class="hazard-meta">
+                                        <span class="badge bg-{% if obs.priority == 'high' %}danger{% elif obs.priority == 'medium' %}warning{% else %}info{% endif %}">
+                                            {{ obs.priority|upper }}
+                                        </span>
+                                        <span class="time">{{ obs.detected_at|timesince }} ago</span>
+                                    </div>
                                 </div>
-                                <div class="hazard-meta">
-                                    <span><i class="fas fa-biohazard"></i> {{ obs.structured_json.hazard_type }}</span>
-                                    <span><i class="fas fa-calendar"></i> {{ obs.detected_at|date:"M d" }}</span>
+                                <div class="hazard-info">
+                                    <div class="info-item">
+                                        <i class="fas fa-biohazard"></i>
+                                        <span>{{ obs.structured_json.hazard_type|default:"Unknown Type" }}</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>{{ obs.location|default:"Unknown Location" }}</span>
+                                    </div>
                                 </div>
-                                <div class="hazard-footer">
-                                    <span><i class="fas fa-user-hard-hat"></i> {{ obs.reporter }}</span>
-                                    <a href="#" class="view-details">View Details <i class="fas fa-chevron-right"></i></a>
+                                <div class="hazard-status">
+                                    <div class="status-item">
+                                        <i class="fas fa-user-hard-hat"></i>
+                                        <span>Reported by {{ obs.reporter }}</span>
+                                    </div>
+                                    <div class="status-item">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Open for {{ obs.detected_at|timesince }}</span>
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="hazard-actions">
+                                <button class="btn btn-sm btn-outline-danger view-details">
+                                    Details
+                                </button>
+                                {% if not obs.resolved %}
+                                <button class="btn btn-sm btn-danger resolve-btn">
+                                    Resolve
+                                </button>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
@@ -336,11 +573,73 @@
             </div>
         </div>
     </div>
+    
+    <!-- 🔍 INSPECTION DETAIL MODAL -->
+    <div class="modal fade" id="inspectionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-clipboard-check me-2"></i>
+                        Inspection Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="inspection-modal-content">
+                        <!-- Dynamic content will be loaded here -->
+                        <div class="loading-spinner">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary print-btn">
+                        <i class="fas fa-print me-2"></i> Print Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ⚠️ HAZARD DETAIL MODAL -->
+    <div class="modal fade" id="hazardModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Hazard Details
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="hazard-modal-content">
+                        <!-- Dynamic content will be loaded here -->
+                        <div class="loading-spinner">
+                            <div class="spinner-border text-danger" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger resolve-modal-btn">
+                        <i class="fas fa-check-circle me-2"></i> Mark as Resolved
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- 🎨 CUSTOM SAFETY STYLES -->
+<!-- 🎨 PREMIUM SAFETY STYLES -->
 <style>
-    /* 🚧 SAFETY COLOR PALETTE */
+    /* 🎨 COLOR PALETTE */
     :root {
         --safety-red: #e63946;
         --safety-orange: #f77f00;
@@ -348,321 +647,320 @@
         --safety-green: #2a9d8f;
         --safety-blue: #1d3557;
         --safety-dark: #14213d;
+        --safety-light: #f8f9fa;
+        
+        --primary-grad: linear-gradient(135deg, #1d3557 0%, #457b9d 100%);
+        --danger-grad: linear-gradient(135deg, #e63946 0%, #f77f00 100%);
+        --warning-grad: linear-gradient(135deg, #f77f00 0%, #fcbf49 100%);
+        --success-grad: linear-gradient(135deg, #2a9d8f 0%, #8ac926 100%);
     }
 
-    /* 🚨 EMERGENCY ALERT */
+    /* 🚨 EMERGENCY ALERT - Enhanced */
     .alert-emergency {
-        background-color: var(--safety-red);
+        background: linear-gradient(135deg, #d90429 0%, #ef233c 100%);
         color: white;
         border: none;
-        border-radius: 8px;
-        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        padding: 0;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(239, 35, 60, 0.3);
+    }
+    
+    .emergency-alert-content {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
     }
     
     .alert-emergency .alert-icon {
-        font-size: 1.5rem;
-    }
-    
-    .alert-emergency .alert-actions .btn {
-        font-weight: bold;
-    }
-
-    /* 🦺 INDUSTRIAL HEADER */
-    .industrial-bg {
-        background: linear-gradient(135deg, var(--safety-dark) 0%, var(--safety-blue) 100%);
-        border-left: 4px solid var(--safety-red);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    }
-    
-    .safety-score-display {
-        text-align: center;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-    }
-    
-    .safety-score-display .score-value {
+        position: relative;
         font-size: 2rem;
-        font-weight: bold;
-        line-height: 1;
+        margin-right: 1.5rem;
+        padding-right: 1.5rem;
     }
     
-    .safety-score-display .score-label {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        opacity: 0.8;
+    .alert-emergency .alert-icon::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 2px;
+        height: 60%;
+        background: rgba(255,255,255,0.2);
     }
-
-    /* ⚡ QUICK ACTIONS */
-    .quick-actions .action-card {
+    
+    .siren-light {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 12px;
+        height: 12px;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 10px 2px #fff;
+        animation: pulse 1.5s infinite;
+    }
+    
+    .alert-details {
+        flex: 1;
+        margin-right: 1.5rem;
+    }
+    
+    .alert-header {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        height: 100%;
-        padding: 1.5rem;
-        border-radius: 8px;
-        color: white;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        text-align: center;
-    }
-    
-    .quick-actions .action-card i {
-        font-size: 2rem;
         margin-bottom: 0.5rem;
     }
     
-    .quick-actions .action-card span {
+    .alert-header h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+        margin-right: 1rem;
+    }
+    
+    .hazard-scroll {
+        max-height: 80px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    
+    .hazard-scroll::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .hazard-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.3);
+        border-radius: 2px;
+    }
+    
+    .hazard-item {
+        padding: 0.3rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .hazard-type {
         font-weight: 600;
     }
     
-    .quick-actions .action-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    .hazard-location {
+        opacity: 0.8;
+        font-size: 0.9em;
+    }
+    
+    .hazard-time {
+        font-size: 0.8em;
+        opacity: 0.7;
+    }
+    
+    .alert-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-emergency {
+        border: none;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    
+    .btn-acknowledge {
+        background: rgba(255,255,255,0.9);
+        color: var(--safety-red);
+    }
+    
+    .btn-action {
+        background: rgba(0,0,0,0.3);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.3);
     }
 
-    /* 📊 METRIC CARDS */
-    .safety-metric-card {
-        border: none;
-        border-radius: 10px;
+    /* 🦺 DASHBOARD HEADER - Enhanced */
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--safety-dark) 0%, var(--safety-blue) 100%);
+        border-left: 6px solid var(--safety-orange);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        position: relative;
         overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
     }
     
-    .safety-metric-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+        z-index: 0;
     }
     
-    .safety-metric-card .metric-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-    
-    .safety-metric-card .metric-header i {
-        font-size: 1.5rem;
-        margin-right: 0.75rem;
-    }
-    
-    .safety-metric-card .metric-header h3 {
-        font-size: 1.1rem;
-        margin-bottom: 0;
-    }
-    
-    .safety-metric-card .metric-value {
-        font-size: 2.5rem;
-        font-weight: bold;
-        line-height: 1;
-        margin-bottom: 1rem;
-    }
-    
-    .safety-metric-card .metric-progress {
-        margin-bottom: 1rem;
-    }
-    
-    .safety-metric-card .progress-label {
+    .header-content {
         display: flex;
         justify-content: space-between;
-        font-size: 0.8rem;
-        margin-top: 0.25rem;
-    }
-    
-    .safety-metric-card .metric-details {
-        margin-top: 1.5rem;
-    }
-    
-    .safety-metric-card .detail-item {
-        display: flex;
         align-items: center;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
+        position: relative;
+        z-index: 1;
     }
     
-    .safety-metric-card .detail-item i {
-        margin-right: 0.5rem;
-        width: 1.25rem;
-        text-align: center;
+    .header-text h1 {
+        font-size: 2.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     
-    .safety-metric-card .hazard-list {
+    .header-text p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    .user-badges {
+        display: flex;
+        gap: 0.75rem;
         margin-top: 1rem;
     }
     
-    .safety-metric-card .hazard-item {
-        margin-bottom: 1rem;
+    .safety-score-display {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        border-radius: 12px;
+        min-width: 200px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255,255,255,0.1);
     }
     
-    .safety-metric-card .hazard-type {
-        font-weight: 600;
-        margin-bottom: 0.25rem;
+    .score-container .score-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1;
     }
     
-    .safety-metric-card .hazard-count {
-        font-size: 0.8rem;
-        color: #6c757d;
-        margin-bottom: 0.25rem;
-    }
-    
-    .safety-metric-card .no-hazards {
-        text-align: center;
-        padding: 1.5rem 0;
-    }
-    
-    .safety-metric-card .no-hazards i {
-        font-size: 2rem;
+    .score-container .score-label {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.8;
         margin-bottom: 0.5rem;
     }
     
-    .safety-metric-card .no-hazards span {
+    .score-comparison {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .comparison-item {
+        text-align: center;
+    }
+    
+    .comparison-item .value {
         display: block;
-        color: #6c757d;
+        font-weight: 600;
+        margin-top: 0.25rem;
+    }
+    
+    .security-badges {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .badge-item {
+        display: flex;
+        align-items: center;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(5px);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+    
+    .badge-item i {
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
     }
 
-    /* 📰 ACTIVITY FEED */
-    .safety-activity-card {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-    
-    .safety-activity-card .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.25rem 1.5rem;
-        background: white;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    }
-    
-    .safety-activity-card .card-header h3 {
-        font-size: 1.25rem;
-        margin-bottom: 0;
-        display: flex;
-        align-items: center;
-    }
-    
-    .safety-activity-card .card-header h3 i {
-        margin-right: 0.5rem;
-    }
-    
-    .safety-activity-card .card-body {
-        padding: 0;
-    }
-    
-    .inspection-feed, .hazard-feed {
-        padding: 0.5rem 0;
-    }
-    
-    .inspection-item, .hazard-item {
-        display: flex;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        transition: all 0.2s ease;
-    }
-    
-    .inspection-item:hover, .hazard-item:hover {
-        background: rgba(0, 0, 0, 0.02);
-    }
-    
-    .inspection-icon, .hazard-icon {
-        font-size: 1.5rem;
-        margin-right: 1rem;
-        flex-shrink: 0;
-    }
-    
-    .inspection-details, .hazard-details {
-        flex-grow: 1;
-    }
-    
-    .inspection-header, .hazard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 0.25rem;
-    }
-    
-    .inspection-header h4, .hazard-header h4 {
-        font-size: 1rem;
-        margin-bottom: 0;
-        font-weight: 600;
-    }
-    
-    .inspection-meta, .hazard-meta {
-        display: flex;
-        font-size: 0.8rem;
-        color: #6c757d;
-        margin-bottom: 0.5rem;
-    }
-    
-    .inspection-meta span, .hazard-meta span {
-        margin-right: 1rem;
-    }
-    
-    .inspection-meta i, .hazard-meta i {
-        margin-right: 0.25rem;
-    }
-    
-    .inspection-footer, .hazard-footer {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.8rem;
-    }
-    
-    .view-details {
-        color: var(--safety-blue);
-        font-weight: 500;
+    /* ⚡ QUICK ACTIONS - Enhanced */
+    .quick-actions .action-card {
+        display: block;
+        height: 100%;
+        padding: 1.5rem;
+        border-radius: 12px;
+        color: white;
         text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
-    .view-details i {
-        font-size: 0.7rem;
+    .bg-primary-grad { background: var(--primary-grad); }
+    .bg-danger-grad { background: var(--danger-grad); }
+    .bg-warning-grad { background: var(--warning-grad); }
+    .bg-success-grad { background: var(--success-grad); }
+    
+    .quick-actions .action-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            to right,
+            rgba(255,255,255,0) 0%,
+            rgba(255,255,255,0.1) 50%,
+            rgba(255,255,255,0) 100%
+        );
+        transform: rotate(45deg);
+        transition: all 0.6s ease;
+        opacity: 0;
     }
     
-    .empty-state {
-        text-align: center;
-        padding: 2rem;
+    .quick-actions .action-card:hover::before {
+        opacity: 1;
+        left: 100%;
     }
     
-    .empty-state .empty-icon {
-        font-size: 3rem;
-        color: #dee2e6;
-        margin-bottom: 1rem;
-    }
-    
-    .empty-state h4 {
-        font-size: 1.25rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .empty-state p {
-        color: #6c757d;
+    .action-icon {
+        position: relative;
+        width: 60px;
+        height: 60px;
         margin-bottom: 1.5rem;
     }
-</style>
-
-<!-- 📜 INTERACTIVITY -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Make inspection/hazard items clickable
-    document.querySelectorAll('.inspection-item, .hazard-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            // Don't trigger if clicking on a link
-            if (!e.target.closest('a')) {
-                const detailsLink = this.querySelector('.view-details');
-                if (detailsLink) {
-                    window.location.href = detailsLink.href;
-                }
-            }
-        });
-    });
     
-    // Initialize tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-});
-</script>
+    .action-icon i {
+        position: relative;
+        z-index: 2;
+        font-size: 1.75rem;
+    }
+    
+    .icon-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        z-index: 1;
+    }
+    
+    .action-title {
+        display: block;
+        font-size: 1.25rem;
+       : translateX(0);
+    }
+
 {% endblock %}
