@@ -66,22 +66,49 @@ def safety_image_test(request):
             prompt = """
 **Safety Inspection Analysis Request**
 
-You are a senior workplace safety expert with 20+ years of field experience. You are analyzing the uploaded workplace photo. Provide your response using the following structured format:
+
+You are an AI safety inspection assistant. Based on the provided input (such as a photo or observation), generate clearly separated and numbered hazard reports. 
+
+Each hazard must be output using the following exact structure. Do not combine or merge hazards. Each block must be self-contained.
+
+For every identified issue, follow **this markdown format**:
 
 ---
 
-### Hazard #1
+### Hazard #{{ n }}
 - **Title**: [Short title of hazard]
 - **Severity**: Low / Medium / High / Critical
-- **Description**: [Detailed description of the hazard]
-- **OSHA Reference**: [If applicable]
+- **Description**: [Detailed explanation of the hazard and its impact]
+- **OSHA Reference**: [e.g., 1926.501(b)(1)] or "N/A" if not applicable
 
 #### Recommendation
-- **Action**: [Corrective action to eliminate the hazard]
-- **PPE**: [Required PPE, if any]
-- **Training**: [Required training, if any]
-- **Engineering Control**: [Control measure, if any]
-- **Timeline**: [Suggested resolution timeline]
+- **Action**: [Corrective or preventive measure to eliminate or reduce the hazard]
+
+---
+
+### ✅ Example Output
+
+```markdown
+### Hazard #1
+- **Title**: Missing Guardrails on Elevated Platform
+- **Severity**: High
+- **Description**: The platform at the construction site lacks guardrails on two sides, increasing the risk of falls from height.
+- **OSHA Reference**: 1926.501(b)(1)
+
+#### Recommendation
+- **Action**: Install compliant guardrails (at least 42 inches high) on all open sides of the platform immediately.
+
+---
+
+### Hazard #2
+- **Title**: Blocked Emergency Exit
+- **Severity**: Critical
+- **Description**: The designated emergency exit is obstructed by equipment, making it inaccessible during an emergency.
+- **OSHA Reference**: 1910.37(a)(3)
+
+#### Recommendation
+- **Action**: Clear the emergency exit path and place visible signage to ensure constant accessibility.
+
 
 ---
 
@@ -693,8 +720,8 @@ def finalize_inspection(request, inspection_id):
         inspection.save()
 
     return redirect("mrsafe_app:inspection_detail", inspection_id=inspection.id)
-
 from django.template.loader import get_template
+from django.templatetags.static import static
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 from django.contrib.auth.decorators import login_required
@@ -704,9 +731,15 @@ from django.shortcuts import get_object_or_404
 @login_required
 def export_inspection_pdf(request, inspection_id):
     inspection = get_object_or_404(SiteInspection, id=inspection_id)
-    template = get_template('mrsafe/inspect/inspection_pdf.html')
-    html = template.render({'inspection': inspection})
+    
+    # Build full logo URL
+    logo_url = request.build_absolute_uri(static('images/logo-company4.png'))
 
+    # Render HTML with logo_url
+    template = get_template('mrsafe/inspect/inspection_pdf.html')
+    html = template.render({'inspection': inspection, 'logo_url': logo_url})
+
+    # Create PDF
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="inspection_{inspection.id}.pdf"'
 
@@ -714,18 +747,228 @@ def export_inspection_pdf(request, inspection_id):
 
     if pisa_status.err:
         return HttpResponse("Error generating PDF", status=500)
-    return response
+    
+    return response  # ✅ Return PDF, not render()
+
 
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, HttpResponse
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN
+from io import BytesIO
+from datetime import datetime
 from ..models import SiteInspection
 
 @login_required
 def export_inspection_ppt(request, inspection_id):
     inspection = get_object_or_404(SiteInspection, id=inspection_id)
 
-    # Temporary placeholder response
-    return HttpResponse(f"PPT export for inspection: {inspection.title}", content_type="text/plain")
+    prs = Presentation()
+    prs.slide_width = Inches(13.333)
+    prs.slide_height = Inches(7.5)
+
+    # Colors
+    PRIMARY_COLOR = RGBColor(44, 62, 80)
+    SECONDARY_COLOR = RGBColor(52, 152, 219)
+    ACCENT_COLOR = RGBColor(231, 76, 60)
+    LIGHT_BG = RGBColor(245, 245, 245)
+
+    # ---------------- Title Slide ----------------
+    blank_layout = prs.slide_layouts[6]
+    title_slide = prs.slides.add_slide(blank_layout)
+
+    # Background
+    background = title_slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, prs.slide_height
+    )
+    background.fill.solid()
+    background.fill.fore_color.rgb = PRIMARY_COLOR
+
+    # Logo (use actual file path or catch error)
+    logo_path = 'static/images/mrsafe-logo.png'  # Adjust path as needed
+    try:
+        title_slide.shapes.add_picture(
+            logo_path, Inches(1), Inches(0.5), height=Inches(1)
+        )
+    except:
+        logo_box = title_slide.shapes.add_textbox(Inches(1), Inches(0.5), Inches(2), Inches(0.5))
+        logo_text = logo_box.text_frame.add_paragraph()
+        logo_text.text = "MrSafe"
+        logo_text.font.size = Pt(24)
+        logo_text.font.color.rgb = RGBColor(255, 255, 255)
+
+    # Title
+    title_box = title_slide.shapes.add_textbox(Inches(1), Inches(2), prs.slide_width - Inches(2), Inches(1.5))
+    title = title_box.text_frame.add_paragraph()
+    title.text = "Site Inspection Report"
+    title.font.size = Pt(44)
+    title.font.color.rgb = RGBColor(255, 255, 255)
+    title.font.bold = True
+
+    # Info
+    info_box = title_slide.shapes.add_textbox(Inches(1), Inches(3.5), prs.slide_width - Inches(2), Inches(3))
+    info = info_box.text_frame
+    info.word_wrap = True
+
+    def safe_name(val):
+        return val.get_full_name() if hasattr(val, 'get_full_name') else str(val)
+
+    info_lines = [
+        f"Inspection ID: MR-{inspection.id:06d}",
+        f"Title: {inspection.title}",
+        f"Location: {inspection.location}",
+        f"Inspector: {safe_name(getattr(inspection, 'inspector', 'N/A'))}",
+    ]
+
+    for line in info_lines:
+        p = info.add_paragraph()
+        p.text = line
+        p.font.size = Pt(18)
+        p.font.color.rgb = RGBColor(255, 255, 255)
+
+    # Footer
+    footer_box = title_slide.shapes.add_textbox(Inches(1), prs.slide_height - Inches(0.7), prs.slide_width - Inches(2), Inches(0.5))
+    footer = footer_box.text_frame.add_paragraph()
+    footer.text = "Generated by MrSafe | www.mrsafe.me"
+    footer.font.size = Pt(12)
+    footer.font.color.rgb = RGBColor(200, 200, 200)
+    footer.alignment = PP_ALIGN.RIGHT
+
+    # ---------------- Summary Slide ----------------
+    summary_slide = prs.slides.add_slide(prs.slide_layouts[5])
+    summary_slide.shapes.title.text = "Inspection Summary"
+    summary_slide.shapes.title.text_frame.paragraphs[0].font.color.rgb = PRIMARY_COLOR
+    summary_slide.shapes.title.text_frame.paragraphs[0].font.size = Pt(32)
+
+    # Background
+    bg = summary_slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, prs.slide_height)
+    bg.fill.solid()
+    bg.fill.fore_color.rgb = LIGHT_BG
+    summary_slide.shapes._spTree.remove(bg._element)
+    summary_slide.shapes._spTree.insert(2, bg._element)
+
+    rows, cols = 4, 2
+    table = summary_slide.shapes.add_table(
+        rows, cols, Inches(1.5), Inches(2), prs.slide_width - Inches(3), Inches(3.5)
+    ).table
+
+    table.columns[0].width = Inches(3)
+    table.columns[1].width = prs.slide_width - Inches(3) - Inches(3)
+
+    # Headers
+    table.cell(0, 0).text = "Metric"
+    table.cell(0, 1).text = "Value"
+    for col in range(2):
+        cell = table.cell(0, col)
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = PRIMARY_COLOR
+        para = cell.text_frame.paragraphs[0]
+        para.font.bold = True
+        para.font.color.rgb = RGBColor(255, 255, 255)
+        para.alignment = PP_ALIGN.CENTER
+
+    # Data rows
+    data = [
+        ("Total Observations", str(inspection.observations.count())),
+        ("High Risk Items", str(getattr(inspection, 'high_risk_count', 0))),
+        ("Completion", f"{getattr(inspection, 'completion_percentage', 0)}%"),
+    ]
+
+    for row_idx, (label, value) in enumerate(data, start=1):
+        table.cell(row_idx, 0).text = label
+        table.cell(row_idx, 1).text = value
+
+        for col in range(2):
+            cell = table.cell(row_idx, col)
+            cell.text_frame.paragraphs[0].font.size = Pt(14)
+            cell.fill.solid()
+            cell.fill.fore_color.rgb = RGBColor(255, 255, 255)
+
+    # ---------------- Observations Slides ----------------
+    observations = inspection.observations.all()
+    if observations.exists():
+        for idx, obs in enumerate(observations, 1):
+            slide = prs.slides.add_slide(prs.slide_layouts[5])
+            slide.shapes.title.text = f"Observation #{idx}"
+            slide.shapes.title.text_frame.paragraphs[0].font.color.rgb = PRIMARY_COLOR
+            slide.shapes.title.text_frame.paragraphs[0].font.size = Pt(28)
+
+            # Background
+            obs_bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, prs.slide_width, prs.slide_height)
+            obs_bg.fill.solid()
+            obs_bg.fill.fore_color.rgb = LIGHT_BG
+            slide.shapes._spTree.remove(obs_bg._element)
+            slide.shapes._spTree.insert(2, obs_bg._element)
+
+            # Textbox
+            box = slide.shapes.add_textbox(Inches(1), Inches(1.8), prs.slide_width - Inches(2), prs.slide_height - Inches(2.5))
+            tf = box.text_frame
+            tf.word_wrap = True
+
+            # Hazard
+            p1 = tf.add_paragraph()
+            p1.text = "HAZARD:"
+            p1.font.size = Pt(16)
+            p1.font.color.rgb = ACCENT_COLOR
+            p1.font.bold = True
+
+            p2 = tf.add_paragraph()
+            p2.text = obs.hazard_description
+            p2.font.size = Pt(14)
+
+            # Recommendation
+            p3 = tf.add_paragraph()
+            p3.text = "RECOMMENDATION:"
+            p3.font.size = Pt(16)
+            p3.font.color.rgb = SECONDARY_COLOR
+            p3.font.bold = True
+
+            p4 = tf.add_paragraph()
+            p4.text = obs.recommendations
+            p4.font.size = Pt(14)
+
+            # Footer with detection date
+            footer_box = slide.shapes.add_textbox(Inches(1), prs.slide_height - Inches(0.7), prs.slide_width - Inches(2), Inches(0.5))
+            footer = footer_box.text_frame.add_paragraph()
+            footer.text = f"Detected on: {obs.detected_at.strftime('%B %d, %Y') if getattr(obs, 'detected_at', None) else 'Date not specified'}"
+            footer.font.size = Pt(12)
+            footer.font.color.rgb = RGBColor(150, 150, 150)
+    else:
+        # No Observations Slide
+        slide = prs.slides.add_slide(prs.slide_layouts[5])
+        slide.shapes.title.text = "No Observations Recorded"
+        slide.shapes.title.text_frame.paragraphs[0].font.color.rgb = PRIMARY_COLOR
+        slide.shapes.title.text_frame.paragraphs[0].font.size = Pt(32)
+
+        box = slide.shapes.add_textbox(Inches(2), Inches(3), prs.slide_width - Inches(4), Inches(2))
+        p = box.text_frame.add_paragraph()
+        p.text = "No safety observations were recorded for this inspection."
+        p.font.size = Pt(20)
+        p.font.color.rgb = RGBColor(100, 100, 100)
+        p.alignment = PP_ALIGN.CENTER
+
+    # ---------------- Export as Response ----------------
+    ppt_io = BytesIO()
+    prs.save(ppt_io)
+    ppt_io.seek(0)
+
+    date_str = datetime.today().strftime("%Y%m%d")
+    filename = f"mrsafe_inspection_{inspection.id}_{date_str}.pptx"
+
+    response = HttpResponse(
+        ppt_io.read(),
+        content_type='application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    return response
+
+
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from ..models import SiteInspection
