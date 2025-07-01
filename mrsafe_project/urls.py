@@ -30,6 +30,7 @@ urlpatterns = [
     # Admin and rich editor
     path('admin/', admin.site.urls),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),  # ✅ This line is crucial
 
 
 
