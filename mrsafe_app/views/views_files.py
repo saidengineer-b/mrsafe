@@ -250,10 +250,17 @@ def home(request):
         "is_premium": request.user.has_premium_access  # Pass to template
     })
 
+
+
+########################passwards issues#############
+from django.contrib.auth.views import PasswordResetView
+from django.urls import reverse_lazy
+from ..forms import CustomPasswordResetForm  # Ensure this exists
+
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'registration/password_reset_form.html'
     form_class = CustomPasswordResetForm
-    success_url = reverse_lazy('password_reset_done')  # Redirect after successful form submission
+    success_url = reverse_lazy('password_reset_done')  # After form submit
 
 
 from django.contrib import messages
@@ -261,6 +268,9 @@ from django.contrib import messages
 def password_reset_done(request):
     messages.success(request, "We've sent you an email with instructions to reset your password.")
     return render(request, 'registration/password_reset_done.html')
+
+
+#############################################################################
 
 #store ITEM______________________________________________________________________________
 from django.shortcuts import render
