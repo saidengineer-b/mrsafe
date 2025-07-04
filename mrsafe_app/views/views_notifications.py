@@ -67,3 +67,7 @@ class Command(BaseCommand):
 
 ###################################################################################################
 
+from django.http import JsonResponse
+
+def notifications_api(request):
+    return JsonResponse({"status": "ok", "notifications": []})
