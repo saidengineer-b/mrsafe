@@ -258,11 +258,15 @@
 <section class="campaign-section py-5 bg-warning-subtle">
   <div class="container">
     <div class="row align-items-center mb-4">
-      <!-- Campaign Image -->
-      <div class="col-lg-6 mb-4 mb-lg-0">
-        <img src="{% static 'images/Campign-10000.jpg' %}" alt="First 10,000 Observations Campaign" class="img-fluid rounded shadow">
+    <!-- Video 1 -->
+    <div class="col-md-6">
+      <div class="video-container animate__animated animate__fadeIn animate__delay-1s">
+        <video controls poster="{% static 'images/Campign-10000.jpg' %}" class="w-100 rounded shadow">
+          <source src="{% static 'images/mr-safe-demo1.mp4' %}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
-
+    </div>
       <!-- Campaign Description -->
       <div class="col-lg-6">
         <h2 class="mb-3 text-dark fw-bold">Be Among the First 10,000 Safety Observations</h2>
@@ -290,8 +294,8 @@
     <!-- Video 1 -->
     <div class="col-md-6">
       <div class="video-container animate__animated animate__fadeIn animate__delay-1s">
-        <video controls poster="{% static 'images/Campign-10000.jpg' %}" class="w-100 rounded shadow">
-          <source src="{% static 'images/mr-safe-demo1.mp4' %}" type="video/mp4">
+        <video controls poster="{% static 'images/video-poster1.jpg' %}" class="w-100 rounded shadow">
+          <source src="{% static 'images/mr-safe-demo3.mp4' %}" type="video/mp4">
           Your browser does not support the video tag.
         </video>
       </div>
