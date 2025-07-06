@@ -290,7 +290,7 @@
     <!-- Video 1 -->
     <div class="col-md-6">
       <div class="video-container animate__animated animate__fadeIn animate__delay-1s">
-        <video controls poster="{% static 'images/video-poster.jpg' %}" class="w-100 rounded shadow">
+        <video controls poster="{% static 'images/Campign-10000.jpg' %}" class="w-100 rounded shadow">
           <source src="{% static 'images/mr-safe-demo1.mp4' %}" type="video/mp4">
           Your browser does not support the video tag.
         </video>
@@ -309,6 +309,31 @@
 
   </div>
 </div>
+<!-- QuizAI Quizzes Section -->
+<section class="quizai-section py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-4 fw-bold">🧠 Featured Quizzes from QuizAI</h2>
+    <p class="text-center text-muted mb-5">Explore interactive quizzes powered by AI. Scan the QR code or click to play instantly.</p>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+      <!-- Single Quiz Card -->
+      {% for quiz in quizzes %}
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{{ quiz.image_url }}" class="card-img-top" alt="Quiz Cover">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ quiz.title }}</h5>
+            <img src="{{ quiz.qr_code_url }}" alt="QR Code for {{ quiz.title }}" class="img-fluid my-2" width="100">
+            <a href="{{ quiz.url }}" class="btn btn-outline-primary btn-sm" target="_blank">Take the Quiz</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</section>
 
 </section>
 
