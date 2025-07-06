@@ -300,7 +300,7 @@
     <!-- Video 2 -->
     <div class="col-md-6">
       <div class="video-container animate__animated animate__fadeIn animate__delay-1s">
-        <video controls poster="{% static 'images/video-poster.jpg' %}" class="w-100 rounded shadow">
+        <video controls poster="{% static 'images/video-poster2.jpg' %}" class="w-100 rounded shadow">
           <source src="{% static 'images/mr-safe-demo2.mp4' %}" type="video/mp4">
           Your browser does not support the video tag.
         </video>
@@ -317,23 +317,81 @@
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
 
-      <!-- Single Quiz Card -->
-      {% for quiz in quizzes %}
+      <!-- Quiz 1 -->
       <div class="col">
         <div class="card h-100 shadow-sm border-0">
-          <img src="{{ quiz.image_url }}" class="card-img-top" alt="Quiz Cover">
+          <img src="{% static 'images/firesafety_quiz.png' %}" class="card-img-top" alt="Electrical Safety">
           <div class="card-body text-center">
-            <h5 class="card-title">{{ quiz.title }}</h5>
-            <img src="{{ quiz.qr_code_url }}" alt="QR Code for {{ quiz.title }}" class="img-fluid my-2" width="100">
-            <a href="{{ quiz.url }}" class="btn btn-outline-primary btn-sm" target="_blank">Take the Quiz</a>
+            <h5 class="card-title">Fire Safety Quiz</h5>
+            <a href="https://quiz-ai.net/quizzes/quizzes/public/56/" class="btn btn-outline-primary btn-sm" target="_blank">Take the Quiz</a>
           </div>
         </div>
       </div>
-      {% endfor %}
+
+      <!-- Quiz 2 -->
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{% static 'images/quizzes/fire_safety.jpg' %}" class="card-img-top" alt="Fire Safety">
+          <div class="card-body text-center">
+            <h5 class="card-title">Fire Safety Awareness</h5>
+            <img src="{% static 'qr/fire_safety_qr.png' %}" alt="QR Code" class="img-fluid my-2" width="100">
+            <a href="https://quiz-ai.net/public-quiz/fire-safety" class="btn btn-outline-primary btn-sm" target="_blank">Take the Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz 3 -->
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{% static 'images/quizzes/ppe_quiz.jpg' %}" class="card-img-top" alt="PPE">
+          <div class="card-body text-center">
+            <h5 class="card-title">Personal Protective Equipment</h5>
+            <img src="{% static 'qr/ppe_qr.png' %}" alt="QR Code" class="img-fluid my-2" width="100">
+            <a href="https://quiz-ai.net/public-quiz/ppe-basics" class="btn btn-outline-primary btn-sm" target="_blank">Take the Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz 4 -->
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{% static 'images/quizzes/ladder_safety.jpg' %}" class="card-img-top" alt="Ladder Safety">
+          <div class="card-body text-center">
+            <h5 class="card-title">Ladder Safety Do's & Don'ts</h5>
+            <img src="{% static 'qr/ladder_safety_qr.png' %}" alt="QR Code" class="img-fluid my-2" width="100">
+            <a href="https://quiz-ai.net/public-quiz/ladder-safety" class="btn btn-outline-primary btn-sm" target="_blank">Take the Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz 5 -->
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{% static 'images/quizzes/hazcom.jpg' %}" class="card-img-top" alt="HazCom">
+          <div class="card-body text-center">
+            <h5 class="card-title">Hazard Communication (HazCom)</h5>
+            <img src="{% static 'qr/hazcom_qr.png' %}" alt="QR Code" class="img-fluid my-2" width="100">
+            <a href="https://quiz-ai.net/public-quiz/hazcom" class="btn btn-outline-primary btn-sm" target="_blank">Take the Quiz</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz 6 -->
+      <div class="col">
+        <div class="card h-100 shadow-sm border-0">
+          <img src="{% static 'images/quizzes/forklift_safety.jpg' %}" class="card-img-top" alt="Forklift Safety">
+          <div class="card-body text-center">
+            <h5 class="card-title">Forklift Safety Rules</h5>
+            <img src="{% static 'qr/forklift_safety_qr.png' %}" alt="QR Code" class="img-fluid my-2" width="100">
+            <a href="https://quiz-ai.net/public-quiz/forklift-safety" class="btn btn-outline-primary btn-sm" target="_blank">Take the Quiz</a>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
 </section>
+
 
 </section>
 
