@@ -66,33 +66,7 @@ from django.shortcuts import render
 
 
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from ..models import SiteInspection, UserProfile
 
-@login_required
-def profile(request):
-    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
-    
-
-    # ✅ Get site inspections created by the user
-    inspections = SiteInspection.objects.filter(inspector=request.user).order_by('-date')
-    total_inspections = inspections.count()
-    completed_inspections = inspections.filter(completed=True).count()
-
-    # ✅ Get coin balance if used
-    user_coins = getattr(user_profile, 'coin_balance', None)
-    coin_balance = user_coins.balance if user_coins else 0
-
-    context = {
-        "user_profile": user_profile,
-        "inspections": inspections,
-        "total_inspections": total_inspections,
-        "completed_inspections": completed_inspections,
-        "coin_balance": coin_balance,
-    }
-
-    return render(request, "mrsafe/profile.html", context)
 
 
 from django.contrib.auth.decorators import login_required
@@ -1500,7 +1474,7 @@ def user_management_view(request):
     return render(request, 'mrsafe_app/admin/admin_user_management.html', {"users": users})
 
 
-@login_required
+
 def user_profile_view(request, user_id):
     if not request.user.is_staff:
         return redirect("mrsafe_app:profile")  # Redirect non-admins

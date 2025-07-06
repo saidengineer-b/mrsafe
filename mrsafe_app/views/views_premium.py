@@ -65,43 +65,33 @@ def generate_premium_qr(premium_code):
     qr_image_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
     return f"data:image/png;base64,{qr_image_base64}"
 
-
 import uuid
-@login_required
+from django.conf import settings
+
 def premium_dashboard(request):
-    if not request.user.is_premium:
-        messages.warning(request, "🚫 Premium access required to view this page.")
-        return redirect("mrsafe_app:premium_membership")
+    # Block access for non-premium users unless override is enabled
+    if not request.user.is_authenticated or not request.user.is_premium:
+        if not getattr(settings, "ALLOW_PUBLIC_PREMIUM_DASHBOARD", False):
+            messages.warning(request, "🚫 Premium access required to view this page.")
+            return redirect("mrsafe_app:premium_membership")
 
-    # ✅ Get or create the premium profile for the logged-in trainer
-    
-   
+    user = request.user if request.user.is_authenticated else None
 
-    premium_profile, created = PremiumProfile.objects.get_or_create(user=request.user)
-    if not premium_profile.premium_code:
-        premium_profile.premium_code = str(uuid.uuid4()).split('-')[0].upper()  # e.g., '9A7D5F'
-        premium_profile.save()
+    if user:
+        premium_profile, created = PremiumProfile.objects.get_or_create(user=user)
+        if not premium_profile.premium_code:
+            premium_profile.premium_code = str(uuid.uuid4()).split('-')[0].upper()
+            premium_profile.save()
 
-    premium_code = premium_profile.premium_code
-    premium_qr_url = generate_premium_qr(premium_code)
+        premium_code = premium_profile.premium_code
+        premium_qr_url = generate_premium_qr(premium_code)
+    else:
+        premium_code = "DEMO123"
+        premium_qr_url = generate_premium_qr(premium_code)
 
-
-    # ✅ Trainer is the logged-in user
-    trainer = request.user
-
-    # ✅ Fetch the first group (or adjust to get specific groups if needed)
-    
-    # ✅ Fetch linked trainees (from LinkedUser model)
-
-   
-
-
-    # ✅ Return data to template
     return render(request, "mrsafe/premium/premium_dashboard.html", {
-        "premium_qr_url": premium_qr_url,
         "premium_code": premium_code,
-     
-          # To loop in table if needed
+        "premium_qr_url": premium_qr_url,
     })
 
 
