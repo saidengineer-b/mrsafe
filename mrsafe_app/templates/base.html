@@ -332,369 +332,266 @@
         }
 
         // Notification System
-        let notificationSocket = null;
-        let notificationCheckInterval = null;
+<script>
+    // Notification System
+    let notificationCheckInterval = null;
 
-        function initializeNotifications() {
-            // Initial fetch
-            fetchNotifications();
-            
-            // Set up periodic checking (every 30 seconds)
-            notificationCheckInterval = setInterval(fetchNotifications, 30000);
-            
-            // Set up WebSocket if available
-            setupNotificationWebSocket();
-            
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(event) {
-                const notificationContainer = document.querySelector('.notification-container');
-                if (!notificationContainer.contains(event.target)) {
-                    const dropdown = document.getElementById('notification-dropdown');
-                    dropdown.style.display = 'none';
+    function initializeNotifications() {
+        // Initial fetch
+        fetchNotifications();
+
+        // Set up periodic checking (every 30 seconds)
+        notificationCheckInterval = setInterval(fetchNotifications, 30000);
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const notificationContainer = document.querySelector('.notification-container');
+            if (!notificationContainer.contains(event.target)) {
+                const dropdown = document.getElementById('notification-dropdown');
+                dropdown.style.display = 'none';
+            }
+        });
+    }
+
+    function toggleNotifications() {
+        const dropdown = document.getElementById("notification-dropdown");
+        const isVisible = dropdown.style.display === "block";
+
+        if (!isVisible) {
+            // Show dropdown with animation
+            dropdown.style.display = "block";
+            anime({
+                targets: dropdown,
+                opacity: [0, 1],
+                translateY: [-10, 0],
+                duration: 200,
+                easing: 'easeOutQuad'
+            });
+
+            // Mark notifications as read when opened
+            if (parseInt(document.getElementById('notification-count').textContent) > 0) {
+                markAllAsRead();
+            }
+        } else {
+            // Hide dropdown with animation
+            anime({
+                targets: dropdown,
+                opacity: [1, 0],
+                translateY: [0, -10],
+                duration: 150,
+                easing: 'easeInQuad',
+                complete: function() {
+                    dropdown.style.display = "none";
                 }
             });
         }
+    }
 
-        function setupNotificationWebSocket() {
-            if ('WebSocket' in window) {
-                const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-                const host = window.location.host;
-                const path = '/ws/notifications/';
-                
-                notificationSocket = new WebSocket(protocol + host + path);
-                
-                notificationSocket.onopen = function() {
-                    console.log('WebSocket connection established for notifications');
-                };
-                
-                notificationSocket.onmessage = function(event) {
-                    const data = JSON.parse(event.data);
-                    if (data.type === 'new_notification') {
-                        addNewNotification(data.notification);
-                        updateNotificationBadge(1); // Increment by 1
-                        playNotificationSound();
+    function fetchNotifications() {
+        fetch("/notifications/")
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                updateNotificationsUI(data);
+            })
+            .catch(error => {
+                console.error("Error fetching notifications:", error);
+                const notificationList = document.getElementById("notification-list");
+                notificationList.innerHTML = `
+                    <li class="notification-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Failed to load notifications</span>
+                    </li>
+                `;
+            });
+    }
+
+    function updateNotificationsUI(data) {
+        const notificationList = document.getElementById("notification-list");
+        updateNotificationBadge(data.unread_count);
+
+        if (data.notifications.length === 0) {
+            notificationList.innerHTML = `
+                <li class="notification-empty">
+                    <i class="fas fa-bell-slash"></i>
+                    <span>No notifications available</span>
+                </li>
+            `;
+        } else {
+            notificationList.innerHTML = '';
+            data.notifications.forEach(notification => {
+                const li = document.createElement('li');
+                li.className = `notification-item ${notification.unread ? 'unread' : ''}`;
+                li.innerHTML = `
+                    <div class="notification-content">
+                        <div class="notification-icon">
+                            <i class="fas ${notification.icon || 'fa-info-circle'}"></i>
+                        </div>
+                        <div class="notification-details">
+                            <div class="notification-message">${notification.message}</div>
+                            <div class="notification-meta">
+                                <span class="notification-time">${notification.time}</span>
+                                <span class="notification-category">${notification.category}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="notification-action" onclick="markNotificationAsRead(event, ${notification.id})">
+                        <i class="fas fa-check"></i>
+                    </button>
+                `;
+                li.addEventListener('click', function(e) {
+                    if (!e.target.closest('.notification-action')) {
+                        window.location.href = notification.url || '#';
                     }
-                };
-                
-                notificationSocket.onclose = function() {
-                    console.log('WebSocket connection closed, attempting to reconnect...');
-                    setTimeout(setupNotificationWebSocket, 5000);
-                };
-                
-                notificationSocket.onerror = function(error) {
-                    console.error('WebSocket error:', error);
-                };
-            }
-        }
-
-        function toggleNotifications() {
-            const dropdown = document.getElementById("notification-dropdown");
-            const isVisible = dropdown.style.display === "block";
-            
-            if (!isVisible) {
-                // Show dropdown with animation
-                dropdown.style.display = "block";
-                anime({
-                    targets: dropdown,
-                    opacity: [0, 1],
-                    translateY: [-10, 0],
-                    duration: 200,
-                    easing: 'easeOutQuad'
                 });
-                
-                // Mark notifications as read when opened
-                if (parseInt(document.getElementById('notification-count').textContent) > 0) {
-                    markAllAsRead();
+                notificationList.appendChild(li);
+            });
+        }
+    }
+
+    function updateNotificationBadge(count) {
+        const badge = document.getElementById('notification-count');
+        if (count > 0) {
+            badge.textContent = count > 99 ? '99+' : count;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function markNotificationAsRead(event, notificationId) {
+        event.stopPropagation();
+
+        fetch(`/notifications/mark-read/${notificationId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to mark as read');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const notificationItem = event.target.closest('.notification-item');
+                if (notificationItem) {
+                    notificationItem.classList.remove('unread');
+                    updateNotificationBadge(parseInt(document.getElementById('notification-count').textContent) - 1);
                 }
-            } else {
-                // Hide dropdown with animation
-                anime({
-                    targets: dropdown,
-                    opacity: [1, 0],
-                    translateY: [0, -10],
-                    duration: 150,
-                    easing: 'easeInQuad',
-                    complete: function() {
-                        dropdown.style.display = "none";
-                    }
-                });
             }
-        }
+        })
+        .catch(error => {
+            console.error('Error marking notification as read:', error);
+            showToast('Failed to mark notification as read');
+        });
+    }
 
-        function fetchNotifications() {
-            fetch("/notifications/")
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(data => {
-                    updateNotificationsUI(data);
-                })
-                .catch(error => {
-                    console.error("Error fetching notifications:", error);
-                    // Show error in UI if needed
-                    const notificationList = document.getElementById("notification-list");
-                    notificationList.innerHTML = `
-                        <li class="notification-error">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span>Failed to load notifications</span>
-                        </li>
-                    `;
+    function markAllAsRead() {
+        fetch('/notifications/mark-all-read/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to mark all as read');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                document.querySelectorAll('.notification-item.unread').forEach(item => {
+                    item.classList.remove('unread');
                 });
-        }
+                updateNotificationBadge(0);
+            }
+        })
+        .catch(error => {
+            console.error('Error marking all notifications as read:', error);
+            showToast('Failed to mark all as read');
+        });
+    }
 
-        function updateNotificationsUI(data) {
-            const notificationList = document.getElementById("notification-list");
-            const notificationCount = document.getElementById("notification-count");
-            
-            // Update notification count
-            updateNotificationBadge(data.unread_count);
-            
-            // Update notification list
-            if (data.notifications.length === 0) {
+    function clearAllNotifications() {
+        if (!confirm('Are you sure you want to clear all notifications?')) return;
+
+        fetch('/notifications/clear-all/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to clear notifications');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const notificationList = document.getElementById("notification-list");
                 notificationList.innerHTML = `
                     <li class="notification-empty">
                         <i class="fas fa-bell-slash"></i>
                         <span>No notifications available</span>
                     </li>
                 `;
-            } else {
-                notificationList.innerHTML = '';
-                data.notifications.forEach(notification => {
-                    const li = document.createElement('li');
-                    li.className = `notification-item ${notification.unread ? 'unread' : ''}`;
-                    li.innerHTML = `
-                        <div class="notification-content">
-                            <div class="notification-icon">
-                                <i class="fas ${notification.icon || 'fa-info-circle'}"></i>
-                            </div>
-                            <div class="notification-details">
-                                <div class="notification-message">${notification.message}</div>
-                                <div class="notification-meta">
-                                    <span class="notification-time">${notification.time}</span>
-                                    <span class="notification-category">${notification.category}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="notification-action" onclick="markNotificationAsRead(event, ${notification.id})">
-                            <i class="fas fa-check"></i>
-                        </button>
-                    `;
-                    li.addEventListener('click', function(e) {
-                        if (!e.target.closest('.notification-action')) {
-                            window.location.href = notification.url || '#';
-                        }
+                updateNotificationBadge(0);
+                showToast('All notifications cleared');
+            }
+        })
+        .catch(error => {
+            console.error('Error clearing notifications:', error);
+            showToast('Failed to clear notifications');
+        });
+    }
+
+    function getCSRFToken() {
+        return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+    }
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'safety-toast-message';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        anime({
+            targets: toast,
+            opacity: [0, 1],
+            translateY: [20, 0],
+            duration: 300,
+            easing: 'easeOutQuad',
+            complete: () => {
+                setTimeout(() => {
+                    anime({
+                        targets: toast,
+                        opacity: 0,
+                        translateY: -20,
+                        duration: 300,
+                        easing: 'easeInQuad',
+                        complete: () => toast.remove()
                     });
-                    notificationList.appendChild(li);
-                });
+                }, 3000);
             }
-        }
+        });
+    }
 
-        function addNewNotification(notification) {
-            const notificationList = document.getElementById("notification-list");
-            const emptyItem = document.querySelector('.notification-empty');
-            
-            if (emptyItem) {
-                notificationList.removeChild(emptyItem);
-            }
-            
-            const li = document.createElement('li');
-            li.className = 'notification-item unread';
-            li.innerHTML = `
-                <div class="notification-content">
-                    <div class="notification-icon">
-                        <i class="fas ${notification.icon || 'fa-info-circle'}"></i>
-                    </div>
-                    <div class="notification-details">
-                        <div class="notification-message">${notification.message}</div>
-                        <div class="notification-meta">
-                            <span class="notification-time">Just now</span>
-                            <span class="notification-category">${notification.category}</span>
-                        </div>
-                    </div>
-                </div>
-                <button class="notification-action" onclick="markNotificationAsRead(event, ${notification.id})">
-                    <i class="fas fa-check"></i>
-                </button>
-            `;
-            li.addEventListener('click', function(e) {
-                if (!e.target.closest('.notification-action')) {
-                    window.location.href = notification.url || '#';
-                }
-            });
-            
-            // Add new notification at the top with animation
-            if (notificationList.firstChild) {
-                notificationList.insertBefore(li, notificationList.firstChild);
-            } else {
-                notificationList.appendChild(li);
-            }
-            
-            anime({
-                targets: li,
-                opacity: [0, 1],
-                translateX: [20, 0],
-                duration: 300,
-                easing: 'easeOutQuad'
-            });
-        }
+    // Optional: subtle glow animation for premium button
+    setInterval(() => {
+        anime({
+            targets: '.safety-premium-glow',
+            opacity: [0.3, 0.7],
+            duration: 2000,
+            direction: 'alternate',
+            easing: 'easeInOutSine'
+        });
+    }, 2000);
+</script>
 
-        function updateNotificationBadge(count) {
-            const badge = document.getElementById('notification-count');
-            if (count > 0) {
-                badge.textContent = count > 99 ? '99+' : count;
-                badge.style.display = 'inline-block';
-                
-                // Add pulse animation if new notifications
-                if (parseInt(badge.textContent) < count) {
-                    badge.classList.add('pulse');
-                    setTimeout(() => badge.classList.remove('pulse'), 1000);
-                }
-            } else {
-                badge.style.display = 'none';
-            }
-        }
-
-        function markNotificationAsRead(event, notificationId) {
-            event.stopPropagation();
-            
-            fetch(`/notifications/mark-read/${notificationId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCSRFToken(),
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to mark as read');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Update UI
-                    const notificationItem = event.target.closest('.notification-item');
-                    if (notificationItem) {
-                        notificationItem.classList.remove('unread');
-                        updateNotificationBadge(parseInt(document.getElementById('notification-count').textContent) - 1);
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error marking notification as read:', error);
-                showToast('Failed to mark notification as read');
-            });
-        }
-
-        function markAllAsRead() {
-            fetch('/notifications/mark-all-read/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCSRFToken(),
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to mark all as read');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Update UI
-                    document.querySelectorAll('.notification-item.unread').forEach(item => {
-                        item.classList.remove('unread');
-                    });
-                    updateNotificationBadge(0);
-                }
-            })
-            .catch(error => {
-                console.error('Error marking all notifications as read:', error);
-                showToast('Failed to mark all as read');
-            });
-        }
-
-        function clearAllNotifications() {
-            if (!confirm('Are you sure you want to clear all notifications?')) return;
-            
-            fetch('/notifications/clear-all/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': getCSRFToken(),
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to clear notifications');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Update UI
-                    const notificationList = document.getElementById("notification-list");
-                    notificationList.innerHTML = `
-                        <li class="notification-empty">
-                            <i class="fas fa-bell-slash"></i>
-                            <span>No notifications available</span>
-                        </li>
-                    `;
-                    updateNotificationBadge(0);
-                    showToast('All notifications cleared');
-                }
-            })
-            .catch(error => {
-                console.error('Error clearing notifications:', error);
-                showToast('Failed to clear notifications');
-            });
-        }
-
-        function playNotificationSound() {
-            // Only play sound if notifications are enabled and not muted
-            const audio = new Audio('{% static "sounds/notification.mp3" %}');
-            audio.volume = 0.3;
-            audio.play().catch(e => console.log('Audio play failed:', e));
-        }
-
-        function getCSRFToken() {
-            return document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'safety-toast-message';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            anime({
-                targets: toast,
-                opacity: [0, 1],
-                translateY: [20, 0],
-                duration: 300,
-                easing: 'easeOutQuad',
-                complete: () => {
-                    setTimeout(() => {
-                        anime({
-                            targets: toast,
-                            opacity: 0,
-                            translateY: -20,
-                            duration: 300,
-                            easing: 'easeInQuad',
-                            complete: () => toast.remove()
-                        });
-                    }, 3000);
-                }
-            });
-        }
-
-        // Add subtle animation to premium button
-        setInterval(() => {
-            anime({
-                targets: '.safety-premium-glow',
-                opacity: [0.3, 0.7],
-                duration: 2000,
-                direction: 'alternate',
-                easing: 'easeInOutSine'
-            });
-        }, 2000);
-    </script>
 
     <!-- Modern CSS Styles with Safety Theme -->
     <style>
