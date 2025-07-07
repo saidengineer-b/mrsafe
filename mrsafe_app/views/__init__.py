@@ -9,7 +9,7 @@ from .views_premium import (
 from .views_notifications import (
     get_notifications,
     mark_notification_as_read,
-    clear_notifications,mark_all_as_read,notifications_api
+    clear_notifications,mark_all_as_read,notifications_api,notification_settings
 ) 
 
 from .views_inspect import (safety_image_test,inspect,save_observation,inspect_success,

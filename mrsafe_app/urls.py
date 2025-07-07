@@ -71,7 +71,7 @@ from .views import (contact,
                     
                     
                     subscribe_premium,PremiumPlanListView,plan_checkout,CartCheckoutView
-                    ,coin_manage_view,delete_coin_activity,SafetyDashboardView,notifications_api)
+                    ,coin_manage_view,delete_coin_activity,SafetyDashboardView,notifications_api,notification_settings)
 
 
 from django.urls import path
@@ -80,7 +80,8 @@ from django.shortcuts import redirect
 
 
 urlpatterns = [
- 
+ path('settings/notifications/', views.notification_settings, name='notification_settings'),
+
 path('api/notifications', views.notifications_api, name='notifications_api'),
   path('dashboard/', SafetyDashboardView.as_view(), name='safety_dashboard'),
   

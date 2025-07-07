@@ -71,3 +71,9 @@ from django.http import JsonResponse
 
 def notifications_api(request):
     return JsonResponse({"status": "ok", "notifications": []})
+
+from django.shortcuts import render
+
+def notification_settings(request):
+    # Your view logic here
+    return render(request, 'mrsafe/notification_settings.html')
