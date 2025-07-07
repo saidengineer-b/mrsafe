@@ -195,6 +195,3 @@ braintree.Configuration.configure(
 ##########################################################tempoaratrly 
 # Temporarily allow public access
 ALLOW_PUBLIC_PREMIUM_DASHBOARD = True
-# Allow public access temporarily (for testing, demo, or Google AdSense review)
-ALLOW_PUBLIC_USER_PROFILE_VIEW = True
-
