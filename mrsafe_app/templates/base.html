@@ -62,40 +62,45 @@
           
         </div>
 
-        <!-- Header Right Icons -->
-        <div class="safety-header-right d-flex align-items-center gap-3">
-            <a href="javascript:history.back()" class="safety-header-icon" title="Back">
-                <i class="fas fa-arrow-left safety-icon"></i>
-            </a>
-          
+  <!-- Header Right Icons -->
+<div class="safety-header-right d-flex align-items-center justify-content-end gap-3">
+    <!-- Back Button -->
+    <a href="javascript:history.back()" class="safety-header-icon" title="Back">
+        <i class="fas fa-arrow-left safety-icon"></i>
+    </a>
 
-            <!-- Notifications -->
-            <div class="safety-notification-container position-relative">
-                <div class="safety-header-icon" onclick="toggleNotifications()" title="Alerts">
-                    <i class="fas fa-bell safety-icon"></i>
-                    <span id="notification-count" class="safety-badge pulse">0</span>
-                </div>
-                
-                <div id="notification-dropdown" class="safety-notification-dropdown">
-                    <h4><i class="fas fa-bell me-2"></i>Safety Alerts</h4>
-                    <ul id="notification-list">
-                        <li class="safety-notification-item">No new alerts.</li>
-                    </ul>
-                    <button onclick="clearAllNotifications()" class="safety-clear-btn">Acknowledge All</button>
-                </div>
-            
+    <!-- Action Buttons Container -->
+    <div class="d-flex align-items-center gap-3">
+        <!-- Store Button -->
+        <a href="{% url 'mrsafe_app:store' %}" class="safety-nav-item">
+            <i class="fas fa-toolbox safety-nav-icon"></i>
+            <span class="safety-nav-label">Store</span>
+        </a>
+
+        <!-- Notifications -->
+        <div class="notification-container position-relative">
+            <div class="notification-header-icon" onclick="toggleNotifications()" title="Notifications">
+                <i class="fas fa-bell notification-icon"></i>
+                <span id="notification-count" class="notification-badge pulse">0</span>
             </div>
-    
-            <div class="d-flex align-items-center safety-action-buttons">
-                <a href="{% url 'mrsafe_app:store' %}" class="safety-nav-item mx-3">
-                    <i class="fas fa-toolbox safety-nav-icon"></i>
-                    <span class="safety-nav-label">Store</span>
-                </a>
-                <a href="#" class="safety-nav-item mx-3" onclick="shareApp()">
-                    <i class="fas fa-shield-alt safety-nav-icon"></i>
-                    <span class="safety-nav-label">Share</span>
-                </a>
+
+            <div id="notification-dropdown" class="notification-dropdown">
+                <h4><i class="fas fa-bell me-2"></i>Notifications</h4>
+                <ul id="notification-list">
+                    <li class="notification-item">No new notifications.</li>
+                </ul>
+                <button onclick="clearAllNotifications()" class="notification-clear-btn">Acknowledge All</button>
             </div>
+        </div>
+
+        <!-- Share Button -->
+        <a href="#" class="safety-nav-item" onclick="shareApp()">
+            <i class="fas fa-shield-alt safety-nav-icon"></i>
+            <span class="safety-nav-label">Share</span>
+        </a>
+    </div>
+</div>
+
          
         </div>
     </header>
@@ -201,16 +206,7 @@
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Safety Alert Panel -->
-    <div class="safety-alert-panel" id="safetyAlertPanel">
-        <div class="safety-alert-content">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span id="safetyAlertMessage">Emergency alert! Please evacuate immediately.</span>
-            <button class="safety-alert-close" onclick="closeSafetyAlert()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
+
 
     <!-- Safety Bottom Navigation -->
     <div class="safety-bottom-navbar d-flex justify-content-evenly align-items-center">
@@ -312,41 +308,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-        // Emergency functionality
-        function triggerEmergency() {
-            const alertPanel = document.getElementById("safetyAlertPanel");
-            alertPanel.style.display = "block";
-            document.getElementById("safetyAlertMessage").textContent = "EMERGENCY ALERT ACTIVATED! Follow safety procedures immediately.";
-            
-            // Flash red and sound alarm
-            document.body.style.backgroundColor = "#ff0000";
-            setTimeout(() => {
-                document.body.style.backgroundColor = "";
-            }, 500);
-            
-            // Play alarm sound (commented out to prevent automatic playback)
-            // const alarmSound = new Audio('{% static "sounds/alarm.mp3" %}');
-            // alarmSound.play();
-            
-            // Send emergency notification to server
-            fetch("/emergency/", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCSRFToken(),
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    user_id: "{{ request.user.id }}",
-                    location: "Unknown",
-                    type: "manual"
-                })
-            }).catch(error => console.error("Error sending emergency alert:", error));
-        }
-
-        function closeSafetyAlert() {
-            document.getElementById("safetyAlertPanel").style.display = "none";
-        }
-
         // Share functionality
         function shareApp() {
             if (navigator.share) {
@@ -364,90 +325,100 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         }
+// Toggle the visibility of the notification dropdown menu
+function toggleNotifications() {
+    const dropdown = document.getElementById("notification-dropdown");
+    // Toggle the display between 'none' and 'block'
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
 
-        // Notification system
-        function fetchNotifications() {
-            fetch("/notifications/")
-                .then(response => response.json())
-                .then(data => {
-                    const notificationList = document.getElementById("notification-list");
-                    const notificationCount = document.getElementById("notification-count");
+    if (dropdown.style.display === "block") {
+        // Optional: Add animation if needed
+        anime({
+            targets: '#notification-dropdown',
+            opacity: [0, 1],
+            translateY: [-10, 0],
+            duration: 300,
+            easing: 'easeOutQuad'
+        });
+    }
+}
 
-                    if (data.count > 0) {
-                        notificationCount.innerText = data.count;
-                        notificationCount.style.display = "inline-block";
-                        animateNotificationBadge();
-                    } else {
-                        notificationCount.style.display = "none";
-                    }
+// Fetch notifications and update the UI
+function fetchNotifications() {
+    fetch("/notifications/")  // Fetch notifications from your backend
+        .then(response => response.json())
+        .then(data => {
+            const notificationList = document.getElementById("notification-list");
+            const notificationCount = document.getElementById("notification-count");
 
-                    notificationList.innerHTML = "";
-                    if (data.notifications.length === 0) {
-                        notificationList.innerHTML = `<li class="safety-notification-item">No new safety alerts.</li>`;
-                    } else {
-                        data.notifications.forEach(notification => {
-                            const li = document.createElement("li");
-                            li.className = "safety-notification-item";
-                            li.innerHTML = `
-                                <div class="safety-notification-content">
-                                    <i class="fas ${notification.icon || 'fa-triangle-exclamation'} me-2"></i>
-                                    ${notification.message}
-                                </div>
-                                <small class="safety-notification-time">${notification.time}</small>
-                            `;
-                            li.onclick = () => markNotificationAsRead(notification.id);
-                            notificationList.appendChild(li);
-                        });
-                    }
-                })
-                .catch(error => console.error("Error fetching notifications:", error));
-        }
-
-        function animateNotificationBadge() {
-            anime({
-                targets: '#notification-count',
-                scale: [1, 1.3, 1],
-                duration: 500,
-                easing: 'easeInOutQuad'
-            });
-        }
-
-        function markNotificationAsRead(notificationId) {
-            fetch(`/notifications/read/${notificationId}/`, {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCSRFToken(),
-                    "Content-Type": "application/json"
-                }
-            }).then(() => fetchNotifications())
-              .catch(error => console.error("Error marking notification as read:", error));
-        }
-
-        function clearAllNotifications() {
-            fetch(`/notifications/clear/`, {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": getCSRFToken(),
-                    "Content-Type": "application/json"
-                }
-            }).then(() => fetchNotifications())
-              .catch(error => console.error("Error clearing notifications:", error));
-        }
-
-        function toggleNotifications() {
-            const dropdown = document.getElementById("notification-dropdown");
-            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-            
-            if (dropdown.style.display === "block") {
-                anime({
-                    targets: '#notification-dropdown',
-                    opacity: [0, 1],
-                    translateY: [-10, 0],
-                    duration: 300,
-                    easing: 'easeOutQuad'
-                });
+            // Update the notification count badge
+            if (data.count > 0) {
+                notificationCount.innerText = data.count;
+                notificationCount.style.display = "inline-block";
+            } else {
+                notificationCount.style.display = "none";
             }
+
+            // Clear previous notifications
+            notificationList.innerHTML = "";  // Clear the previous list
+
+            // If no notifications, show default message
+            if (data.notifications.length === 0) {
+                notificationList.innerHTML = `<li class="notification-item">No new notifications.</li>`;
+            } else {
+                const fragment = document.createDocumentFragment();  // Using document fragment to minimize DOM manipulation
+                data.notifications.forEach(notification => {
+                    const li = document.createElement("li");
+                    li.className = "notification-item";  // Updated class name for general notifications
+                    li.innerHTML = `
+                        <div class="notification-content">
+                            <i class="fas ${notification.icon || 'fa-info-circle'} me-2"></i>
+                            ${notification.message}
+                        </div>
+                        <small class="notification-time">${notification.time}</small>
+                    `;
+                    li.onclick = () => markNotificationAsRead(notification.id);
+                    fragment.appendChild(li);  // Append to the document fragment
+                });
+                notificationList.appendChild(fragment);  // Append all notifications at once
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching notifications:", error);
+            alert("Failed to fetch notifications. Please try again later.");  // Display an alert if fetching fails
+        });
+}
+
+// Mark the notification as read (backend call to update the status)
+function markNotificationAsRead(notificationId) {
+    fetch(`/notifications/read/${notificationId}/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken(),
+            "Content-Type": "application/json"
         }
+    }).then(() => fetchNotifications())  // Refresh the notification list
+      .catch(error => {
+          console.error("Error marking notification as read:", error);
+          alert("Failed to mark notification as read. Please try again.");
+      });
+}
+
+// Clear all notifications (reset the notification state)
+function clearAllNotifications() {
+    fetch(`/notifications/clear/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCSRFToken(),
+            "Content-Type": "application/json"
+        }
+    }).then(() => fetchNotifications())  // Refresh the notification list
+      .catch(error => {
+          console.error("Error clearing notifications:", error);
+          alert("Failed to clear notifications. Please try again.");
+      });
+}
+
 
         function getCSRFToken() {
             return document.cookie.split("; ").find(row => row.startsWith("csrftoken"))?.split("=")[1];
@@ -497,30 +468,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }, 2000);
             
-            // Check for safety alerts
-            checkSafetyAlerts();
-            setInterval(checkSafetyAlerts, 60000); // Check every minute
-        });
+
         
-        // Check for safety alerts from server
-        function checkSafetyAlerts() {
-            fetch("/safety-alerts/")
-                .then(response => response.json())
-                .then(data => {
-                    if (data.alert) {
-                        const alertPanel = document.getElementById("safetyAlertPanel");
-                        alertPanel.style.display = "block";
-                        document.getElementById("safetyAlertMessage").textContent = data.message;
-                        
-                        // Flash alert color
-                        alertPanel.style.backgroundColor = data.color || "#ff0000";
-                        setTimeout(() => {
-                            alertPanel.style.backgroundColor = "";
-                        }, 1000);
-                    }
-                })
-                .catch(error => console.error("Error checking safety alerts:", error));
-        }
     </script>
 
     <!-- Modern CSS Styles with Safety Theme -->
@@ -694,96 +643,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .safety-icon {
             transition: all 0.3s ease;
         }
-
-        .safety-emergency-btn {
-            background-color: var(--safety-danger);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(214, 64, 69, 0.3);
-        }
-
-        .safety-emergency-btn:hover {
-            background-color: #c03940;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(214, 64, 69, 0.4);
-        }
-
-        /* Notification Styles */
-        .safety-notification-container {
-            position: relative;
-        }
-
-        .safety-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--safety-danger);
-            color: white;
-            border-radius: 50%;
-            padding: 3px 7px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            display: none;
-        }
-
-        .safety-notification-dropdown {
-            position: absolute;
-            top: 50px;
-            right: 0;
-            width: 320px;
-            max-height: 400px;
-            overflow-y: auto;
-            background-color: var(--safety-darker);
-            border-radius: 6px;
-            padding: 15px;
-            display: none;
-            z-index: 1100;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--safety-gray);
-        }
-
-        .safety-notification-dropdown h4 {
-            color: var(--safety-accent);
-            font-size: 1rem;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--safety-gray);
-        }
-
-        .safety-notification-item {
-            padding: 10px;
-            border-bottom: 1px solid var(--safety-gray);
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .safety-notification-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .safety-notification-content {
-            display: flex;
-            align-items: center;
-        }
-
-        .safety-notification-time {
-            color: var(--safety-light-gray);
-            font-size: 0.8rem;
-            display: block;
-            margin-top: 5px;
-        }
-
+    
         .safety-clear-btn {
             width: 100%;
             margin-top: 10px;
@@ -1353,44 +1213,90 @@ document.addEventListener('DOMContentLoaded', function() {
         .safety-table tr:hover {
             background-color: rgba(255, 255, 255, 0.05);
         }
+    
+        /* Notification Styles */
+.notification-container {
+    position: relative;
+}
 
-        /* Alert Styles */
-        .safety-alert {
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #e53935; /* Red color for badge */
+    color: white;
+    border-radius: 50%;
+    padding: 3px 7px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    display: none;  /* Initially hidden until there are notifications */
+}
 
-        .safety-alert i {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
+.notification-dropdown {
+    position: absolute;
+    top: 50px; /* Adjust position based on icon */
+    right: 0;
+    width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: #424242;  /* Darker background for the dropdown */
+    border-radius: 6px;
+    padding: 15px;
+    display: none;  /* Initially hidden */
+    z-index: 1100;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid #616161;  /* Light gray border */
+}
 
-        .safety-alert-success {
-            background-color: rgba(75, 181, 67, 0.2);
-            border-left: 4px solid var(--safety-success);
-            color: var(--safety-success);
-        }
+.notification-dropdown h4 {
+    color: #81c784;  /* Accent color */
+    font-size: 1rem;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #616161;  /* Light gray border */
+}
 
-        .safety-alert-warning {
-            background-color: rgba(249, 166, 32, 0.2);
-            border-left: 4px solid var(--safety-warning);
-            color: var(--safety-warning);
-        }
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #616161;  /* Light gray border */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
-        .safety-alert-danger {
-            background-color: rgba(214, 64, 69, 0.2);
-            border-left: 4px solid var(--safety-danger);
-            color: var(--safety-danger);
-        }
+.notification-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);  /* Hover effect */
+}
 
-        .safety-alert-info {
-            background-color: rgba(58, 124, 165, 0.2);
-            border-left: 4px solid var(--safety-info);
-            color: var(--safety-info);
-        }
+.notification-content {
+    display: flex;
+    align-items: center;
+}
+
+.notification-time {
+    color: #bdbdbd;  /* Light gray time text */
+    font-size: 0.8rem;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Optional: Button styling for clearing notifications */
+.notification-clear-btn {
+    background-color: #f44336; /* Red button color */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.notification-clear-btn:hover {
+    background-color: #d32f2f; /* Darker red when hovered */
+}
+
+
+
+        
     </style>
 </body>
 </html>
