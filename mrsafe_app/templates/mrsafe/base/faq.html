@@ -6,99 +6,168 @@
 {% block content %}
 <div class="container my-5 text-white">
   
-  <!-- 🔹 Header -->
-  <div class="text-center mb-4">
-    <h1 class="text-tiffany fw-bold display-5 neon-text">❓ FAQ - Mr. Safe</h1>
-    <p class="text-tiffany fs-5">
-      Find answers to common safety and inspection questions. Still need help?
-      <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany">Contact us</a>.
+  <!-- 🚧 Industrial Header -->
+  <div class="text-center mb-5 position-relative">
+    <div class="position-absolute top-50 start-0 end-0 h-1 bg-tiffany opacity-25"></div>
+    <h1 class="text-tiffany fw-bold display-5 font-monospace d-inline-block px-4" 
+        style="text-shadow: 0 0 10px rgba(64, 224, 208, 0.5); background: #0a0f2c;">
+      > SAFETY_QUERY_SYSTEM
+    </h1>
+    <p class="text-tiffany mt-3 font-monospace small">
+      // FREQUENTLY ASKED SAFETY PROTOCOLS // 
+      <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany font-monospace">[REQUEST ASSISTANCE]</a>
     </p>
   </div>
 
-  <!-- 🔹 FAQ Sections -->
+  <!-- ⚠️ Industrial FAQ Panels -->
   <div class="faq-section">
 
-    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-      <h3 class="text-tiffany fw-bold mb-2">🛠️ What is Mr. Safe?</h3>
-      <p class="text-light">
-        Mr. Safe is an AI-powered safety inspection platform that lets you analyze photos, identify hazards, generate instant reports, and manage site safety efficiently.
+    <!-- FAQ Item 1 -->
+    <div class="bg-dark border border-tiffany rounded-4 shadow-lg p-4 mb-4 position-relative"
+         style="box-shadow: inset 0 0 10px rgba(64, 224, 208, 0.1), 0 0 15px rgba(64, 224, 208, 0.2);">
+      <div class="position-absolute top-0 start-0 bg-tiffany" style="width: 4px; height: 100%;"></div>
+      <h3 class="text-tiffany fw-bold mb-3 font-monospace">
+        <span class="badge bg-tiffany text-dark me-2 font-monospace">01</span>
+        SYSTEM_IDENTIFICATION
+      </h3>
+      <p class="text-light ps-4 font-monospace small">
+        MR. SAFE IS AN AI-POWERED SAFETY INSPECTION PLATFORM THAT LETS YOU ANALYZE PHOTOS, IDENTIFY HAZARDS, GENERATE INSTANT REPORTS, AND MANAGE SITE SAFETY EFFICIENTLY.
       </p>
     </div>
 
-    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-      <h3 class="text-tiffany fw-bold mb-2">📸 How does AI image analysis work?</h3>
-      <p class="text-light">
-        You simply upload a photo of your worksite or observation. Mr. Safe’s AI scans the image to detect potential hazards, and provides a structured report with recommendations.
+    <!-- FAQ Item 2 -->
+    <div class="bg-dark border border-tiffany rounded-4 shadow-lg p-4 mb-4 position-relative"
+         style="box-shadow: inset 0 0 10px rgba(64, 224, 208, 0.1), 0 0 15px rgba(64, 224, 208, 0.2);">
+      <div class="position-absolute top-0 start-0 bg-tiffany" style="width: 4px; height: 100%;"></div>
+      <h3 class="text-tiffany fw-bold mb-3 font-monospace">
+        <span class="badge bg-tiffany text-dark me-2 font-monospace">02</span>
+        IMAGE_ANALYSIS_PROTOCOL
+      </h3>
+      <p class="text-light ps-4 font-monospace small">
+        UPLOAD A PHOTO OF YOUR WORKSITE. MR. SAFE'S AI SCANS THE IMAGE TO DETECT POTENTIAL HAZARDS, AND PROVIDES A STRUCTURED REPORT WITH RECOMMENDATIONS.
       </p>
     </div>
 
-    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-      <h3 class="text-tiffany fw-bold mb-2">📄 Can I export the safety reports?</h3>
-      <p class="text-light">
-        Yes! You can export reports in PDF, PowerPoint, or Word formats, including images, hazards, recommendations, and inspection details.
+    <!-- FAQ Item 3 -->
+    <div class="bg-dark border border-tiffany rounded-4 shadow-lg p-4 mb-4 position-relative"
+         style="box-shadow: inset 0 0 10px rgba(64, 224, 208, 0.1), 0 0 15px rgba(64, 224, 208, 0.2);">
+      <div class="position-absolute top-0 start-0 bg-tiffany" style="width: 4px; height: 100%;"></div>
+      <h3 class="text-tiffany fw-bold mb-3 font-monospace">
+        <span class="badge bg-tiffany text-dark me-2 font-monospace">03</span>
+        REPORT_EXPORT_FUNCTIONS
+      </h3>
+      <p class="text-light ps-4 font-monospace small">
+        AFFIRMATIVE. EXPORT REPORTS IN PDF, POWERPOINT, OR WORD FORMATS, INCLUDING IMAGES, HAZARDS, RECOMMENDATIONS, AND INSPECTION DETAILS.
       </p>
     </div>
 
-    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-      <h3 class="text-tiffany fw-bold mb-2">🔐 How do I reset my password?</h3>
-      <p class="text-light">
-        On the login page, click <strong>"Forgot Password"</strong>. We'll email you a secure link to reset your password.
+    <!-- FAQ Item 4 -->
+    <div class="bg-dark border border-tiffany rounded-4 shadow-lg p-4 mb-4 position-relative"
+         style="box-shadow: inset 0 0 10px rgba(64, 224, 208, 0.1), 0 0 15px rgba(64, 224, 208, 0.2);">
+      <div class="position-absolute top-0 start-0 bg-tiffany" style="width: 4px; height: 100%;"></div>
+      <h3 class="text-tiffany fw-bold mb-3 font-monospace">
+        <span class="badge bg-tiffany text-dark me-2 font-monospace">04</span>
+        CREDENTIAL_RESET
+      </h3>
+      <p class="text-light ps-4 font-monospace small">
+        ON THE LOGIN INTERFACE, SELECT <strong class="text-tiffany">"FORGOT PASSWORD"</strong>. WE'LL TRANSMIT A SECURE LINK TO RESET YOUR CREDENTIALS.
       </p>
     </div>
 
-    <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-      <h3 class="text-tiffany fw-bold mb-2">📞 How do I contact support?</h3>
-      <p class="text-light">
-        For technical help or questions, please reach out via our <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany">contact page</a>. Our team is ready to assist you.
+    <!-- FAQ Item 5 -->
+    <div class="bg-dark border border-tiffany rounded-4 shadow-lg p-4 mb-4 position-relative"
+         style="box-shadow: inset 0 0 10px rgba(64, 224, 208, 0.1), 0 0 15px rgba(64, 224, 208, 0.2);">
+      <div class="position-absolute top-0 start-0 bg-tiffany" style="width: 4px; height: 100%;"></div>
+      <h3 class="text-tiffany fw-bold mb-3 font-monospace">
+        <span class="badge bg-tiffany text-dark me-2 font-monospace">05</span>
+        SUPPORT_REQUEST
+      </h3>
+      <p class="text-light ps-4 font-monospace small">
+        FOR TECHNICAL ASSISTANCE, INITIATE CONTACT VIA OUR <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany font-monospace">[COMMUNICATION CHANNEL]</a>. SAFETY TEAM STANDBY.
       </p>
     </div>
 
   </div>
 
-  <!-- 🔹 Footer Note -->
-  <footer class="text-center mt-5">
-    <p class="text-tiffany fs-6">
-      <em class="text-tiffany">We regularly update our FAQ to ensure your safety journey with Mr. Safe is smooth and informed.</em>
+  <!-- 🏗️ Industrial Footer -->
+  <footer class="text-center mt-5 pt-4 position-relative">
+    <div class="position-absolute top-0 start-0 end-0 h-1 bg-tiffany opacity-25"></div>
+    <p class="text-tiffany font-monospace small">
+      <em>// SAFETY PROTOCOLS UPDATED REGULARLY //</em>
     </p>
   </footer>
 
 </div>
 
-<!-- 🔹 Custom Style -->
+<!-- 🛠️ Custom Industrial Safety Styling -->
 <style>
   body {
     background-color: #0a0f2c;
-    font-family: 'Segoe UI', sans-serif;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(64, 224, 208, 0.03) 0%, transparent 25%),
+      radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.03) 0%, transparent 25%),
+      linear-gradient(to bottom, #060920, #0a0f2c);
+    font-family: 'Segoe UI', system-ui, sans-serif;
   }
 
   .text-tiffany {
     color: #40E0D0 !important;
   }
 
-  .link-tiffany {
-    color: #40E0D0;
-    text-decoration: none;
-  }
-
-  .link-tiffany:hover {
-    color: #30bfbf;
-    text-decoration: underline;
-  }
-
-  .neon-text {
-    text-shadow: 0 0 8px #40E0D0, 0 0 16px #30bfbf;
-  }
-
-  .faq-section h3 {
-    font-size: 1.4rem;
-  }
-
-  .faq-section p {
-    font-size: 1rem;
+  .bg-tiffany {
+    background-color: #40E0D0 !important;
   }
 
   .bg-dark {
-    background-color: #1a1a2e !important;
+    background-color: rgba(10, 15, 44, 0.8) !important;
+    backdrop-filter: blur(2px);
+  }
+
+  .link-tiffany {
+    color: #40E0D0 !important;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .link-tiffany:hover {
+    color: #30bfbf !important;
+    text-shadow: 0 0 8px rgba(64, 224, 208, 0.5);
+  }
+
+  .font-monospace {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+  }
+
+  .border-tiffany {
+    border-color: #40E0D0 !important;
+  }
+
+  .badge {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    min-width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .faq-section {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .faq-section h3 {
+    font-size: 1.2rem;
+  }
+
+  .faq-section p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  footer {
+    font-size: 0.9rem;
   }
 </style>
 {% endblock %}
