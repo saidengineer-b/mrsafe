@@ -5,73 +5,141 @@
 
 {% block content %}
 <div class="container my-5">
-    <div class="contact-card bg-dark text-white border-tiffany shadow-lg rounded-4 p-4 mx-auto" style="max-width: 600px;">
+    <!-- 🚨 Industrial Safety Contact Panel -->
+    <div class="contact-card bg-dark text-white border-tiffany shadow-lg rounded-4 p-4 mx-auto position-relative overflow-hidden" 
+         style="max-width: 600px; background: linear-gradient(to bottom, #0a0f2c, #121a40); border-width: 2px !important;
+                box-shadow: 0 0 25px rgba(64, 224, 208, 0.3), inset 0 0 15px rgba(64, 224, 208, 0.1);">
+        
+        <!-- ⚠️ Safety Alert Header -->
+        <div class="text-center mb-4 position-relative">
+            <div class="position-absolute top-50 start-0 end-0 h-1 bg-tiffany opacity-25"></div>
+            <h2 class="text-tiffany fw-bold mb-2 font-monospace d-inline-block px-3" 
+                style="text-shadow: 0 0 8px rgba(64, 224, 208, 0.4); background: #0a0f2c;">
+                > CONTACT_SAFETY_TEAM
+            </h2>
+            <p class="text-tiffany mt-3 font-monospace small">
+                // HAVE A SAFETY INQUIRY? TRANSMIT MESSAGE BELOW //
+            </p>
+        </div>
 
-        <!-- 🔹 Header -->
-        <h2 class="text-center text-tiffany fw-bold mb-2">📬 Contact Mr. Safe Team</h2>
-        <p class="text-center text-muted mb-4">
-            Have a question about inspections, AI analysis, or safety features? Let us know!
-        </p>
-
-        <!-- 🔹 Success Message -->
+        <!-- ✅ Success Alert -->
         {% if message %}
-            <div class="alert alert-success fw-bold text-center">{{ message }}</div>
+            <div class="alert alert-success fw-bold text-center font-monospace rounded-0 mb-4" 
+                 style="background: rgba(64, 224, 208, 0.2); border: 1px solid #40E0D0; color: #40E0D0 !important;">
+                {{ message }}
+            </div>
         {% endif %}
 
-        <!-- 🔹 Contact Form -->
+        <!-- 🔧 Industrial Contact Form -->
         <form method="POST" class="contact-form">
             {% csrf_token %}
-            <div class="form-group mb-3">
-                <label for="name" class="text-tiffany fw-semibold">Your Name</label>
-                <input type="text" id="name" name="name" class="form-control bg-dark text-white border-tiffany" placeholder="Enter your name" required>
-            </div>
-            <div class="form-group mb-3">
-                <label for="email" class="text-tiffany fw-semibold">Your Email</label>
-                <input type="email" id="email" name="email" class="form-control bg-dark text-white border-tiffany" placeholder="Enter your email" required>
-            </div>
             <div class="form-group mb-4">
-                <label for="message" class="text-tiffany fw-semibold">Your Message</label>
-                <textarea id="message" name="message" rows="5" class="form-control bg-dark text-white border-tiffany" placeholder="Type your message here" required></textarea>
+                <label for="name" class="text-tiffany fw-bold font-monospace small mb-2 d-block">
+                    <span class="bg-dark ps-1 pe-2">> IDENTIFICATION</span>
+                </label>
+                <input type="text" id="name" name="name" 
+                       class="form-control bg-dark text-white border-tiffany rounded-0 font-monospace py-3" 
+                       style="border-width: 2px !important; background: rgba(10, 15, 44, 0.7) !important;" 
+                       placeholder="ENTER YOUR NAME" required>
             </div>
-            <button type="submit" class="btn btn-tiffany w-100 fw-bold py-2">📨 Send Message</button>
+            
+            <div class="form-group mb-4">
+                <label for="email" class="text-tiffany fw-bold font-monospace small mb-2 d-block">
+                    <span class="bg-dark ps-1 pe-2">> CONTACT_FREQUENCY</span>
+                </label>
+                <input type="email" id="email" name="email" 
+                       class="form-control bg-dark text-white border-tiffany rounded-0 font-monospace py-3" 
+                       style="border-width: 2px !important; background: rgba(10, 15, 44, 0.7) !important;" 
+                       placeholder="ENTER YOUR EMAIL" required>
+            </div>
+            
+            <div class="form-group mb-4">
+                <label for="message" class="text-tiffany fw-bold font-monospace small mb-2 d-block">
+                    <span class="bg-dark ps-1 pe-2">> MESSAGE_CONTENT</span>
+                </label>
+                <textarea id="message" name="message" rows="5" 
+                          class="form-control bg-dark text-white border-tiffany rounded-0 font-monospace" 
+                          style="border-width: 2px !important; background: rgba(10, 15, 44, 0.7) !important;" 
+                          placeholder="ENTER YOUR SAFETY INQUIRY" required></textarea>
+            </div>
+            
+            <button type="submit" 
+                    class="btn btn-tiffany w-100 fw-bold py-3 rounded-0 font-monospace mt-4" 
+                    style="letter-spacing: 1px; box-shadow: 0 0 15px rgba(64, 224, 208, 0.5); border: 1px solid #000 !important;">
+                🚀 TRANSMIT MESSAGE
+            </button>
         </form>
+        
+        <!-- 🏭 Industrial Bottom Border -->
+        <div class="position-absolute bottom-0 start-0 end-0 h-1 bg-tiffany opacity-25"></div>
     </div>
 </div>
 
-<!-- 🔹 Custom Styling -->
+<!-- 🖥️ Custom Industrial Safety Styling -->
 <style>
+    body {
+        background-color: #0a0f2c;
+        background-image: 
+            radial-gradient(circle at 20% 30%, rgba(64, 224, 208, 0.03) 0%, transparent 25%),
+            radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.03) 0%, transparent 25%),
+            linear-gradient(to bottom, #060920, #0a0f2c);
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
     .text-tiffany {
         color: #40E0D0 !important;
     }
 
+    .border-tiffany {
+        border-color: #40E0D0 !important;
+    }
+
     .btn-tiffany {
-        background-color: #40E0D0;
-        color: #0a0f2c;
+        background-color: #40E0D0 !important;
+        color: #0a0f2c !important;
         border: none;
-        border-radius: 8px;
-        transition: 0.3s;
+        transition: all 0.3s ease;
+        font-weight: 800 !important;
     }
 
     .btn-tiffany:hover {
-        background-color: #30bfbf;
+        background-color: #30bfbf !important;
+        color: #000 !important;
+        transform: translateY(-3px);
+        box-shadow: 0 0 25px rgba(64, 224, 208, 0.8) !important;
     }
 
-    .border-tiffany {
-        border: 1px solid #40E0D0 !important;
+    .btn-tiffany:active {
+        transform: translateY(1px);
+    }
+
+    .font-monospace {
+        font-family: 'Courier New', monospace;
+        letter-spacing: 1px;
     }
 
     .form-control:focus {
-        border-color: #40E0D0;
-        box-shadow: 0 0 5px #40E0D0;
+        border-color: #40E0D0 !important;
+        box-shadow: 0 0 10px rgba(64, 224, 208, 0.5) !important;
         outline: none;
-    }
-
-    label {
-        margin-bottom: 6px;
+        background: rgba(10, 15, 44, 0.9) !important;
     }
 
     .contact-card {
-        background-color: #1a1a2e;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .contact-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="50" height="50" x="0" y="0" fill="none" stroke="%2340E0D0" stroke-width="0.3"/><rect width="50" height="50" x="50" y="50" fill="none" stroke="%2340E0D0" stroke-width="0.3"/></svg>');
+        opacity: 0.05;
+        pointer-events: none;
     }
 </style>
 {% endblock %}

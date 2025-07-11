@@ -4,150 +4,203 @@
 {% block content %}
 <div class="container my-5">
 
-  <!-- 🔹 Header -->
-  <h1 class="text-center text-tiffany fw-bold neon-text mb-3">💬 Help Center</h1>
-  <p class="text-center text-white-50 fs-5 mb-4">
-    Need help with inspections or reports? You're in the right place! Browse our help topics or 
-    <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany">contact our team</a>.
-  </p>
+  <!-- 🏭 Industrial Header -->
+  <div class="text-center mb-5 position-relative">
+    <div class="position-absolute top-50 start-0 end-0 h-1 bg-tiffany opacity-25"></div>
+    <h1 class="text-tiffany fw-bold display-5 font-monospace d-inline-block px-4" 
+        style="text-shadow: 0 0 10px rgba(0, 230, 230, 0.5); background: #0f2027;">
+      > SAFETY_HELP_CENTER
+    </h1>
+    <p class="text-tiffany mt-3 font-monospace small">
+      // REQUIRING ASSISTANCE WITH INSPECTIONS? // 
+      <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany font-monospace">[CONTACT COMMAND]</a>
+    </p>
+  </div>
 
-  <!-- 🔹 Table of Contents -->
-  <div class="summary bg-dark-blue border-tiffany shadow-lg p-4 rounded">
-    <h4 class="text-tiffany fw-bold mb-3"><i class="fas fa-list me-2"></i>Table of Contents</h4>
-    <ul class="ps-3">
-      <li><i class="fas fa-camera text-warning me-2"></i><a href="#getting-started" class="link-tiffany">Getting Started</a></li>
-      <li><i class="fas fa-user-shield text-warning me-2"></i><a href="#account" class="link-tiffany">Account & Access</a></li>
-      <li><i class="fas fa-coins text-warning me-2"></i><a href="#plans" class="link-tiffany">Plans & Credits</a></li>
-      <li><i class="fas fa-robot text-warning me-2"></i><a href="#ai-analysis" class="link-tiffany">AI Safety Analysis</a></li>
-      <li><i class="fas fa-bug text-warning me-2"></i><a href="#issues" class="link-tiffany">Troubleshooting</a></li>
-      <li><i class="fas fa-envelope text-warning me-2"></i><a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany">Contact Support</a></li>
+  <!-- ⚠️ Industrial Table of Contents -->
+  <div class="bg-dark border border-tiffany shadow-lg p-4 rounded mb-5" 
+       style="background: linear-gradient(to right, #0f2027, #1b263b); border-left: 8px solid #00e6e6 !important;">
+    <h4 class="text-tiffany fw-bold mb-3 font-monospace">
+      <span class="badge bg-tiffany text-dark me-2">⚠️</span>
+      SAFETY_MANUAL_INDEX
+    </h4>
+    <ul class="ps-0" style="list-style: none;">
+      <li class="mb-2 d-flex align-items-center">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace" style="width: 24px;">01</span>
+        <a href="#getting-started" class="link-tiffany font-monospace small">INITIAL DEPLOYMENT</a>
+      </li>
+      <li class="mb-2 d-flex align-items-center">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace" style="width: 24px;">02</span>
+        <a href="#account" class="link-tiffany font-monospace small">ACCESS CREDENTIALS</a>
+      </li>
+      <li class="mb-2 d-flex align-items-center">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace" style="width: 24px;">03</span>
+        <a href="#plans" class="link-tiffany font-monospace small">RESOURCE ALLOCATION</a>
+      </li>
+      <li class="mb-2 d-flex align-items-center">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace" style="width: 24px;">04</span>
+        <a href="#ai-analysis" class="link-tiffany font-monospace small">HAZARD ANALYSIS SYSTEMS</a>
+      </li>
+      <li class="mb-2 d-flex align-items-center">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace" style="width: 24px;">05</span>
+        <a href="#issues" class="link-tiffany font-monospace small">SYSTEM MALFUNCTIONS</a>
+      </li>
+      <li class="mb-2 d-flex align-items-center">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace" style="width: 24px;">06</span>
+        <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany font-monospace small">DIRECT COMM LINK</a>
+      </li>
     </ul>
   </div>
 
-  <!-- 🔹 Help Sections -->
-  <section id="getting-started" class="faq-section">
-    <h2 class="section-title">🚀 Getting Started with Mr. Safe</h2>
-    <h5 class="question">How do I start using Mr. Safe?</h5>
-    <p class="answer">Register your account, choose a plan, then upload your first safety photo to begin AI analysis.</p>
+  <!-- 🛡️ Industrial Help Sections -->
+  <section id="getting-started" class="bg-dark border border-tiffany shadow-lg p-4 rounded mb-5">
+    <h2 class="text-tiffany fw-bold font-monospace mb-4">
+      <span class="badge bg-tiffany text-dark me-3">🚀</span>
+      INITIAL DEPLOYMENT
+    </h2>
+    <div class="ps-4">
+      <h5 class="text-light font-monospace small mb-2">> ACTIVATION PROTOCOL</h5>
+      <p class="text-light mb-4">Register your account, choose a plan, then upload your first safety photo to begin AI analysis.</p>
+    </div>
   </section>
 
-  <section id="account" class="faq-section">
-    <h2 class="section-title">🔐 Account & Access</h2>
-    <h5 class="question">I forgot my password. What should I do?</h5>
-    <p class="answer">Click <strong>"Forgot Password"</strong> on the login page to reset it securely.</p>
-
-    <h5 class="question">Can I update my account details?</h5>
-    <p class="answer">Yes, go to your <strong>Profile</strong> and update your email or preferences anytime.</p>
+  <section id="account" class="bg-dark border border-tiffany shadow-lg p-4 rounded mb-5">
+    <h2 class="text-tiffany fw-bold font-monospace mb-4">
+      <span class="badge bg-tiffany text-dark me-3">🔐</span>
+      ACCESS CREDENTIALS
+    </h2>
+    <div class="ps-4">
+      <h5 class="text-light font-monospace small mb-2">> CREDENTIAL RECOVERY</h5>
+      <p class="text-light mb-3">Click <strong class="text-tiffany">"Forgot Password"</strong> on the login page to reset it securely.</p>
+      
+      <h5 class="text-light font-monospace small mb-2">> PROFILE CONFIGURATION</h5>
+      <p class="text-light">Go to your <strong class="text-tiffany">Profile</strong> and update your email or preferences anytime.</p>
+    </div>
   </section>
 
-  <section id="plans" class="faq-section">
-    <h2 class="section-title">💰 Plans & Credits</h2>
-    <h5 class="question">How do credits work?</h5>
-    <p class="answer">Each AI inspection consumes 1 credit. You can upgrade your plan to get more credits monthly.</p>
-
-    <h5 class="question">Can I change my subscription?</h5>
-    <p class="answer">Yes, you can upgrade or cancel from the <strong>Premium</strong> section anytime.</p>
+  <section id="plans" class="bg-dark border border-tiffany shadow-lg p-4 rounded mb-5">
+    <h2 class="text-tiffany fw-bold font-monospace mb-4">
+      <span class="badge bg-tiffany text-dark me-3">💰</span>
+      RESOURCE ALLOCATION
+    </h2>
+    <div class="ps-4">
+      <h5 class="text-light font-monospace small mb-2">> CREDIT UTILIZATION</h5>
+      <p class="text-light mb-3">Each AI inspection consumes 1 credit. You can upgrade your plan to get more credits monthly.</p>
+      
+      <h5 class="text-light font-monospace small mb-2">> PLAN MODIFICATION</h5>
+      <p class="text-light">You can upgrade or cancel from the <strong class="text-tiffany">Premium</strong> section anytime.</p>
+    </div>
   </section>
 
-  <section id="ai-analysis" class="faq-section">
-    <h2 class="section-title">🤖 AI Safety Analysis</h2>
-    <h5 class="question">What happens when I upload a photo?</h5>
-    <p class="answer">Our AI detects hazards, suggests improvements, and generates a full inspection report instantly.</p>
-
-    <h5 class="question">Can I export the report?</h5>
-    <p class="answer">Absolutely! Reports can be exported in PDF, Word, or PowerPoint formats.</p>
+  <section id="ai-analysis" class="bg-dark border border-tiffany shadow-lg p-4 rounded mb-5">
+    <h2 class="text-tiffany fw-bold font-monospace mb-4">
+      <span class="badge bg-tiffany text-dark me-3">🤖</span>
+      HAZARD ANALYSIS SYSTEMS
+    </h2>
+    <div class="ps-4">
+      <h5 class="text-light font-monospace small mb-2">> IMAGE PROCESSING</h5>
+      <p class="text-light mb-3">Our AI detects hazards, suggests improvements, and generates a full inspection report instantly.</p>
+      
+      <h5 class="text-light font-monospace small mb-2">> REPORT EXPORT</h5>
+      <p class="text-light">Reports can be exported in PDF, Word, or PowerPoint formats.</p>
+    </div>
   </section>
 
-  <section id="issues" class="faq-section">
-    <h2 class="section-title">⚠️ Troubleshooting</h2>
-    <h5 class="question">The image won’t upload</h5>
-    <p class="answer">Make sure it’s below 5MB and in JPG or PNG format. Reload and try again.</p>
-
-    <h5 class="question">I'm not receiving emails</h5>
-    <p class="answer">Check your spam/junk folder or whitelist our domain <strong>mrsafe.me</strong>.</p>
+  <section id="issues" class="bg-dark border border-tiffany shadow-lg p-4 rounded mb-5">
+    <h2 class="text-tiffany fw-bold font-monospace mb-4">
+      <span class="badge bg-tiffany text-dark me-3">⚠️</span>
+      SYSTEM MALFUNCTIONS
+    </h2>
+    <div class="ps-4">
+      <h5 class="text-light font-monospace small mb-2">> UPLOAD FAILURE</h5>
+      <p class="text-light mb-3">Ensure file is below 5MB and in JPG/PNG format. Reload and try again.</p>
+      
+      <h5 class="text-light font-monospace small mb-2">> COMMUNICATION ERROR</h5>
+      <p class="text-light">Check spam/junk folder or whitelist our domain <strong class="text-tiffany">mrsafe.me</strong>.</p>
+    </div>
   </section>
 
-  <section id="contact" class="faq-section text-white">
-    <h2 class="section-title">📞 Still Need Help?</h2>
-    <p>Our team is ready to support you. <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany">Contact us</a> — response usually within 24 hours.</p>
+  <section id="contact" class="bg-dark border border-tiffany shadow-lg p-4 rounded mb-5">
+    <h2 class="text-tiffany fw-bold font-monospace mb-4">
+      <span class="badge bg-tiffany text-dark me-3">📞</span>
+      DIRECT COMM LINK
+    </h2>
+    <p class="text-light ps-4">Safety team is standby. <a href="{% url 'mrsafe_app:contact' %}" class="link-tiffany font-monospace">[INITIATE CONTACT]</a> — response typically within 24 hours.</p>
   </section>
 
-  <!-- 🔹 Footer -->
-  <footer class="text-center mt-5 text-white-50">
-    <p><em>This Help Center is maintained and updated based on your feedback. Thank you for using <span class="text-tiffany fw-bold">Mr. Safe</span>.</em></p>
+  <!-- 🏭 Industrial Footer -->
+  <footer class="text-center mt-5 pt-4 position-relative">
+    <div class="position-absolute top-0 start-0 end-0 h-1 bg-tiffany opacity-25"></div>
+    <p class="text-tiffany font-monospace small">
+      <em>// SAFETY DOCUMENTATION UPDATED REGULARLY //</em>
+    </p>
   </footer>
 </div>
 
-<!-- ✅ Custom Styling -->
+<!-- 🖥️ Custom Industrial Safety Styling -->
 <style>
   body {
     background-color: #0f2027;
-    color: #f8f9fa;
-    font-family: 'Segoe UI', sans-serif;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(0, 230, 230, 0.03) 0%, transparent 25%),
+      radial-gradient(circle at 80% 70%, rgba(0, 230, 230, 0.03) 0%, transparent 25%),
+      linear-gradient(to bottom, #0a1520, #0f2027);
+    font-family: 'Segoe UI', system-ui, sans-serif;
   }
 
   .text-tiffany {
     color: #00e6e6 !important;
   }
 
+  .bg-tiffany {
+    background-color: #00e6e6 !important;
+  }
+
+  .bg-dark {
+    background-color: rgba(15, 32, 39, 0.9) !important;
+    backdrop-filter: blur(2px);
+  }
+
   .link-tiffany {
     color: #00e6e6 !important;
     text-decoration: none;
+    transition: all 0.3s ease;
   }
 
   .link-tiffany:hover {
-    text-decoration: underline;
+    color: #00b3b3 !important;
+    text-shadow: 0 0 8px rgba(0, 230, 230, 0.5);
   }
 
-  .neon-text {
-    text-shadow: 0 0 6px #00ffe6, 0 0 10px #00fff7;
+  .font-monospace {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
   }
 
-  .bg-dark-blue {
-    background-color: #1b263b;
+  .border-tiffany {
+    border-color: #00e6e6 !important;
   }
 
-  .faq-section {
-    background-color: #1a1a1a;
-    border-left: 4px solid #00e6e6;
-    padding: 25px;
-    border-radius: 10px;
-    margin-top: 40px;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.08);
+  .badge {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    min-width: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .section-title {
-    font-size: 1.5rem;
-    color: #00e6e6;
-    margin-bottom: 1rem;
-    font-weight: 600;
+  section {
+    transition: all 0.3s ease;
   }
 
-  .question {
-    color: #f0f0f0;
-    font-size: 1.1rem;
-    margin-top: 1.2rem;
-  }
-
-  .answer {
-    color: #dcdcdc;
-    font-size: 1rem;
-    margin-top: 0.5rem;
-  }
-
-  .summary ul {
-    list-style: none;
-    padding-left: 0;
-    font-size: 1rem;
-  }
-
-  .summary li {
-    margin-bottom: 10px;
+  section:hover {
+    box-shadow: 0 0 25px rgba(0, 230, 230, 0.3) !important;
+    transform: translateY(-2px);
   }
 
   footer {
     font-size: 0.9rem;
-    color: #aab8c2;
   }
 </style>
 {% endblock %}
