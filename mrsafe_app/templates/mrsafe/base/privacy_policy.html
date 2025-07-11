@@ -4,99 +4,308 @@
 
 {% block content %}
 <div class="container my-5">
-  <div class="bg-dark text-white border-tiffany shadow-lg rounded-4 p-4">
+  <!-- Industrial Safety HUD Container -->
+  <div class="safety-hud-container">
+    
+    <!-- HUD Header -->
+    <div class="hud-header">
+      <div class="hud-line"></div>
+      <h2 class="hud-title">
+        <span class="hud-bracket">[</span>
+        <span class="hud-text">DATA PROTECTION PROTOCOL</span>
+        <span class="hud-bracket">]</span>
+      </h2>
+      <p class="hud-subtitle">
+        <span class="hud-pipe">||</span> 
+        <strong class="hud-highlight">Effective Date:</strong> February 28, 2025
+        <span class="hud-pipe">||</span>
+      </p>
+    </div>
 
-    <!-- 🔹 Header -->
-    <h2 class="text-center text-tiffany fw-bold mb-2">🔒 Privacy Policy</h2>
-    <p class="text-center text-tiffany"><strong>Effective Date:</strong> February 28, 2025</p>
+    <!-- Policy Content in Industrial Panels -->
+    <div class="policy-grid">
+      
+      <!-- Introduction Panel -->
+      <div class="policy-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🔒</span>
+          <span class="panel-title">SYSTEM INTRODUCTION</span>
+        </div>
+        <div class="panel-content">
+          <p>Welcome to <strong>Mr. Safe</strong>! Your privacy and trust are critically important to us. This Privacy Policy outlines how we collect, use, store, and protect your personal data in relation to our AI safety and inspection services.</p>
+        </div>
+      </div>
 
-    <!-- 🔹 Policy Body -->
-    <div class="bg-black rounded-4 p-4 mt-3 policy-box">
-      <p>Welcome to <strong>Mr. Safe</strong>! Your privacy and trust are critically important to us. This Privacy Policy outlines how we collect, use, store, and protect your personal data in relation to our AI safety and inspection services.</p>
+      <!-- Section 1 -->
+      <div class="policy-panel">
+        <div class="panel-header">
+          <span class="panel-icon">📌</span>
+          <span class="panel-title">DATA COLLECTION PARAMETERS</span>
+        </div>
+        <div class="panel-content">
+          <ul class="hud-list">
+            <li><strong>Personal Information:</strong> Name, email, and payment information for subscriptions or purchases.</li>
+            <li><strong>Inspection Data:</strong> Images, location data, and user-submitted safety observations.</li>
+            <li><strong>Usage Data:</strong> How you interact with inspections, reports, and features.</li>
+            <li><strong>Cookies:</strong> Used to enhance user experience and analytics.</li>
+          </ul>
+        </div>
+      </div>
 
-      <h4 class="text-info mt-4">1. 📌 Information We Collect</h4>
-      <ul>
-        <li><strong>Personal Information:</strong> Name, email, and payment information for subscriptions or purchases.</li>
-        <li><strong>Inspection Data:</strong> Images, location data, and user-submitted safety observations.</li>
-        <li><strong>Usage Data:</strong> How you interact with inspections, reports, and features.</li>
-        <li><strong>Cookies:</strong> Used to enhance user experience and analytics.</li>
-      </ul>
+      <!-- Section 2 -->
+      <div class="policy-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🔹</span>
+          <span class="panel-title">DATA UTILIZATION MATRIX</span>
+        </div>
+        <div class="panel-content">
+          <ul class="hud-list">
+            <li>To generate AI-powered safety reports and risk assessments.</li>
+            <li>To improve platform performance and develop new features.</li>
+            <li>To communicate service updates, invoices, and alerts.</li>
+            <li>To comply with legal obligations and ensure security.</li>
+          </ul>
+        </div>
+      </div>
 
-      <h4 class="text-info mt-4">2. 🔹 How We Use Your Data</h4>
-      <ul>
-        <li>To generate AI-powered safety reports and risk assessments.</li>
-        <li>To improve platform performance and develop new features.</li>
-        <li>To communicate service updates, invoices, and alerts.</li>
-        <li>To comply with legal obligations and ensure security.</li>
-      </ul>
+      <!-- Section 3 -->
+      <div class="policy-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🔐</span>
+          <span class="panel-title">DATA SHARING PROTOCOLS</span>
+        </div>
+        <div class="panel-content">
+          <p>We respect your data privacy. We may share information with:</p>
+          <ul class="hud-list">
+            <li><strong>Payment Gateways:</strong> For secure processing of purchases or subscriptions.</li>
+            <li><strong>AI and Analytics Providers:</strong> To generate insights and reports.</li>
+            <li><strong>Legal Authorities:</strong> Only if required by law or safety regulation.</li>
+          </ul>
+        </div>
+      </div>
 
-      <h4 class="text-info mt-4">3. 🔐 Data Sharing & Third-Party Services</h4>
-      <p>We respect your data privacy. We may share information with:</p>
-      <ul>
-        <li><strong>Payment Gateways:</strong> For secure processing of purchases or subscriptions.</li>
-        <li><strong>AI and Analytics Providers:</strong> To generate insights and reports.</li>
-        <li><strong>Legal Authorities:</strong> Only if required by law or safety regulation.</li>
-      </ul>
+      <!-- Section 4 -->
+      <div class="policy-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🚨</span>
+          <span class="panel-title">SECURITY MEASURES</span>
+        </div>
+        <div class="panel-content">
+          <ul class="hud-list">
+            <li>All personal and inspection data is encrypted in transit and at rest.</li>
+            <li>Access is role-based and strictly monitored.</li>
+            <li>We conduct regular platform audits and security patching.</li>
+          </ul>
+        </div>
+      </div>
 
-      <h4 class="text-info mt-4">4. 🚨 Data Protection & Security</h4>
-      <ul>
-        <li>All personal and inspection data is encrypted in transit and at rest.</li>
-        <li>Access is role-based and strictly monitored.</li>
-        <li>We conduct regular platform audits and security patching.</li>
-      </ul>
+      <!-- Section 5 -->
+      <div class="policy-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🎛</span>
+          <span class="panel-title">USER CONTROLS</span>
+        </div>
+        <div class="panel-content">
+          <ul class="hud-list">
+            <li><strong>Access & Update:</strong> You can modify your information from your profile settings.</li>
+            <li><strong>Opt-Out:</strong> You may unsubscribe from non-essential emails.</li>
+            <li><strong>Account Deletion:</strong> Email support to request permanent deletion of your account.</li>
+          </ul>
+        </div>
+      </div>
 
-      <h4 class="text-info mt-4">5. 🎛 Managing Your Privacy</h4>
-      <ul>
-        <li><strong>Access & Update:</strong> You can modify your information from your profile settings.</li>
-        <li><strong>Opt-Out:</strong> You may unsubscribe from non-essential emails.</li>
-        <li><strong>Account Deletion:</strong> Email support to request permanent deletion of your account.</li>
-      </ul>
+      <!-- Section 6 -->
+      <div class="policy-panel">
+        <div class="panel-header">
+          <span class="panel-icon">🔄</span>
+          <span class="panel-title">POLICY UPDATES</span>
+        </div>
+        <div class="panel-content">
+          <p>This Privacy Policy may be updated periodically. Any changes will take immediate effect upon being posted here.</p>
+        </div>
+      </div>
 
-      <h4 class="text-info mt-4">6. 🔄 Changes to This Policy</h4>
-      <p>This Privacy Policy may be updated periodically. Any changes will take immediate effect upon being posted here.</p>
+      <!-- Section 7 -->
+      <div class="policy-panel">
+        <div class="panel-header">
+          <span class="panel-icon">📞</span>
+          <span class="panel-title">CONTACT COMMAND</span>
+        </div>
+        <div class="panel-content">
+          <p>If you have any questions about this policy or your data, please email: <strong class="hud-highlight">support@mrsafe.me</strong></p>
+        </div>
+      </div>
 
-      <h4 class="text-info mt-4">7. 📞 Contact Us</h4>
-      <p>If you have any questions about this policy or your data, please email: <strong class="text-tiffany">support@mrsafe.me</strong></p>
+      <!-- Acknowledgement -->
+      <div class="policy-panel">
+        <div class="panel-header">
+          <span class="panel-icon">✅</span>
+          <span class="panel-title">ACKNOWLEDGEMENT</span>
+        </div>
+        <div class="panel-content">
+          <p>By using <strong>Mr. Safe</strong>, you agree to the terms of this Privacy Policy.</p>
+        </div>
+      </div>
 
-      <h4 class="text-info mt-4">✅ Acknowledgment</h4>
-      <p>By using <strong>Mr. Safe</strong>, you agree to the terms of this Privacy Policy.</p>
+    </div>
+
+    <!-- HUD Footer -->
+    <div class="hud-footer">
+      <div class="hud-line"></div>
+      <p class="hud-legal">
+        <span class="hud-pipe">//</span> 
+        MR. SAFE INDUSTRIAL SECURITY SYSTEMS
+        <span class="hud-pipe">//</span>
+      </p>
     </div>
   </div>
 </div>
 
-<!-- ✅ Styling -->
 <style>
-  .text-tiffany {
+  /* Industrial HUD Interface */
+  body {
+    background-color: #0a0f2c;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(64, 224, 208, 0.05) 0%, transparent 25%),
+      radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.05) 0%, transparent 25%);
+    font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+    color: #e0e0e0;
+  }
+
+  .safety-hud-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .hud-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #40E0D0 30%, #40E0D0 70%, transparent 100%);
+    margin: 20px 0;
+  }
+
+  .hud-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #40E0D0;
+    text-shadow: 0 0 10px rgba(64, 224, 208, 0.7);
+    letter-spacing: 2px;
+    margin: 25px 0;
+    text-align: center;
+  }
+
+  .hud-bracket {
+    color: #40E0D0;
+    font-size: 2.5rem;
+    vertical-align: middle;
+    position: relative;
+    top: -5px;
+  }
+
+  .hud-subtitle {
+    color: #a0a0a0;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .hud-pipe {
+    color: #40E0D0;
+    margin: 0 10px;
+  }
+
+  .hud-highlight {
+    color: #40E0D0;
+    font-weight: bold;
+  }
+
+  /* Policy Grid Layout */
+  .policy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+    margin: 30px 0;
+  }
+
+  .policy-panel {
+    background: rgba(20, 25, 60, 0.7);
+    border: 1px solid #40E0D0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .policy-panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(64, 224, 208, 0.3);
+  }
+
+  .panel-header {
+    background: rgba(64, 224, 208, 0.1);
+    padding: 15px 20px;
+    border-bottom: 1px solid #40E0D0;
+    display: flex;
+    align-items: center;
+  }
+
+  .panel-icon {
+    font-size: 1.5rem;
+    margin-right: 15px;
     color: #40E0D0;
   }
 
-  .border-tiffany {
-    border: 1px solid #40E0D0;
+  .panel-title {
+    font-weight: bold;
+    color: #40E0D0;
+    letter-spacing: 1px;
   }
 
-  .policy-box {
-    background-color: #111;
-    box-shadow: 0 0 10px rgba(64, 224, 208, 0.15);
+  .panel-content {
+    padding: 20px;
   }
 
-  ul {
-    list-style-type: square;
-    padding-left: 20px;
+  .hud-list {
+    list-style-type: none;
+    padding-left: 0;
   }
 
-  ul ul {
-    list-style-type: circle;
+  .hud-list li {
+    position: relative;
     padding-left: 25px;
-  }
-
-  h4 {
-    font-size: 1.2rem;
-    margin-top: 1.5rem;
-  }
-
-  p, li {
-    font-size: 1rem;
+    margin-bottom: 10px;
     line-height: 1.6;
+  }
+
+  .hud-list li:before {
+    content: "•";
+    color: #40E0D0;
+    font-size: 1.5rem;
+    position: absolute;
+    left: 0;
+    top: -5px;
+  }
+
+  .hud-footer {
+    text-align: center;
+    margin-top: 50px;
+  }
+
+  .hud-legal {
+    color: #a0a0a0;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .hud-title {
+      font-size: 1.8rem;
+    }
+    .policy-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 {% endblock %}
