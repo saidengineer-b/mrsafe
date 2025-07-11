@@ -9,129 +9,213 @@
     </div>
 
     <h2>Welcome Back!</h2>
-    <p class="login-subtitle"> your account</p>
+    <p class="login-subtitle">Sign in to your account</p>
+
+    <!-- Display form errors at the top -->
+    {% if form.errors %}
+    <div class="alert alert-error">
+        <p>Your username and password didn't match. Please try again.</p>
+    </div>
+    {% endif %}
 
     <form method="POST" class="login-form">
         {% csrf_token %}
 
         <div class="form-group">
             {{ form.username.label_tag }}
-            <div class="neumorphic neumorphic-input">
+            <div class="input-container">
+                <i class="fas fa-user input-icon"></i>
                 {{ form.username }}
             </div>
         </div>
 
         <div class="form-group">
             {{ form.password.label_tag }}
-            <div class="neumorphic neumorphic-input">
+            <div class="input-container">
+                <i class="fas fa-lock input-icon"></i>
                 {{ form.password }}
+                <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility()"></i>
             </div>
         </div>
 
-        <!-- ✅ Fixed Remember Me Section -->
-        <div class="form-group remember-me-container">
-            <label for="rememberMe" class="remember-me-label">
-                <input type="checkbox" id="rememberMe" name="remember_me" class="remember-checkbox">
-                Remember Me
-            </label>
+        <div class="form-options">
+            <div class="remember-me-container">
+                <label for="rememberMe" class="remember-me-label">
+                    <input type="checkbox" id="rememberMe" name="remember_me" class="remember-checkbox">
+                    Remember Me
+                </label>
+            </div>
+            <p class="forgot-password">
+                <a href="{% url 'quiz_app:password_reset' %}">Forgot Password?</a>
+            </p>
         </div>
 
-        <button type="submit" class="neumorphic neumorphic-button login-btn">Login</button>
+        <button type="submit" class="neumorphic neumorphic-button login-btn">
+            <span class="button-text">Login</span>
+            <i class="fas fa-spinner fa-spin loading-icon"></i>
+        </button>
 
-        <!-- ✅ Fixed Forgot Password Link -->
-        <p class="forgot-password">
-            <a href="{% url 'quiz_app:password_reset' %}">Forgot Password?</a>
-        </p>
+        <!-- Social Login Options -->
+        <div class="social-login">
+            <p class="divider"><span>or continue with</span></p>
+            <div class="social-icons">
+                <a href="#" class="social-icon google">
+                    <i class="fab fa-google"></i>
+                </a>
+                <a href="#" class="social-icon facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-icon twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </div>
+        </div>
     </form>
 
     <p class="register-link">Don't have an account? <a href="{% url 'quiz_app:register' %}">Register here</a>.</p>
 </div>
 
+<!-- Progress Bar (hidden by default) -->
+<div class="progress-container">
+    <div class="progress-bar"></div>
+</div>
 
 <style>
+:root {
+    --primary-color: #4a6bff;
+    --primary-hover: #3a56d4;
+    --error-color: #ff4d4f;
+    --text-color: #333;
+    --light-text: #666;
+    --border-color: #ddd;
+    --bg-gradient-start: #74ebd5;
+    --bg-gradient-end: #9face6;
+    --social-google: #db4437;
+    --social-facebook: #3b5998;
+    --social-twitter: #1da1f2;
+}
+
 body {
-    background: linear-gradient(135deg, #74ebd5, #9face6);
-    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    font-family: 'Segoe UI', 'Arial', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    color: var(--text-color);
 }
 
 .login-container {
-    max-width: 400px;
+    max-width: 420px;
     width: 90%;
     background: #fff;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     text-align: center;
-    animation: slideIn 1s ease-out;
-    transform: perspective(500px) rotateY(0deg);
+    animation: fadeInUp 0.8s ease-out;
 }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(-30px); }
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .logo-container {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .logo {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     object-fit: contain;
     border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
 }
 
 h2 {
-    margin: 10px 0;
-    color: #333;
-    font-weight: bold;
-    font-size: 24px;
+    margin: 10px 0 5px;
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 26px;
 }
 
 .login-subtitle {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 20px;
+    color: var(--light-text);
+    font-size: 15px;
+    margin-bottom: 25px;
 }
 
+/* Form Styling */
 .form-group {
     margin-bottom: 20px;
     text-align: left;
 }
 
 .form-group label {
-    font-weight: bold;
-    color: #555;
+    display: block;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.input-container {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--light-text);
+    font-size: 16px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--light-text);
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.password-toggle:hover {
+    color: var(--primary-color);
 }
 
 .form-group input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    padding: 14px 14px 14px 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
     outline: none;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-size: 15px;
 }
 
 .form-group input:focus {
-    border-color: #007BFF;
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.2);
 }
 
-/* ✅ Remember Me Section Styling */
-.remember-me-container {
+/* Form Options */
+.form-options {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .remember-me-label {
@@ -139,90 +223,229 @@ h2 {
     align-items: center;
     gap: 8px;
     font-size: 14px;
-    color: #555;
+    color: var(--light-text);
     cursor: pointer;
+    user-select: none;
 }
 
 .remember-checkbox {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     cursor: pointer;
-    accent-color: #007BFF;
+    accent-color: var(--primary-color);
     margin: 0;
 }
 
-.remember-checkbox:hover {
-    outline: 2px solid #007BFF;
-    transition: outline 0.2s ease;
-}
-
-.login-btn {
-    width: 100%;
-    padding: 12px;
-    background: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s ease, transform 0.3s ease;
-}
-
-.login-btn:hover {
-    background: #0056b3;
-    transform: translateY(-2px);
-}
-
-.forgot-password {
-    margin-top: 10px;
-}
-
 .forgot-password a {
-    color: #007BFF;
+    color: var(--primary-color);
     text-decoration: none;
     font-size: 14px;
-    transition: color 0.3s ease;
+    transition: all 0.2s;
 }
 
 .forgot-password a:hover {
-    color: #0056b3;
+    color: var(--primary-hover);
     text-decoration: underline;
 }
 
-.register-link {
-    margin-top: 15px;
+/* Button Styling */
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.login-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 107, 255, 0.3);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.loading-icon {
+    display: none;
+}
+
+/* Social Login */
+.social-login {
+    margin: 20px 0;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    color: var(--light-text);
     font-size: 14px;
+    margin: 20px 0;
+}
+
+.divider::before, .divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+    margin: 0 10px;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.social-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon.google { background: var(--social-google); }
+.social-icon.facebook { background: var(--social-facebook); }
+.social-icon.twitter { background: var(--social-twitter); }
+
+/* Register Link */
+.register-link {
+    margin-top: 20px;
+    font-size: 15px;
+    color: var(--light-text);
 }
 
 .register-link a {
-    color: #007BFF;
+    color: var(--primary-color);
     text-decoration: none;
-    transition: color 0.3s ease;
+    font-weight: 500;
+    transition: all 0.2s;
 }
 
 .register-link a:hover {
-    color: #0056b3;
+    color: var(--primary-hover);
     text-decoration: underline;
+}
 
-/* ✅ Progress Bar Styling */
+/* Error Message */
+.alert-error {
+    background: rgba(255, 77, 79, 0.1);
+    color: var(--error-color);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-left: 4px solid var(--error-color);
+    text-align: left;
+}
+
+/* Progress Bar */
 .progress-container {
     width: 100%;
-    background-color: #e0e0e0;
-    border-radius: 5px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
     height: 8px;
     margin: 20px 0;
+    overflow: hidden;
     display: none;
 }
 
 .progress-bar {
     height: 100%;
-    background-color: #17a2b8;
+    background: linear-gradient(90deg, var(--primary-color), #6c5ce7);
     width: 0%;
-    text-align: center;
-    line-height: 8px;
-    color: white;
-    font-size: 12px;
+    transition: width 0.4s ease;
 }
 
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 30px 20px;
+    }
+    
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .forgot-password {
+        align-self: flex-end;
+    }
+}
 </style>
+
+<script>
+// Toggle password visibility
+function togglePasswordVisibility() {
+    const passwordField = document.querySelector('#id_password');
+    const toggleIcon = document.querySelector('.password-toggle');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        passwordField.type = 'password';
+        toggleIcon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+// Form submission loading state
+document.querySelector('.login-form').addEventListener('submit', function(e) {
+    const button = this.querySelector('.login-btn');
+    const buttonText = button.querySelector('.button-text');
+    const loadingIcon = button.querySelector('.loading-icon');
+    
+    button.disabled = true;
+    buttonText.textContent = 'Logging in...';
+    loadingIcon.style.display = 'inline-block';
+    document.querySelector('.progress-container').style.display = 'block';
+    
+    // Simulate progress for demo
+    let progress = 0;
+    const progressBar = document.querySelector('.progress-bar');
+    const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        if (progress >= 100) clearInterval(interval);
+    }, 200);
+});
+
+// Add focus effects to inputs
+const inputs = document.querySelectorAll('.form-group input');
+inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentElement.querySelector('.input-icon').style.color = 'var(--primary-color)';
+    });
+    
+    input.addEventListener('blur', function() {
+        this.parentElement.querySelector('.input-icon').style.color = 'var(--light-text)';
+    });
+});
+</script>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 {% endblock %}

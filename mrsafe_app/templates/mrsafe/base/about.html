@@ -5,135 +5,249 @@
 {% block content %}
 <div class="container my-5 text-white">
 
-  <!-- 🔹 Glowing Logo -->
+  <!-- 🏭 Industrial Logo with HUD Glow -->
   <div class="text-center mb-4">
-    <img src="{% static 'images/mrsafe-logo.png' %}" alt="Mr. Safe Logo" style="width: 120px; height: 120px;"
-         class="rounded-circle shadow" />
+    <div class="position-relative d-inline-block">
+      <img src="{% static 'images/mrsafe-logo.png' %}" alt="Mr. Safe Logo" 
+           style="width: 120px; height: 120px;"
+           class="rounded-circle border-2 border-tiffany bg-dark p-1" />
+      <div class="position-absolute top-0 start-0 w-100 h-100 rounded-circle" 
+           style="box-shadow: 0 0 15px 5px rgba(64, 224, 208, 0.4); pointer-events: none;"></div>
+    </div>
   </div>
 
-  <!-- 🔹 Title -->
-  <div class="text-center mb-4">
-    <h1 class="display-5 fw-bold text-tiffany">About Mr. Safe</h1>
-    <p class="text-tiffany fs-5">AI-Driven Safety, Inspections, and Emergency Innovation</p>
-  </div>
-
-  <!-- 🔹 Mission -->
-  <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-    <h3 class="text-tiffany fw-bold mb-2">🛡️ Our Mission</h3>
-    <p class="text-light">
-      At <strong>Mr. Safe</strong>, we’re redefining the future of safety. Our mission is to make safety smarter, faster, and more proactive using powerful AI tools to detect risks, analyze hazards, and guide teams in real time.
+  <!-- ⚙️ Industrial-Grade Title -->
+  <div class="text-center mb-4 position-relative">
+    <div class="position-absolute top-50 start-0 end-0 h-1 bg-tiffany opacity-25"></div>
+    <h1 class="display-5 fw-bold text-tiffany position-relative d-inline-block px-4" 
+        style="text-shadow: 0 0 12px rgba(64, 224, 208, 0.5); background: #0a0f2c;">
+      <span class="font-monospace">MR_SAFE</span>
+    </h1>
+    <p class="text-tiffany fs-5 mt-3 font-monospace" style="letter-spacing: 2px;">
+      | AI-DRIVEN SAFETY | INSPECTIONS | EMERGENCY INNOVATION |
     </p>
   </div>
 
-  <!-- 🔹 Why Choose -->
-  <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-    <h3 class="text-tiffany fw-bold mb-3">🚀 Why Choose Mr. Safe?</h3>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item bg-transparent text-light border-tiffany">📸 AI-Powered Image Inspection Reports</li>
-      <li class="list-group-item bg-transparent text-light border-tiffany">🚨 Instant Emergency Alert Headcounts</li>
-      <li class="list-group-item bg-transparent text-light border-tiffany">📊 Safety Dashboards & Trend Analysis</li>
-      <li class="list-group-item bg-transparent text-light border-tiffany">📄 Auto-Generated Safety Reports (PDF, PPT, DOCX)</li>
-      <li class="list-group-item bg-transparent text-light border-tiffany">🎯 Designed for Safety Engineers, Officers, and Managers</li>
+  <!-- 🔧 Mission with Steel Panel Effect -->
+  <div class="bg-dark border border-tiffany rounded-4 p-4 mb-4 position-relative"
+       style="box-shadow: inset 0 0 10px rgba(64, 224, 208, 0.2), 0 0 15px rgba(64, 224, 208, 0.3);">
+    <div class="position-absolute top-0 start-0 bg-tiffany" style="width: 4px; height: 100%;"></div>
+    <h3 class="text-tiffany fw-bold mb-2 font-monospace">
+      <span class="bg-dark ps-2 pe-3">> MISSION_PARAMETERS</span>
+    </h3>
+    <p class="text-light ps-3">
+      At <strong class="text-tiffany">MR. SAFE</strong>, we're redefining the future of safety. Our mission is to make safety smarter, faster, and more proactive using powerful AI tools to detect risks, analyze hazards, and guide teams in real time.
+    </p>
+  </div>
+
+  <!-- ⚠️ Why Choose - Safety Control Panel -->
+  <div class="bg-dark border border-tiffany rounded-4 p-4 mb-4 position-relative overflow-hidden"
+       style="box-shadow: inset 0 0 15px rgba(0,0,0,0.5); background: 
+              linear-gradient(135deg, rgba(10,15,44,0.9) 0%, rgba(20,25,60,0.9) 100%);
+              border-left: 8px solid #40E0D0;">
+    <div class="position-absolute top-0 end-0 opacity-10" style="font-size: 120px;">⚠️</div>
+    <h3 class="text-tiffany fw-bold mb-3 font-monospace">
+      <span class="bg-dark ps-2 pe-3">> SAFETY_SYSTEMS</span>
+    </h3>
+    <ul class="list-group list-group-flush ps-3">
+      <li class="list-group-item bg-transparent text-light border-secondary d-flex align-items-center py-3">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace">01</span>
+        <span>AI-POWERED IMAGE INSPECTION REPORTS</span>
+      </li>
+      <li class="list-group-item bg-transparent text-light border-secondary d-flex align-items-center py-3">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace">02</span>
+        <span>INSTANT EMERGENCY ALERT HEADCOUNTS</span>
+      </li>
+      <li class="list-group-item bg-transparent text-light border-secondary d-flex align-items-center py-3">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace">03</span>
+        <span>SAFETY DASHBOARDS & TREND ANALYSIS</span>
+      </li>
+      <li class="list-group-item bg-transparent text-light border-secondary d-flex align-items-center py-3">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace">04</span>
+        <span>AUTO-GENERATED SAFETY REPORTS (PDF, PPT, DOCX)</span>
+      </li>
+      <li class="list-group-item bg-transparent text-light border-secondary d-flex align-items-center py-3">
+        <span class="badge bg-tiffany text-dark me-3 font-monospace">05</span>
+        <span>DESIGNED FOR SAFETY ENGINEERS, OFFICERS, AND MANAGERS</span>
+      </li>
     </ul>
   </div>
 
-  <!-- 🔹 Who We Serve -->
-  <div class="bg-dark border-start border-4 border-tiffany rounded-4 shadow p-4 mb-4">
-    <h3 class="text-tiffany fw-bold mb-2">🏗️ Who We Serve</h3>
-    <p class="text-light">
-      Whether you're a <strong>HSE engineer</strong>, a <strong>construction supervisor</strong>, or a <strong>corporate safety officer</strong>,
-      Mr. Safe empowers your team with the tools to act fast, stay compliant, and prevent incidents.
+  <!-- 🏗️ Who We Serve - Industrial Client Display -->
+  <div class="bg-dark border border-tiffany rounded-4 p-4 mb-4 position-relative"
+       style="background: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\" viewBox=\"0 0 100 100\"><line x1=\"0\" y1=\"0\" x2=\"100\" y2=\"100\" stroke=\"%2340E0D0\" stroke-width=\"0.3\"/><line x1=\"100\" y1=\"0\" x2=\"0\" y2=\"100\" stroke=\"%2340E0D0\" stroke-width=\"0.3\"/></svg>');">
+    <div class="position-absolute bottom-0 end-0 m-3 opacity-25" style="font-size: 60px;">🏗️</div>
+    <h3 class="text-tiffany fw-bold mb-2 font-monospace">
+      <span class="bg-dark ps-2 pe-3">> CLIENT_PROFILES</span>
+    </h3>
+    <p class="text-light ps-3" style="max-width: 80%;">
+      Whether you're a <strong class="text-tiffany">HSE ENGINEER</strong>, a <strong class="text-tiffany">CONSTRUCTION SUPERVISOR</strong>, or a <strong class="text-tiffany">CORPORATE SAFETY OFFICER</strong>,
+      MR. SAFE empowers your team with the tools to act fast, stay compliant, and prevent incidents.
     </p>
   </div>
 
-  <!-- 🔹 Meet the Team -->
+  <!-- 👷 Meet the Team - Industrial ID Cards -->
   <div class="text-center mt-5">
-    <h3 class="text-tiffany fw-bold">🤝 Meet Our Team</h3>
-    <p class="text-tiffany">A dedicated crew focused on AI, safety, and operational excellence.</p>
+    <h3 class="text-tiffany fw-bold font-monospace">
+      <span class="bg-dark ps-2 pe-3">> PERSONNEL_FILES</span>
+    </h3>
+    <p class="text-tiffany font-monospace">// SAFETY OPERATIONS TEAM //</p>
 
     <div class="row mt-4 g-4">
       <div class="col-md-4">
-        <div class="card bg-dark text-white border border-tiffany shadow-lg h-100">
-          <img src="{% static 'images/team_member1.jpg' %}" class="card-img-top" alt="Founder">
-          <div class="card-body">
-            <h5 class="card-title">Eng. Saeed</h5>
-            <p class="card-text text-tiffany">Founder & Lead Developer</p>
+        <div class="card bg-dark text-white border-0 shadow-lg h-100" 
+             style="background: linear-gradient(to bottom, #0a0f2c, #121a40); border-top: 4px solid #40E0D0 !important;">
+          <div class="position-relative overflow-hidden" style="height: 220px;">
+            <img src="{% static 'images/team_member1.jpg' %}" class="card-img-top h-100 w-100" alt="Founder" style="object-fit: cover;">
+            <div class="position-absolute bottom-0 start-0 end-0 p-3 text-start" 
+                 style="background: linear-gradient(to top, rgba(10,15,44,0.9), transparent);">
+              <h5 class="card-title text-tiffany mb-0 font-monospace">ENG. SAEED</h5>
+            </div>
+          </div>
+          <div class="card-body text-start">
+            <p class="card-text text-light font-monospace small">> FOUNDER & LEAD DEVELOPER</p>
+            <div class="bg-tiffany-opacity-10 p-2 rounded">
+              <p class="small text-tiffany mb-0 font-monospace">// AI SAFETY SYSTEMS //</p>
+            </div>
           </div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card bg-dark text-white border border-tiffany shadow-lg h-100">
-          <img src="{% static 'images/team_member2.jpg' %}" class="card-img-top" alt="CEO">
-          <div class="card-body">
-            <h5 class="card-title">Mr. Osama</h5>
-            <p class="card-text text-tiffany">Founder & CEO</p>
+        <div class="card bg-dark text-white border-0 shadow-lg h-100" 
+             style="background: linear-gradient(to bottom, #0a0f2c, #121a40); border-top: 4px solid #40E0D0 !important;">
+          <div class="position-relative overflow-hidden" style="height: 220px;">
+            <img src="{% static 'images/team_member2.jpg' %}" class="card-img-top h-100 w-100" alt="CEO" style="object-fit: cover;">
+            <div class="position-absolute bottom-0 start-0 end-0 p-3 text-start" 
+                 style="background: linear-gradient(to top, rgba(10,15,44,0.9), transparent);">
+              <h5 class="card-title text-tiffany mb-0 font-monospace">MR. OSAMA</h5>
+            </div>
+          </div>
+          <div class="card-body text-start">
+            <p class="card-text text-light font-monospace small">> FOUNDER & CEO</p>
+            <div class="bg-tiffany-opacity-10 p-2 rounded">
+              <p class="small text-tiffany mb-0 font-monospace">// OPERATIONS COMMAND //</p>
+            </div>
           </div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card bg-dark text-white border border-tiffany shadow-lg h-100">
-          <img src="{% static 'images/team_member3.jpg' %}" class="card-img-top" alt="Engineer">
-          <div class="card-body">
-            <h5 class="card-title">Eng. Razan</h5>
-            <p class="card-text text-tiffany">AI & Risk Engineer</p>
+        <div class="card bg-dark text-white border-0 shadow-lg h-100" 
+             style="background: linear-gradient(to bottom, #0a0f2c, #121a40); border-top: 4px solid #40E0D0 !important;">
+          <div class="position-relative overflow-hidden" style="height: 220px;">
+            <img src="{% static 'images/team_member3.jpg' %}" class="card-img-top h-100 w-100" alt="Engineer" style="object-fit: cover;">
+            <div class="position-absolute bottom-0 start-0 end-0 p-3 text-start" 
+                 style="background: linear-gradient(to top, rgba(10,15,44,0.9), transparent);">
+              <h5 class="card-title text-tiffany mb-0 font-monospace">ENG. RAZAN</h5>
+            </div>
+          </div>
+          <div class="card-body text-start">
+            <p class="card-text text-light font-monospace small">> AI & RISK ENGINEER</p>
+            <div class="bg-tiffany-opacity-10 p-2 rounded">
+              <p class="small text-tiffany mb-0 font-monospace">// HAZARD ANALYSIS //</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 🔹 Call to Action -->
-  <div class="text-center mt-5">
-    <h3 class="text-tiffany fw-bold mb-2">🌐 Be Proactive, Be Safe</h3>
-    <p class="text-tiffany fs-5">Start using <strong>Mr. Safe</strong> to revolutionize how your team handles safety.</p>
-    <a href="{% url 'mrsafe_app:register' %}" class="btn btn-tiffany fw-bold px-4 py-2 rounded-pill shadow">🚀 Get Started</a>
+  <!-- 🚨 Emergency Call to Action -->
+  <div class="text-center mt-5 pt-4 position-relative">
+    <div class="position-absolute top-0 start-0 end-0 h-1 bg-tiffany opacity-25"></div>
+    <h3 class="text-tiffany fw-bold mb-3 font-monospace">
+      <span class="bg-dark ps-2 pe-3">> SAFETY_PROTOCOL_ACTIVATION</span>
+    </h3>
+    <p class="text-tiffany fs-5 font-monospace">INITIATE MR. SAFE DEPLOYMENT SEQUENCE</p>
+    <a href="{% url 'mrsafe_app:register' %}" 
+       class="btn btn-lg btn-tiffany fw-bold px-5 py-3 rounded-0 shadow font-monospace" 
+       style="letter-spacing: 1px; box-shadow: 0 0 25px rgba(64, 224, 208, 0.6); border: 1px solid #000 !important;">
+       🚨 EXECUTE SAFETY PROTOCOLS
+    </a>
   </div>
 </div>
 
-<!-- 🔹 QR Code -->
-<div class="text-center mt-5">
-  <h4 class="text-tiffany mb-2">📱 Scan to Explore Mr. Safe</h4>
-  <img src="{% static 'images/qr_mrsafe.png' %}" 
-       alt="QR Code for Mr. Safe" 
-       class="img-fluid rounded shadow" 
-       style="max-width: 240px;" />
+<!-- 🔍 QR Access Panel -->
+<div class="text-center mt-5 pt-5 position-relative">
+  <div class="position-absolute top-0 start-0 end-0 h-1 bg-tiffany opacity-25"></div>
+  <h4 class="text-tiffany mb-3 font-monospace">
+    <span class="bg-dark ps-2 pe-3">> MOBILE_ACCESS</span>
+  </h4>
+  <div class="d-inline-block p-3 rounded-0" style="background: rgba(10,15,44,0.7); border: 1px solid #40E0D0;">
+    <img src="{% static 'images/qr_mrsafe.png' %}" 
+         alt="QR Code for Mr. Safe" 
+         class="img-fluid" 
+         style="width: 180px; height: 180px; border: 1px solid #40E0D0; box-shadow: 0 0 30px rgba(64, 224, 208, 0.8);" />
+  </div>
+  <p class="text-tiffany mt-3 font-monospace small">SCAN FOR IMMEDIATE ACCESS</p>
 </div>
 
-<!-- 🔹 Custom Styling -->
+<!-- 🖥️ Custom Industrial Safety Styling -->
 <style>
   body {
     background-color: #0a0f2c;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(64, 224, 208, 0.03) 0%, transparent 25%),
+      radial-gradient(circle at 80% 70%, rgba(64, 224, 208, 0.03) 0%, transparent 25%),
+      linear-gradient(to bottom, #060920, #0a0f2c);
+    font-family: 'Segoe UI', system-ui, sans-serif;
   }
 
   .text-tiffany {
     color: #40E0D0 !important;
   }
 
+  .bg-tiffany {
+    background-color: #40E0D0 !important;
+  }
+
   .btn-tiffany {
     background-color: #40E0D0;
-    color: #0a0f2c;
+    color: #0a0f2c !important;
     border: none;
-    transition: 0.3s;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    font-weight: 800 !important;
   }
 
   .btn-tiffany:hover {
     background-color: #30bfbf;
-    color: black;
+    color: #000 !important;
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px rgba(64, 224, 208, 0.9) !important;
+  }
+
+  .btn-tiffany:active {
+    transform: translateY(1px);
+  }
+
+  .font-monospace {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+  }
+
+  .border-tiffany {
+    border-color: #40E0D0 !important;
+  }
+
+  .card {
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(64, 224, 208, 0.4) !important;
   }
 
   .list-group-item {
-    border: none;
-    font-weight: 500;
+    background-color: rgba(20, 25, 60, 0.5) !important;
+    margin-bottom: 1px;
   }
 
-  .card-img-top {
-    object-fit: cover;
-    height: 220px;
-  }
-
-  img[alt*="QR Code"] {
-    box-shadow: 0 0 25px #40E0D0;
-    border-radius: 16px;
+  .badge {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    min-width: 32px;
   }
 </style>
 {% endblock %}
