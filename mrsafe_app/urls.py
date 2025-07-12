@@ -1,3 +1,8 @@
+from django.urls import path
+from django.views.static import serve
+from django.conf import settings
+from django.conf.urls.static import static
+from django.views.generic import TemplateView
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
@@ -244,7 +249,7 @@ path("premium/subscribe/<str:plan>/", subscribe_premium, name="subscribe_premium
     path('premium-dashboard/', premium_dashboard, name='premium_dashboard'),
 
     path("upgrade-membership/", upgrade_membership, name="upgrade_membership"),
-    
+     path("ads.txt", serve, {"path": "ads.txt", "document_root": settings.BASE_DIR / "mrsafe_app"}),
     ]
 
 
