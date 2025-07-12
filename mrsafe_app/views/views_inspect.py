@@ -731,7 +731,7 @@ def safe_site_observation(request, inspection_id):
 
     return redirect('mrsafe_app:inspection_detail', inspection_id=inspection_id)
 
-from django.utils.timezone import now
+
 
 from django.utils.timezone import now
 from django.contrib.auth.decorators import login_required
@@ -746,7 +746,9 @@ def finalize_inspection(request, inspection_id):
         inspection.completed_at = now()
         inspection.save()
 
-    return redirect("mrsafe_app:inspection_detail", inspection_id=inspection.id)
+    return redirect("mrsafe_app:inspection_list")
+
+
 from django.template.loader import get_template
 from django.templatetags.static import static
 from django.http import HttpResponse

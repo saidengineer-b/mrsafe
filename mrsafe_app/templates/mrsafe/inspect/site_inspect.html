@@ -33,6 +33,353 @@
     {% endif %}
 </div>
 
+<!-- 🚧 SAFETY INSPECTION CONTAINER 🚧 -->
+<div class="safety-inspection-container">
+    <!-- 🚨 INSPECTION HEADER 🚨 -->
+    <div class="safety-inspection-header">
+        <h1 class="safety-inspection-title">
+            <span>
+                <i class="fas fa-clipboard-check"></i> SITE INSPECTION REPORT
+            </span>
+            <span class="safety-status-badge {% if inspection.is_completed %}safety-status-complete{% else %}safety-status-inprogress{% endif %}">
+                {% if inspection.is_completed %}COMPLETED{% else %}IN PROGRESS{% endif %}
+            </span>
+        </h1>
+        
+        <div class="dropdown" style="position: absolute; top: 2rem; right: 2rem;">
+            <button class="safety-export-btn dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-download"></i> EXPORT
+            </button>
+            <ul class="dropdown-menu safety-export-menu" aria-labelledby="exportDropdown">
+                <li><button class="dropdown-item safety-export-item" id="copyReportBtn"><i class="far fa-copy"></i> Copy Report</button></li>
+                <li><button class="dropdown-item safety-export-item" id="exportPdfBtn"><i class="far fa-file-pdf"></i> Export as PDF</button></li>
+                <li><button class="dropdown-item safety-export-item" id="exportPptBtn"><i class="far fa-file-powerpoint"></i> Export as PPT</button></li>
+                <li><button class="dropdown-item safety-export-item" id="printReportBtn"><i class="fas fa-print"></i> Print Report</button></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 🔍 INSPECTION SUMMARY 🔍 -->
+    <div class="safety-summary-card">
+        <div class="safety-summary-grid">
+            <div class="safety-summary-item">
+                <div class="safety-summary-icon">
+                    <i class="fas fa-id-badge"></i>
+                </div>
+                <div>
+                    <div class="safety-summary-label">Inspection ID</div>
+                    <div class="safety-summary-value">{{ inspection.id }}</div>
+                </div>
+            </div>
+            
+            <div class="safety-summary-item">
+                <div class="safety-summary-icon">
+                    <i class="fas fa-user-hard-hat"></i>
+                </div>
+                <div>
+                    <div class="safety-summary-label">Inspector</div>
+                    <div class="safety-summary-value">{{ inspection.inspector.username }}</div>
+                </div>
+            </div>
+            
+            <div class="safety-summary-item">
+                <div class="safety-summary-icon">
+                    <i class="far fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <div class="safety-summary-label">Date</div>
+                    <div class="safety-summary-value">{{ inspection.date }}</div>
+                </div>
+            </div>
+            
+            <div class="safety-summary-item">
+                <div class="safety-summary-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                    <div class="safety-summary-label">Location</div>
+                    <div class="safety-summary-value">{{ inspection.location }}</div>
+                </div>
+            </div>
+        </div>
+        
+        {% if not inspection.is_completed %}
+        <div class="safety-progress-container">
+            <div class="safety-progress-bar">
+                <div class="safety-progress-fill" style="width: {{ inspection.completion_percentage }}%"></div>
+            </div>
+            <div class="safety-progress-text">{{ inspection.completion_percentage }}% COMPLETE</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ⚠️ OBSERVATIONS SECTION ⚠️ -->
+    <div>
+        <div class="safety-observations-header">
+            <h2 class="safety-observations-title">
+                <i class="fas fa-exclamation-triangle"></i> SAFETY OBSERVATIONS
+                <span class="safety-observations-count">{{ observations|length }}</span>
+            </h2>
+            <button class="safety-toggle-btn" data-bs-toggle="collapse" data-bs-target="#observationsCollapse">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+        
+        <div class="collapse show" id="observationsCollapse" style="padding: 2rem;">
+            {% if observations %}
+                <table class="safety-observations-table">
+                    <thead>
+                        <tr>
+                            <th>PHOTO</th>
+                            <th>HAZARD</th>
+                            <th>RISK LEVEL</th>
+                            <th>DETECTED</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for observation in observations %}
+                        <tr>
+                            <td data-label="Photo">
+                                {% if observation.photo %}
+                                <img src="{{ observation.photo.url }}" alt="Observation Photo" class="safety-photo-thumb">
+                                {% else %}
+                                <div class="safety-photo-placeholder">
+                                    <i class="far fa-image"></i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td data-label="Hazard">
+                                <div class="safety-hazard-text">{{ observation.hazard_description|truncatechars:30 }}</div>
+                            </td>
+                            <td data-label="Risk Level">
+                                <span class="safety-risk-badge 
+                                    {% if observation.risk_level == 'High' %}safety-risk-high
+                                    {% elif observation.risk_level == 'Medium' %}safety-risk-medium
+                                    {% else %}safety-risk-low{% endif %}">
+                                    {{ observation.risk_level }}
+                                </span>
+                            </td>
+                            <td data-label="Detected">{{ observation.detected_at|date:"M d, Y" }}</td>
+                            <td data-label="Actions">
+                                <button class="safety-action-btn safety-copy-btn copy-hazard-btn" 
+                                        data-hazard="{{ observation.hazard_description }}"
+                                        title="Copy Hazard">
+                                    <i class="far fa-copy"></i>
+                                </button>
+                                <button class="safety-action-btn safety-view-btn view-details-btn"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#observationModal{{ observation.id }}"
+                                        title="View Details">
+                                    <i class="far fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div style="text-align: center; padding: 2rem; background: var(--safety-light); border-radius: 8px;">
+                    <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--safety-green); margin-bottom: 1rem;"></i>
+                    <h3 style="color: var(--safety-green);">NO SAFETY OBSERVATIONS FOUND</h3>
+                    <p style="color: var(--safety-dark);">This inspection has no recorded hazards.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 🛠️ ACTION BUTTONS 🛠️ -->
+    <div class="safety-action-buttons">
+        <a href="{% url 'mrsafe_app:site_inspection_start' inspection.id %}" class="safety-btn safety-btn-primary">
+            <i class="fas fa-play-circle"></i> CONTINUE INSPECTION
+        </a>
+        
+        <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="safety-btn safety-btn-outline">
+            <i class="fas fa-arrow-left"></i> BACK TO OVERVIEW
+        </a>
+        {% if not inspection.is_completed %}
+<form method="POST" action="{% url 'mrsafe_app:finalize_inspection' inspection.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="safety-btn safety-btn-success">
+        <i class="fas fa-check-circle"></i> COMPLETE INSPECTION
+    </button>
+</form>
+{% endif %}
+
+    </div>
+</div>
+
+<!-- 🖼️ OBSERVATION DETAIL MODALS 🖼️ -->
+{% for observation in observations %}
+<div class="modal fade" id="observationModal{{ observation.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content safety-modal">
+            <div class="safety-modal-header">
+                <h3 class="safety-modal-title">OBSERVATION DETAILS</h3>
+                <button type="button" class="safety-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="safety-modal-body">
+                <div class="safety-modal-grid">
+                    <!-- Photo Column -->
+                    <div>
+                        <div class="safety-modal-photo">
+                            {% if observation.photo %}
+                            <img src="{{ observation.photo.url }}" alt="Observation Photo">
+                            {% else %}
+                            <div class="safety-modal-photo-placeholder">
+                                <i class="far fa-image"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="safety-modal-meta">
+                            <div class="safety-meta-item">
+                                <span class="safety-meta-label">Detected At:</span>
+                                <span class="safety-meta-value">{{ observation.detected_at }}</span>
+                            </div>
+                            <div class="safety-meta-item">
+                                <span class="safety-meta-label">Risk Level:</span>
+                                <span class="safety-meta-value">
+                                    <span class="safety-risk-badge 
+                                        {% if observation.risk_level == 'High' %}safety-risk-high
+                                        {% elif observation.risk_level == 'Medium' %}safety-risk-medium
+                                        {% else %}safety-risk-low{% endif %}">
+                                        {{ observation.risk_level }}
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Details Column -->
+                    <div>
+                        <div class="safety-content-box">
+                            <h4 class="safety-content-title">
+                                <i class="fas fa-exclamation-triangle" style="color: var(--safety-red);"></i> HAZARD DESCRIPTION
+                            </h4>
+                            <p class="safety-content-text">{{ observation.hazard_description }}</p>
+                        </div>
+                        
+                        <div class="safety-content-box">
+                            <h4 class="safety-content-title">
+                                <i class="fas fa-lightbulb" style="color: var(--safety-green);"></i> RECOMMENDATIONS
+                            </h4>
+                            <p class="safety-content-text">{{ observation.recommendations }}</p>
+                        </div>
+                        
+                        {% if observation.additional_notes %}
+                        <div class="safety-content-box">
+                            <h4 class="safety-content-title">
+                                <i class="fas fa-sticky-note" style="color: var(--safety-blue);"></i> ADDITIONAL NOTES
+                            </h4>
+                            <p class="safety-content-text">{{ observation.additional_notes }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="safety-modal-footer">
+                <button type="button" class="safety-btn safety-btn-secondary" data-bs-dismiss="modal">CLOSE</button>
+                <a href="{% url 'mrsafe_app:observation_detail' observation.id %}" class="safety-btn safety-btn-primary">
+                    <i class="fas fa-external-link-alt"></i> VIEW FULL DETAILS
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- 🍞 TOAST NOTIFICATIONS 🍞 -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="exportToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" style="background: var(--safety-green); color: white;">
+            <strong class="me-auto">SUCCESS</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" style="background: white; color: var(--safety-dark);">
+            Report exported successfully!
+        </div>
+    </div>
+    
+    <div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header" style="background: var(--safety-blue); color: white;">
+            <strong class="me-auto">COPIED</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" style="background: white; color: var(--safety-dark);">
+            Content copied to clipboard!
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Initialize toasts
+        const exportToast = new bootstrap.Toast(document.getElementById('exportToast'));
+        const copyToast = new bootstrap.Toast(document.getElementById('copyToast'));
+        
+        // Copy hazard functionality
+        document.querySelectorAll('.copy-hazard-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const hazardText = this.getAttribute('data-hazard');
+                navigator.clipboard.writeText(hazardText).then(() => {
+                    copyToast.show();
+                });
+            });
+        });
+        
+        // Export buttons functionality
+        document.getElementById('copyReportBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implement copy report logic here
+            exportToast.show();
+        });
+        
+        document.getElementById('exportPdfBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implement PDF export logic here
+            exportToast.show();
+        });
+        
+        document.getElementById('exportPptBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Implement PPT export logic here
+            exportToast.show();
+        });
+        
+        document.getElementById('printReportBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.print();
+        });
+        
+        // Animate progress bar on page load
+        const progressFill = document.querySelector('.safety-progress-fill');
+        if (progressFill) {
+            // The width is already set inline, this just triggers the transition
+            progressFill.style.width = progressFill.style.width;
+        }
+        
+        // Fix for modal shaking issue
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('show.bs.modal', function () {
+                document.body.style.overflow = 'hidden';
+                document.body.style.paddingRight = '0';
+            });
+            
+            modal.addEventListener('hidden.bs.modal', function () {
+                document.body.style.overflow = 'auto';
+                document.body.style.paddingRight = '0';
+            });
+        });
+    });
+</script>
 <!-- 🎨 PREMIUM SAFETY STYLES -->
 <style>
     /* 🎨 COLOR PALETTE */
@@ -624,348 +971,4 @@
     }
 </style>
 
-<!-- 🚧 SAFETY INSPECTION CONTAINER 🚧 -->
-<div class="safety-inspection-container">
-    <!-- 🚨 INSPECTION HEADER 🚨 -->
-    <div class="safety-inspection-header">
-        <h1 class="safety-inspection-title">
-            <span>
-                <i class="fas fa-clipboard-check"></i> SITE INSPECTION REPORT
-            </span>
-            <span class="safety-status-badge {% if inspection.is_completed %}safety-status-complete{% else %}safety-status-inprogress{% endif %}">
-                {% if inspection.is_completed %}COMPLETED{% else %}IN PROGRESS{% endif %}
-            </span>
-        </h1>
-        
-        <div class="dropdown" style="position: absolute; top: 2rem; right: 2rem;">
-            <button class="safety-export-btn dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-download"></i> EXPORT
-            </button>
-            <ul class="dropdown-menu safety-export-menu" aria-labelledby="exportDropdown">
-                <li><button class="dropdown-item safety-export-item" id="copyReportBtn"><i class="far fa-copy"></i> Copy Report</button></li>
-                <li><button class="dropdown-item safety-export-item" id="exportPdfBtn"><i class="far fa-file-pdf"></i> Export as PDF</button></li>
-                <li><button class="dropdown-item safety-export-item" id="exportPptBtn"><i class="far fa-file-powerpoint"></i> Export as PPT</button></li>
-                <li><button class="dropdown-item safety-export-item" id="printReportBtn"><i class="fas fa-print"></i> Print Report</button></li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- 🔍 INSPECTION SUMMARY 🔍 -->
-    <div class="safety-summary-card">
-        <div class="safety-summary-grid">
-            <div class="safety-summary-item">
-                <div class="safety-summary-icon">
-                    <i class="fas fa-id-badge"></i>
-                </div>
-                <div>
-                    <div class="safety-summary-label">Inspection ID</div>
-                    <div class="safety-summary-value">{{ inspection.id }}</div>
-                </div>
-            </div>
-            
-            <div class="safety-summary-item">
-                <div class="safety-summary-icon">
-                    <i class="fas fa-user-hard-hat"></i>
-                </div>
-                <div>
-                    <div class="safety-summary-label">Inspector</div>
-                    <div class="safety-summary-value">{{ inspection.inspector.username }}</div>
-                </div>
-            </div>
-            
-            <div class="safety-summary-item">
-                <div class="safety-summary-icon">
-                    <i class="far fa-calendar-alt"></i>
-                </div>
-                <div>
-                    <div class="safety-summary-label">Date</div>
-                    <div class="safety-summary-value">{{ inspection.date }}</div>
-                </div>
-            </div>
-            
-            <div class="safety-summary-item">
-                <div class="safety-summary-icon">
-                    <i class="fas fa-map-marker-alt"></i>
-                </div>
-                <div>
-                    <div class="safety-summary-label">Location</div>
-                    <div class="safety-summary-value">{{ inspection.location }}</div>
-                </div>
-            </div>
-        </div>
-        
-        {% if not inspection.is_completed %}
-        <div class="safety-progress-container">
-            <div class="safety-progress-bar">
-                <div class="safety-progress-fill" style="width: {{ inspection.completion_percentage }}%"></div>
-            </div>
-            <div class="safety-progress-text">{{ inspection.completion_percentage }}% COMPLETE</div>
-        </div>
-        {% endif %}
-    </div>
-
-    <!-- ⚠️ OBSERVATIONS SECTION ⚠️ -->
-    <div>
-        <div class="safety-observations-header">
-            <h2 class="safety-observations-title">
-                <i class="fas fa-exclamation-triangle"></i> SAFETY OBSERVATIONS
-                <span class="safety-observations-count">{{ observations|length }}</span>
-            </h2>
-            <button class="safety-toggle-btn" data-bs-toggle="collapse" data-bs-target="#observationsCollapse">
-                <i class="fas fa-chevron-down"></i>
-            </button>
-        </div>
-        
-        <div class="collapse show" id="observationsCollapse" style="padding: 2rem;">
-            {% if observations %}
-                <table class="safety-observations-table">
-                    <thead>
-                        <tr>
-                            <th>PHOTO</th>
-                            <th>HAZARD</th>
-                            <th>RISK LEVEL</th>
-                            <th>DETECTED</th>
-                            <th>ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for observation in observations %}
-                        <tr>
-                            <td data-label="Photo">
-                                {% if observation.photo %}
-                                <img src="{{ observation.photo.url }}" alt="Observation Photo" class="safety-photo-thumb">
-                                {% else %}
-                                <div class="safety-photo-placeholder">
-                                    <i class="far fa-image"></i>
-                                </div>
-                                {% endif %}
-                            </td>
-                            <td data-label="Hazard">
-                                <div class="safety-hazard-text">{{ observation.hazard_description|truncatechars:30 }}</div>
-                            </td>
-                            <td data-label="Risk Level">
-                                <span class="safety-risk-badge 
-                                    {% if observation.risk_level == 'High' %}safety-risk-high
-                                    {% elif observation.risk_level == 'Medium' %}safety-risk-medium
-                                    {% else %}safety-risk-low{% endif %}">
-                                    {{ observation.risk_level }}
-                                </span>
-                            </td>
-                            <td data-label="Detected">{{ observation.detected_at|date:"M d, Y" }}</td>
-                            <td data-label="Actions">
-                                <button class="safety-action-btn safety-copy-btn copy-hazard-btn" 
-                                        data-hazard="{{ observation.hazard_description }}"
-                                        title="Copy Hazard">
-                                    <i class="far fa-copy"></i>
-                                </button>
-                                <button class="safety-action-btn safety-view-btn view-details-btn"
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#observationModal{{ observation.id }}"
-                                        title="View Details">
-                                    <i class="far fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div style="text-align: center; padding: 2rem; background: var(--safety-light); border-radius: 8px;">
-                    <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--safety-green); margin-bottom: 1rem;"></i>
-                    <h3 style="color: var(--safety-green);">NO SAFETY OBSERVATIONS FOUND</h3>
-                    <p style="color: var(--safety-dark);">This inspection has no recorded hazards.</p>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <!-- 🛠️ ACTION BUTTONS 🛠️ -->
-    <div class="safety-action-buttons">
-        <a href="{% url 'mrsafe_app:site_inspection_start' inspection.id %}" class="safety-btn safety-btn-primary">
-            <i class="fas fa-play-circle"></i> CONTINUE INSPECTION
-        </a>
-        
-        <a href="{% url 'mrsafe_app:inspection_detail' inspection.id %}" class="safety-btn safety-btn-outline">
-            <i class="fas fa-arrow-left"></i> BACK TO OVERVIEW
-        </a>
-        
-        {% if not inspection.is_completed %}
-        <a href="#" class="safety-btn safety-btn-success">
-            <i class="fas fa-check-circle"></i> COMPLETE INSPECTION
-        </a>
-        {% endif %}
-    </div>
-</div>
-
-<!-- 🖼️ OBSERVATION DETAIL MODALS 🖼️ -->
-{% for observation in observations %}
-<div class="modal fade" id="observationModal{{ observation.id }}" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content safety-modal">
-            <div class="safety-modal-header">
-                <h3 class="safety-modal-title">OBSERVATION DETAILS</h3>
-                <button type="button" class="safety-modal-close" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="safety-modal-body">
-                <div class="safety-modal-grid">
-                    <!-- Photo Column -->
-                    <div>
-                        <div class="safety-modal-photo">
-                            {% if observation.photo %}
-                            <img src="{{ observation.photo.url }}" alt="Observation Photo">
-                            {% else %}
-                            <div class="safety-modal-photo-placeholder">
-                                <i class="far fa-image"></i>
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div class="safety-modal-meta">
-                            <div class="safety-meta-item">
-                                <span class="safety-meta-label">Detected At:</span>
-                                <span class="safety-meta-value">{{ observation.detected_at }}</span>
-                            </div>
-                            <div class="safety-meta-item">
-                                <span class="safety-meta-label">Risk Level:</span>
-                                <span class="safety-meta-value">
-                                    <span class="safety-risk-badge 
-                                        {% if observation.risk_level == 'High' %}safety-risk-high
-                                        {% elif observation.risk_level == 'Medium' %}safety-risk-medium
-                                        {% else %}safety-risk-low{% endif %}">
-                                        {{ observation.risk_level }}
-                                    </span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Details Column -->
-                    <div>
-                        <div class="safety-content-box">
-                            <h4 class="safety-content-title">
-                                <i class="fas fa-exclamation-triangle" style="color: var(--safety-red);"></i> HAZARD DESCRIPTION
-                            </h4>
-                            <p class="safety-content-text">{{ observation.hazard_description }}</p>
-                        </div>
-                        
-                        <div class="safety-content-box">
-                            <h4 class="safety-content-title">
-                                <i class="fas fa-lightbulb" style="color: var(--safety-green);"></i> RECOMMENDATIONS
-                            </h4>
-                            <p class="safety-content-text">{{ observation.recommendations }}</p>
-                        </div>
-                        
-                        {% if observation.additional_notes %}
-                        <div class="safety-content-box">
-                            <h4 class="safety-content-title">
-                                <i class="fas fa-sticky-note" style="color: var(--safety-blue);"></i> ADDITIONAL NOTES
-                            </h4>
-                            <p class="safety-content-text">{{ observation.additional_notes }}</p>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="safety-modal-footer">
-                <button type="button" class="safety-btn safety-btn-secondary" data-bs-dismiss="modal">CLOSE</button>
-                <a href="{% url 'mrsafe_app:observation_detail' observation.id %}" class="safety-btn safety-btn-primary">
-                    <i class="fas fa-external-link-alt"></i> VIEW FULL DETAILS
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
-
-<!-- 🍞 TOAST NOTIFICATIONS 🍞 -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="exportToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header" style="background: var(--safety-green); color: white;">
-            <strong class="me-auto">SUCCESS</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body" style="background: white; color: var(--safety-dark);">
-            Report exported successfully!
-        </div>
-    </div>
-    
-    <div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header" style="background: var(--safety-blue); color: white;">
-            <strong class="me-auto">COPIED</strong>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body" style="background: white; color: var(--safety-dark);">
-            Content copied to clipboard!
-        </div>
-    </div>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-        
-        // Initialize toasts
-        const exportToast = new bootstrap.Toast(document.getElementById('exportToast'));
-        const copyToast = new bootstrap.Toast(document.getElementById('copyToast'));
-        
-        // Copy hazard functionality
-        document.querySelectorAll('.copy-hazard-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const hazardText = this.getAttribute('data-hazard');
-                navigator.clipboard.writeText(hazardText).then(() => {
-                    copyToast.show();
-                });
-            });
-        });
-        
-        // Export buttons functionality
-        document.getElementById('copyReportBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            // Implement copy report logic here
-            exportToast.show();
-        });
-        
-        document.getElementById('exportPdfBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            // Implement PDF export logic here
-            exportToast.show();
-        });
-        
-        document.getElementById('exportPptBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            // Implement PPT export logic here
-            exportToast.show();
-        });
-        
-        document.getElementById('printReportBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            window.print();
-        });
-        
-        // Animate progress bar on page load
-        const progressFill = document.querySelector('.safety-progress-fill');
-        if (progressFill) {
-            // The width is already set inline, this just triggers the transition
-            progressFill.style.width = progressFill.style.width;
-        }
-        
-        // Fix for modal shaking issue
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('show.bs.modal', function () {
-                document.body.style.overflow = 'hidden';
-                document.body.style.paddingRight = '0';
-            });
-            
-            modal.addEventListener('hidden.bs.modal', function () {
-                document.body.style.overflow = 'auto';
-                document.body.style.paddingRight = '0';
-            });
-        });
-    });
-</script>
 {% endblock %}
